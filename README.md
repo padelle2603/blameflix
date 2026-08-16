@@ -22,44 +22,6 @@ BlameFlix è un catalogo e lettore personale per film e serie TV: cerca titoli, 
 | Linux desktop | Electron | `BlameFlix-<versione>.AppImage` |
 | Web | HTML/CSS/JS statico | `www/` |
 
-## Compilazione
-
-### Web
-Non serve alcuna build: la cartella `www/` è HTML/CSS/JS statico.
-
-### Android (APK)
-```bash
-npm install
-npx cap sync android
-cd android && ./gradlew assembleRelease
-```
-
-L'APK firmato viene copiato in `dist/android/BlameFlix-<versione>.apk`. Se non
-è presente `android/keystore.properties`, la build usa la firma di debug.
-
-### Desktop Linux (AppImage)
-```bash
-cd electron
-npm install
-npm run dist
-```
-
-L'AppImage viene generata in `dist/linux/`.
-
-### Build automatica su GitHub Actions
-Ad ogni push sul branch `main` (o manualmente), il workflow
-[`.github/workflows/build.yml`](.github/workflows/build.yml) compila **APK e
-AppImage** e crea/aggiorna una **Release** su GitHub, usando la versione dal
-`package.json` radice (tag `v<versione>`). Per pubblicare una nuova versione
-basta incrementare il campo `version` in `package.json` e fare push.
-
-Per firmare l'APK di release da GitHub Actions, imposta nel repository questi
-**secrets** (vedi *Settings → Secrets and variables → Actions*):
-`ANDROID_KEYSTORE_BASE64` (il file `release.keystore` codificato in base64,
-es. `base64 -w0 release.keystore`), `ANDROID_KEYSTORE_PASSWORD`,
-`ANDROID_KEY_ALIAS` e `ANDROID_KEY_PASSWORD`. Se non li imposti, l'APK viene
-firmato con la chiave di debug.
-
 ## Impostazioni
 
 - **Chiave API TMDB**: inseriscila nelle Impostazioni per abilitare la ricerca.
