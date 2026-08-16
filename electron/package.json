@@ -4,6 +4,7 @@
   "description": "BlameFlix desktop (Electron wrapper)",
   "main": "main.js",
   "private": true,
+  "author": "padelle2603",
   "scripts": {
     "start": "electron .",
     "dist": "electron-builder --linux --publish never"

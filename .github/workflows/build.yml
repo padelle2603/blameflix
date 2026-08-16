@@ -103,7 +103,15 @@ jobs:
 
       - name: Build AppImage
         working-directory: electron
-        run: npm run dist
+        run: |
+          for i in 1 2 3 4 5; do
+            if npm run dist; then
+              exit 0
+            fi
+            echo "Tentativo $i fallito (download transitorio), riprovo tra 15s..."
+            sleep 15
+          done
+          exit 1
 
       - name: Upload AppImage artifact
         uses: actions/upload-artifact@v4
