@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">BlameFlix</string>
+    <string name="title_activity_main">BlameFlix</string>
+    <string name="package_name">com.padelle.blameflix</string>
+    <string name="custom_url_scheme">com.padelle.blameflix</string>
+</resources>

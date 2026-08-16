@@ -1,0 +1,32 @@
+# Node
+node_modules/
+**/node_modules/
+
+# Build outputs
+dist/
+electron/dist/
+
+# Android / Gradle
+android/.gradle/
+android/build/
+android/app/build/
+android/capacitor-cordova-android-plugins/
+android/local.properties
+android/.kotlin/
+
+# Copied web assets & generated config (Capacitor)
+android/app/src/main/assets/public/
+android/app/src/main/assets/capacitor.config.json
+android/app/src/main/assets/capacitor.plugins.json
+android/app/src/main/res/xml/config.xml
+
+# Keystore / secrets
+android/*.keystore
+android/keystore.properties
+
+# www lib è rigenerato da cap sync
+www/lib/
+
+# OS / editor
+.DS_Store
+*.swp

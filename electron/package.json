@@ -1,0 +1,36 @@
+{
+  "name": "blameflix-desktop",
+  "version": "1.0.0",
+  "description": "BlameFlix desktop (Electron wrapper)",
+  "main": "main.js",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --linux --publish never"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.padelle.blameflix",
+    "productName": "BlameFlix",
+    "files": [
+      "main.js",
+      "preload.js",
+      "package.json"
+    ],
+    "extraResources": [
+      { "from": "../www", "to": "www" },
+      { "from": "../assets/icon.png", "to": "icon.png" }
+    ],
+    "directories": {
+      "output": "../dist/linux"
+    },
+    "linux": {
+      "target": ["AppImage", "dir"],
+      "category": "AudioVideo",
+      "icon": "../assets/icon.png"
+    }
+  }
+}

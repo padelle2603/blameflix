@@ -1,0 +1,3429 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlameFlix</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --paper: #141210;
+            --paper-hi: #1F1A15;
+            --ink: #F3EBD9;
+            --rosso: #E04334;
+            --lago: #33A39B;
+            --meta: #A99A85;
+            --radius-sm: 8px;
+            --radius: 12px;
+            --radius-lg: 16px;
+            --radius-pill: 999px;
+            --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.28);
+            --shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+        }
+
+        * { box-sizing: border-box; }
+
+        [hidden] { display: none !important; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Archivo', Helvetica, Arial, sans-serif;
+            background-color: var(--paper);
+            color: var(--ink);
+            margin: 0;
+            padding: 0 0 4rem;
+            line-height: 1.5;
+        }
+
+        :focus-visible {
+            outline: 2px solid var(--lago);
+            outline-offset: 2px;
+        }
+
+        /* ===== TOP BAR ===== */
+        .topbar {
+            max-width: 1240px;
+            margin: 0 auto;
+            padding: 1.4rem 1.4rem 0.4rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .brand {
+            appearance: none;
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-family: 'Archivo Black', 'Archivo', sans-serif;
+            font-size: 1.35rem;
+            letter-spacing: 0.02em;
+            color: var(--ink);
+        }
+
+        .brand__mark {
+            width: 14px;
+            height: 14px;
+            background: var(--rosso);
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .count-tag {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            color: var(--ink);
+            border: 1px solid var(--ink);
+            border-radius: var(--radius-pill);
+            padding: 5px 12px;
+            white-space: nowrap;
+        }
+
+        .count-tag em {
+            font-style: normal;
+            color: var(--rosso);
+        }
+
+        .btn-settings {
+            appearance: none;
+            background: none;
+            border: 1px solid var(--ink);
+            border-radius: var(--radius-sm);
+            color: var(--ink);
+            width: 40px;
+            height: 40px;
+            font-size: 1.2rem;
+            line-height: 1;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.15s, color 0.15s;
+        }
+
+        .btn-settings:hover {
+            background: var(--ink);
+            color: var(--paper);
+        }
+
+        /* ===== CHIAVE API MANCANTE ===== */
+        .key-notice {
+            max-width: 1240px;
+            margin: 0 auto;
+            padding: 0 1.4rem;
+        }
+
+        .key-notice__inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+            border: 1px solid var(--rosso);
+            background: var(--paper-hi);
+            border-radius: var(--radius);
+            padding: 0.8rem 1rem;
+        }
+
+        .key-notice p {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--rosso);
+            margin: 0;
+        }
+
+        .key-notice .btn {
+            padding: 7px 14px;
+            font-size: 0.7rem;
+            white-space: nowrap;
+        }
+
+        .key-notice + .key-notice { margin-top: 0.6rem; }
+
+        /* ===== SETTINGS OVERLAY ===== */
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(20, 18, 16, 0.72);
+            backdrop-filter: blur(3px);
+            display: flex;
+            justify-content: center;
+            padding: 1.4rem;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            z-index: 50;
+        }
+
+        .settings-panel {
+            margin: auto;
+            width: 100%;
+            max-width: 480px;
+            background: var(--paper-hi);
+            border: 1px solid var(--ink);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            padding: 1.6rem 1.6rem 1.4rem;
+        }
+
+        .settings-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .settings-head .eyebrow { margin-bottom: 0.3rem; }
+
+        .settings-head h2 {
+            font-family: 'Archivo', sans-serif;
+            font-weight: 700;
+            font-size: 1.4rem;
+            line-height: 1.1;
+            margin: 0;
+        }
+
+        .settings-field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .settings-field label {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.68rem;
+            font-weight: 600;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--rosso);
+        }
+
+        .settings-field input {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.88rem;
+            color: var(--ink);
+            background: var(--paper);
+            border: 1px solid var(--ink);
+            border-radius: var(--radius-sm);
+            padding: 0.55rem 0.7rem;
+            outline: none;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+
+        .settings-field input:focus-visible {
+            border-color: var(--lago);
+            box-shadow: 0 0 0 2px rgba(51, 163, 155, 0.25);
+        }
+
+        .settings-field .settings-hint {
+            font-size: 0.72rem;
+            color: var(--meta);
+            margin: 0;
+        }
+
+        .settings-actions {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-top: 1.2rem;
+        }
+
+        .settings-status {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            color: var(--lago);
+            text-transform: uppercase;
+        }
+
+        .settings-status.is-error { color: var(--rosso); }
+
+        .settings-check {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 0.9rem;
+            color: var(--ink);
+            cursor: pointer;
+            width: fit-content;
+        }
+
+        .settings-check input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--rosso);
+            cursor: pointer;
+        }
+
+        .settings-field select {
+            width: fit-content;
+            min-width: 190px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--ink);
+            background: var(--paper);
+            background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='none' stroke='%23F3EBD9' stroke-width='2' d='M1 3l4 4 4-4'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            border: 1px solid var(--ink);
+            border-radius: var(--radius-sm);
+            padding: 8px 30px 8px 10px;
+            appearance: none;
+            -webkit-appearance: none;
+            outline: none;
+            cursor: pointer;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+
+        .settings-field select:focus-visible {
+            border-color: var(--lago);
+            box-shadow: 0 0 0 2px rgba(51, 163, 155, 0.25);
+        }
+
+        .settings-field select option {
+            background: var(--paper-hi);
+            color: var(--ink);
+        }
+
+        /* ===== CONTAINER ===== */
+        .container {
+            max-width: 1240px;
+            margin: 0 auto;
+            padding: 0 1.4rem;
+        }
+
+        /* ===== SEARCH ===== */
+        .searchbar { margin: 1.6rem 0 2.2rem; }
+
+        .searchbar-label {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--rosso);
+            display: block;
+            margin-bottom: 0.4rem;
+        }
+
+        .searchbar-row { position: relative; }
+
+        .searchbar-row input {
+            width: 100%;
+            font-family: 'Archivo', sans-serif;
+            font-size: 1.15rem;
+            color: var(--ink);
+            background: var(--paper-hi);
+            border: 1px solid var(--ink);
+            border-radius: var(--radius);
+            padding: 0.75rem 3rem 0.75rem 1rem;
+            outline: none;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+
+        .searchbar-row input::placeholder { color: var(--meta); }
+
+        .searchbar-row input:focus-visible {
+            border-color: var(--lago);
+            box-shadow: 0 0 0 2px rgba(51, 163, 155, 0.25);
+        }
+
+        .searchbar-clear {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--ink);
+            font-size: 1.5rem;
+            line-height: 1;
+            cursor: pointer;
+            padding: 0.3rem 0.6rem;
+        }
+
+        .searchbar-clear:hover { color: var(--rosso); }
+
+        /* ===== SECTION HEAD ===== */
+        .section-head {
+            display: flex;
+            align-items: baseline;
+            gap: 0.9rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.4rem;
+        }
+
+        .eyebrow {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--rosso);
+            display: block;
+        }
+
+        .section-title {
+            font-family: 'Archivo Black', 'Archivo', sans-serif;
+            font-weight: 400;
+            font-size: 1.6rem;
+            line-height: 1.1;
+            margin: 0;
+        }
+
+        .section-count {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.72rem;
+            color: var(--meta);
+            letter-spacing: 0.08em;
+        }
+
+        .section-unwatched {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--paper);
+            background: var(--rosso);
+            border-radius: var(--radius-pill);
+            padding: 4px 12px;
+            margin-left: auto;
+        }
+
+        .section-unwatched.is-all-clear {
+            background: var(--lago);
+        }
+
+        /* ===== CATALOG TOOLS ===== */
+        .catalog-tools {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            margin: 0 0 1.4rem;
+        }
+
+        .catalog-tools__group {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+        }
+
+        .catalog-tools__group + .catalog-tools__group {
+            margin-left: auto;
+        }
+
+        .ctl {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--meta);
+            background: transparent;
+            border: 1px solid var(--ink);
+            border-radius: var(--radius-sm);
+            padding: 7px 12px;
+            cursor: pointer;
+            transition: background 0.15s, color 0.15s, border-color 0.15s, transform 0.1s;
+        }
+
+        .ctl:hover { color: var(--ink); border-color: var(--ink); }
+
+        .ctl:active { transform: translateY(1px); }
+
+        .ctl.is-busy { opacity: 0.55; cursor: progress; }
+
+        .ctl[aria-pressed="true"] {
+            background: var(--rosso);
+            border-color: var(--rosso);
+            color: #FFF7EC;
+        }
+
+        .ctl--icon { letter-spacing: 0.02em; text-transform: none; }
+
+        /* ===== VIEW MODES ===== */
+        .grid--list {
+            grid-template-columns: 1fr;
+            gap: 6px;
+        }
+
+        .card--list {
+            flex-direction: row;
+            align-items: center;
+        }
+
+        .card--list .card-poster {
+            display: none;
+        }
+
+        .card--list .credit-block {
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 3px;
+            padding: 13px 18px;
+        }
+
+        .card--list .credit-title {
+            font-size: 1.02rem;
+            line-height: 1.3;
+            white-space: normal;
+            overflow-wrap: break-word;
+        }
+
+        .card--list .credit-meta {
+            font-size: 0.7rem;
+            white-space: nowrap;
+        }
+
+        /* ===== 35mm STRIP ===== */
+        .strip { padding: 0; }
+
+        .rail { display: none; }
+
+        /* ===== GRID & CARDS ===== */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+            gap: 22px 18px;
+        }
+
+        .card {
+            background: var(--paper-hi);
+            border: 1px solid var(--ink);
+            border-radius: var(--radius);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            border-color: var(--rosso);
+            box-shadow: var(--shadow);
+        }
+
+        .card-poster {
+            position: relative;
+            aspect-ratio: 2 / 3;
+            overflow: hidden;
+            background: var(--paper-hi);
+            border-bottom: 1px solid var(--ink);
+        }
+
+        .card-poster img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .card-kind {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.6rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            background: var(--paper-hi);
+            color: var(--ink);
+            border: 1px solid var(--ink);
+            border-radius: var(--radius-sm);
+            padding: 2px 8px;
+        }
+
+        .stamp {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.62rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            color: var(--rosso);
+            background: rgba(20, 18, 16, 0.78);
+            border: 1px solid var(--rosso);
+            border-radius: var(--radius-pill);
+            padding: 3px 10px;
+        }
+
+        .card-unwatched {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.62rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            color: var(--paper);
+            background: var(--rosso);
+            border: 1px solid var(--rosso);
+            border-radius: var(--radius-pill);
+            padding: 3px 10px;
+        }
+
+        .credit-block {
+            padding: 10px 12px 12px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .credit-title {
+            font-family: 'Archivo', sans-serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+            line-height: 1.2;
+            margin: 0;
+        }
+
+        .credit-meta {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--meta);
+            margin: 0;
+            letter-spacing: 0.04em;
+        }
+
+        .credit-meta .star { color: var(--rosso); font-style: normal; }
+
+        /* ===== EMPTY STATE ===== */
+        .empty-state {
+            border: 1px dashed var(--ink);
+            border-radius: var(--radius-lg);
+            padding: 3rem 1.5rem;
+            text-align: center;
+            background: var(--paper-hi);
+        }
+
+        .empty-kicker {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--rosso);
+            margin: 0 0 0.8rem;
+        }
+
+        .empty-state p:last-child {
+            font-family: 'Archivo', sans-serif;
+            font-size: 1.05rem;
+            color: var(--ink);
+            margin: 0;
+            max-width: 34rem;
+            margin-inline: auto;
+        }
+
+        /* ===== DETAIL ===== */
+        .detail-header {
+            display: flex;
+            gap: 2.2rem;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            margin-top: 1.4rem;
+        }
+
+        .detail-poster-wrap {
+            position: relative;
+            width: 280px;
+            max-width: 100%;
+            border: 1px solid var(--ink);
+            border-radius: var(--radius-lg);
+            background: var(--paper-hi);
+            overflow: hidden;
+        }
+
+        .detail-poster {
+            display: block;
+            width: 100%;
+            aspect-ratio: 2 / 3;
+            object-fit: cover;
+        }
+
+        .detail-kind {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.62rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            background: var(--paper-hi);
+            border: 1px solid var(--ink);
+            border-radius: var(--radius-sm);
+            padding: 3px 10px;
+        }
+
+        .detail-content { flex: 1; min-width: 280px; }
+
+        .detail-title {
+            font-family: 'Archivo Black', 'Archivo', sans-serif;
+            font-weight: 400;
+            font-size: 1.9rem;
+            line-height: 1.1;
+            margin: 0.3rem 0 1rem;
+        }
+
+        .detail-overview {
+            font-size: 1rem;
+            color: var(--ink);
+            max-width: 56rem;
+            margin: 0 0 1.4rem;
+        }
+
+        .detail-facts {
+            display: flex;
+            gap: 2.2rem;
+            flex-wrap: wrap;
+            margin: 0 0 1.8rem;
+        }
+
+        .detail-facts div { min-width: 90px; }
+
+        .detail-facts dt {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.66rem;
+            font-weight: 600;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--meta);
+            margin: 0 0 0.2rem;
+        }
+
+        .detail-facts dd {
+            font-family: 'Archivo', sans-serif;
+            font-weight: 700;
+            font-size: 1.15rem;
+            margin: 0;
+        }
+
+        .detail-unwatched {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--paper);
+            background: var(--rosso);
+            border-radius: var(--radius-pill);
+            padding: 5px 12px;
+            margin: 0 0 1.4rem;
+        }
+
+        .detail-unwatched.is-all-clear {
+            background: var(--lago);
+        }
+
+        .detail-mark-all {
+            font-size: 0.68rem;
+            padding: 7px 11px;
+            margin: 0 0 1.4rem;
+            border-color: var(--lago);
+            color: var(--lago);
+        }
+
+        .detail-mark-all:hover {
+            background: var(--lago);
+            border-color: var(--lago);
+            color: var(--paper);
+        }
+
+        .detail-mark-all:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            border-color: var(--meta);
+            color: var(--meta);
+            background: transparent;
+        }
+
+        .detail-actions {
+            display: flex;
+            gap: 0.9rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--ink);
+            background: transparent;
+            border: 1px solid var(--ink);
+            border-radius: var(--radius-sm);
+            padding: 10px 18px;
+            cursor: pointer;
+            transition: background 0.15s, color 0.15s, border-color 0.15s, transform 0.1s;
+        }
+
+        .btn:hover { background: var(--ink); color: var(--paper); }
+
+        .btn:active { transform: translateY(1px); }
+
+        .btn--rosso {
+            background: var(--rosso);
+            border-color: var(--rosso);
+            color: #FFF7EC;
+        }
+
+        .btn--rosso:hover { background: #b93226; border-color: #b93226; color: #FFF7EC; }
+
+        .btn--stamp { border-style: dashed; }
+
+        .btn--saved {
+            border-color: var(--rosso);
+            color: var(--rosso);
+            border-style: solid;
+        }
+
+        .btn--saved:hover { background: var(--rosso); color: #FFF7EC; }
+
+        .btn--ghost {
+            border: none;
+            padding-left: 0;
+            color: var(--ink);
+            text-transform: none;
+            letter-spacing: 0.02em;
+            font-weight: 600;
+        }
+
+        .btn--ghost:hover { background: none; color: var(--rosso); }
+
+        /* ===== SEASON CONTROLS ===== */
+        .season-controls {
+            margin-top: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            border-top: 1px solid var(--ink);
+            padding-top: 1.2rem;
+        }
+
+        .season-controls label {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .season-controls select {
+            min-width: 76px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--ink);
+            background: var(--paper);
+            background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='none' stroke='%23F3EBD9' stroke-width='2' d='M1 3l4 4 4-4'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            border: 1px solid var(--ink);
+            border-radius: var(--radius-sm);
+            padding: 6px 26px 6px 10px;
+            appearance: none;
+            -webkit-appearance: none;
+            outline: none;
+            cursor: pointer;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+
+        .season-controls select:focus-visible {
+            border-color: var(--lago);
+            box-shadow: 0 0 0 2px rgba(51, 163, 155, 0.25);
+        }
+
+        .season-controls select option {
+            background: var(--paper-hi);
+            color: var(--ink);
+        }
+
+        .season-controls .season-controls__custom {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
+
+        .season-controls .season-controls__custom input[type="number"] {
+            width: 72px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--ink);
+            background: var(--paper);
+            border: 1px solid var(--ink);
+            border-radius: var(--radius-sm);
+            padding: 6px 8px;
+            outline: none;
+            transition: border-color 0.15s, box-shadow 0.15s;
+            -moz-appearance: textfield;
+            appearance: textfield;
+        }
+
+        .season-controls .season-controls__custom input[type="number"]:focus-visible {
+            border-color: var(--lago);
+            box-shadow: 0 0 0 2px rgba(51, 163, 155, 0.25);
+        }
+
+        .season-controls .season-controls__custom input[type="number"]::-webkit-outer-spin-button,
+        .season-controls .season-controls__custom input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .season-controls .season-controls__custom-hint {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.68rem;
+            color: var(--meta);
+            letter-spacing: 0.06em;
+            margin: 0;
+            flex-basis: 100%;
+        }
+
+        /* ===== HERO BACKDROP ===== */
+        #detail-view { position: relative; }
+        #detail-view > .btn--ghost { position: relative; z-index: 1; }
+
+        .detail-backdrop {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 440px;
+            background-size: cover;
+            background-position: center top;
+            opacity: 0.28;
+            pointer-events: none;
+            z-index: 0;
+            -webkit-mask-image: linear-gradient(to bottom, #000, transparent 90%);
+            mask-image: linear-gradient(to bottom, #000, transparent 90%);
+        }
+
+        .detail-header { position: relative; z-index: 1; }
+
+        /* ===== EPISODI (lista stile streaming) ===== */
+        .episode-section {
+            margin-top: 2.8rem;
+            border-top: 1px solid var(--ink);
+            padding-top: 1.6rem;
+        }
+
+        .episode-section__head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.2rem;
+        }
+
+        .episode-section__title {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--meta);
+            margin: 0;
+        }
+
+        .episode-section__mark { font-size: 0.68rem; padding: 7px 11px; }
+
+        .episode-section__mark:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            border-color: var(--meta);
+            color: var(--meta);
+        }
+
+        .episode-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .episode-list__loading,
+        .episode-list__empty {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.78rem;
+            color: var(--meta);
+            margin: 0;
+            padding: 0.6rem 0;
+        }
+
+        .episode-row--skeleton {
+            pointer-events: none;
+            border-color: transparent;
+        }
+
+        .skeleton-block {
+            position: relative;
+            overflow: hidden;
+            background: rgba(243, 235, 217, 0.08);
+            border-radius: var(--radius-sm);
+        }
+
+        .skeleton-block::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            transform: translateX(-100%);
+            background: linear-gradient(90deg, transparent, rgba(243, 235, 217, 0.12), transparent);
+            animation: shimmer 1.4s infinite;
+        }
+
+        .sk-title { height: 14px; width: 55%; margin-bottom: 0.6rem; }
+        .sk-meta { height: 11px; width: 35%; margin-bottom: 0.6rem; }
+        .sk-line { height: 12px; width: 90%; }
+
+        @keyframes shimmer {
+            to { transform: translateX(100%); }
+        }
+
+        .episode-row {
+            display: flex;
+            gap: 1.1rem;
+            align-items: flex-start;
+            background: var(--paper-hi);
+            border: 1px solid var(--ink);
+            border-radius: var(--radius);
+            padding: 0.7rem;
+            transition: opacity 0.2s ease, border-color 0.2s ease;
+        }
+
+        .episode-row.is-resume { border-color: var(--lago); }
+
+        .episode-row__thumb {
+            position: relative;
+            flex: 0 0 150px;
+            aspect-ratio: 16 / 9;
+            background: var(--paper);
+            border: 1px solid var(--ink);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+        }
+
+        .episode-row__thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .episode-row__num {
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.6rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            background: rgba(20, 18, 16, 0.85);
+            border: 1px solid var(--ink);
+            border-radius: var(--radius-sm);
+            color: var(--ink);
+            padding: 2px 6px;
+        }
+
+        .episode-row__body { flex: 1; min-width: 0; }
+
+        .episode-row__head {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            flex-wrap: wrap;
+        }
+
+        .episode-row__title {
+            font-family: 'Archivo', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        .episode-row__meta {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.66rem;
+            letter-spacing: 0.06em;
+            color: var(--meta);
+            margin: 0.25rem 0 0.4rem;
+        }
+
+        .episode-row__overview {
+            font-size: 0.86rem;
+            color: var(--ink);
+            margin: 0;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .episode-row__actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            align-items: flex-end;
+        }
+
+        .episode-row__play { padding: 8px 12px; font-size: 0.72rem; }
+
+        .episode-row__toggle {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.9rem;
+            background: none;
+            border: 1px solid var(--meta);
+            border-radius: var(--radius-sm);
+            color: var(--meta);
+            width: 26px;
+            height: 26px;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .episode-row__toggle:hover { border-color: var(--lago); color: var(--lago); }
+
+        .episode-row__badge {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.6rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            border: 1px solid var(--lago);
+            border-radius: var(--radius-pill);
+            color: var(--lago);
+            padding: 2px 10px;
+            cursor: pointer;
+        }
+
+        .episode-row__badge:hover { background: var(--lago); color: var(--paper); }
+
+        .episode-row.is-watched { opacity: 0.55; }
+        .episode-row.is-watched .episode-row__title { text-decoration: line-through; }
+        .episode-row.is-future { opacity: 0.45; }
+
+        .episode-row.is-future .episode-row__play {
+            border-color: var(--meta);
+            color: var(--meta);
+            background: transparent;
+            cursor: not-allowed;
+        }
+
+        .episode-row.is-future .episode-row__toggle { cursor: not-allowed; opacity: 0.5; }
+
+        /* ===== NOVITÀ (cronologia in-app) ===== */
+        .news-section {
+            border: 1px solid var(--ink);
+            background: var(--paper-hi);
+            border-radius: var(--radius-lg);
+            margin: 0 0 2rem;
+            padding: 1rem 1.2rem;
+        }
+
+        .news-section__head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.6rem;
+        }
+
+        .news-section__title {
+            font-family: 'Archivo', sans-serif;
+            font-weight: 700;
+            font-size: 1.25rem;
+            margin: 0;
+        }
+
+        .news-section__clear { font-size: 0.7rem; }
+
+        .news-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .news-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.55rem 0;
+            border-top: 1px dashed var(--ink);
+        }
+
+        .news-item__kind {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.6rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            color: var(--rosso);
+            flex: 0 0 auto;
+        }
+
+        .news-item__title {
+            appearance: none;
+            background: none;
+            border: none;
+            padding: 0;
+            font: inherit;
+            color: var(--ink);
+            text-align: left;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .news-item__title:hover { color: var(--rosso); }
+
+        .news-item__date {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.64rem;
+            color: var(--meta);
+            margin-left: auto;
+            white-space: nowrap;
+        }
+
+        .settings-field--divider {
+            border-top: 1px solid var(--ink);
+            padding-top: 1.2rem;
+        }
+
+        /* ===== TOAST (avvisi in-app) ===== */
+        .toast {
+            position: fixed;
+            left: 50%;
+            bottom: 1.4rem;
+            transform: translateX(-50%) translateY(10px);
+            max-width: min(560px, calc(100vw - 2rem));
+            width: max-content;
+            background: var(--paper-hi);
+            border: 1px solid var(--ink);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 0.8rem 1rem 0.8rem 1.1rem;
+            z-index: 70;
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s, transform 0.25s;
+        }
+
+        .toast.is-visible {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+            pointer-events: auto;
+        }
+
+        .toast__title {
+            font-family: 'Archivo', sans-serif;
+            font-weight: 700;
+            font-size: 0.92rem;
+            line-height: 1.2;
+        }
+
+        .toast__body {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.72rem;
+            color: var(--ink);
+            white-space: pre-line;
+            letter-spacing: 0.02em;
+        }
+
+        /* ===== DOCUMENTAZIONE ===== */
+        .docs-panel {
+            max-width: 720px;
+            max-height: 86vh;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--ink);
+            border-radius: var(--radius-lg);
+        }
+
+        .docs-body {
+            overflow-y: auto;
+            padding-right: 0.6rem;
+            line-height: 1.6;
+        }
+
+        .docs-body > * + * { margin-top: 1.1rem; }
+
+        .docs-body h3 {
+            font-family: 'Archivo', sans-serif;
+            font-weight: 700;
+            font-size: 1.05rem;
+            margin: 0;
+            padding-top: 1.1rem;
+            border-top: 1px solid var(--ink);
+        }
+
+        .docs-body h3:first-child { padding-top: 0; border-top: none; }
+
+        .docs-body p { margin: 0; font-size: 0.92rem; }
+
+        .docs-body ul, .docs-body ol { margin: 0; padding-left: 1.2rem; font-size: 0.92rem; }
+
+        .docs-body li { margin: 0.3rem 0; }
+
+        .docs-body code {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.8rem;
+            background: var(--paper);
+            border: 1px solid var(--ink);
+            padding: 1px 5px;
+            word-break: break-all;
+        }
+
+        .docs-body a { color: var(--lago); }
+
+        .docs-body .docs-hint {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.68rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--meta);
+            margin: 0;
+        }
+
+        .docs-body pre {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.68rem;
+            line-height: 1.5;
+            color: var(--ink);
+            background: var(--paper);
+            border: 1px solid var(--ink);
+            border-radius: var(--radius-sm);
+            padding: 0.7rem;
+            margin: 0;
+            overflow-x: auto;
+            white-space: pre;
+        }
+
+        .docs-body pre code { border: none; background: none; padding: 0; }
+
+        .docs-note {
+            border-left: 3px solid var(--lago);
+            padding: 0.5rem 0.8rem;
+            font-size: 0.82rem;
+            color: var(--ink);
+            background: rgba(51, 163, 155, 0.08);
+        }
+
+        /* ===== COLOPHON ===== */
+        .colophon {
+            max-width: 1240px;
+            margin: 3rem auto 0;
+            padding: 0 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.66rem;
+            color: var(--meta);
+        }
+
+        .colophon__tmdb {
+            display: inline-flex;
+            align-items: center;
+            line-height: 0;
+        }
+
+        .colophon__tmdb img {
+            height: 22px;
+            width: auto;
+            display: block;
+        }
+
+        .colophon__note {
+            margin: 0;
+            font-size: 0.6rem;
+            line-height: 1.6;
+            letter-spacing: 0.02em;
+            max-width: 46rem;
+        }
+
+        .colophon__note a { color: var(--meta); text-decoration: underline; }
+
+        .colophon__tag {
+            margin-left: auto;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--meta);
+            white-space: nowrap;
+        }
+
+        .docs-tmdb {
+            height: 26px;
+            width: auto;
+            display: block;
+            border: 1px solid var(--ink);
+            border-radius: 6px;
+            background: #0d253f;
+            padding: 4px;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 640px) {
+            .grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 16px 12px; }
+            .card--list .credit-block { padding: 11px 14px; }
+            .detail-poster-wrap { width: 100%; }
+            .catalog-tools { display: grid; grid-template-columns: 1fr; }
+            .catalog-tools__group + .catalog-tools__group { margin-left: 0; }
+            .episode-row { flex-wrap: wrap; }
+            .episode-row__thumb { flex-basis: 100%; }
+            .episode-row__actions { flex-direction: row; justify-content: flex-end; width: 100%; }
+            .episode-row__toggle { width: 34px; height: 34px; font-size: 1rem; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header class="topbar">
+    <button class="brand" onclick="showHome()" aria-label="Torna alla tua homepage">
+        <span class="brand__mark" aria-hidden="true"></span>BLAMEFLIX
+    </button>
+    <span class="count-tag">SALVATI: <em id="count-tag">0</em></span>
+    <button type="button" class="btn-settings" onclick="openSettings()" aria-label="Impostazioni" title="Impostazioni">⚙</button>
+</header>
+
+<div class="key-notice" id="key-notice" hidden>
+    <div class="key-notice__inner">
+        <p>⚠ Nessuna chiave TMDB · impossibile cercare</p>
+        <button type="button" class="btn" onclick="openSettings()">Imposta la chiave</button>
+    </div>
+</div>
+
+<div class="key-notice" id="resolver-notice" hidden>
+    <div class="key-notice__inner">
+        <p>⚠ Nessun resolver configurato · «Guarda ora» non attivo</p>
+        <button type="button" class="btn" onclick="openSettings()">Configura il resolver</button>
+    </div>
+</div>
+
+<div class="container">
+
+    <div class="searchbar">
+        <label class="searchbar-label" for="search-input">Cerca un titolo</label>
+        <div class="searchbar-row">
+            <input type="text" id="search-input" placeholder="Cerca film o serie TV…" autocomplete="off"
+                   onkeyup="handleSearch(this.value)">
+            <button type="button" class="searchbar-clear" id="search-clear" onclick="clearSearch()"
+                    aria-label="Torna alla tua homepage" hidden>&times;</button>
+        </div>
+    </div>
+
+    <!-- HOMEPAGE / SEARCH -->
+    <main id="home-view">
+        <div class="section-head">
+            <span class="eyebrow" id="section-eyebrow">La tua sala</span>
+            <h2 class="section-title" id="section-title">BlameFlix</h2>
+            <span class="section-count" id="section-count"></span>
+            <span class="section-unwatched" id="home-unwatched" hidden></span>
+        </div>
+
+        <section class="news-section" id="news-section" hidden>
+            <div class="news-section__head">
+                <h3 class="news-section__title">Novità</h3>
+                <button type="button" class="btn btn--ghost news-section__clear" onclick="clearNewsHistory()">Svuota</button>
+            </div>
+            <ul class="news-list" id="news-list"></ul>
+        </section>
+
+        <div class="catalog-tools" id="catalog-tools">
+            <div class="catalog-tools__group" role="group" aria-label="Filtra per tipo">
+                <button type="button" class="ctl" data-type="all" aria-pressed="true" onclick="setFilter('all')">Tutti</button>
+                <button type="button" class="ctl" data-type="movie" aria-pressed="false" onclick="setFilter('movie')">Film</button>
+                <button type="button" class="ctl" data-type="tv" aria-pressed="false" onclick="setFilter('tv')">Serie</button>
+            </div>
+            <div class="catalog-tools__group" role="group" aria-label="Cambia visualizzazione">
+                <button type="button" class="ctl ctl--icon" data-view="grid" aria-pressed="true" onclick="setView('grid')" title="Griglia">▦ Griglia</button>
+                <button type="button" class="ctl ctl--icon" data-view="list" aria-pressed="false" onclick="setView('list')" title="Lista">☰ Lista</button>
+            </div>
+            <div class="catalog-tools__group" role="group" aria-label="Verifica nuove uscite">
+                <button type="button" class="ctl" id="btn-sync" onclick="syncReleases()" title="Verifica nuove uscite">⟳ Sync</button>
+            </div>
+        </div>
+
+        <div id="results-grid" class="grid"></div>
+
+        <div id="empty-state" class="empty-state" hidden>
+            <p class="empty-kicker">Nessun titolo in sala</p>
+            <p>La tua sala è vuota. Cerca il primo film o la prima serie qui sopra per iniziare.</p>
+        </div>
+    </main>
+
+    <!-- DETAIL (overlay, nessuna pagina nuova) -->
+    <main id="detail-view" hidden>
+        <button class="btn btn--ghost" onclick="showHome()">&larr; BlameFlix</button>
+
+        <div class="detail-backdrop" id="detail-backdrop" hidden aria-hidden="true"></div>
+
+        <div class="detail-header">
+            <div class="detail-poster-wrap">
+                <img id="detail-poster" class="detail-poster" src="" alt="Poster">
+                <span id="detail-kind" class="detail-kind">FILM</span>
+            </div>
+            <div class="detail-content">
+                <span class="eyebrow">Scheda titolo</span>
+                <h2 id="detail-title" class="detail-title"></h2>
+                <p id="detail-overview" class="detail-overview"></p>
+
+                <dl class="detail-facts">
+                    <div>
+                        <dt>Anno</dt>
+                        <dd id="detail-date"></dd>
+                    </div>
+                    <div>
+                        <dt>Voto</dt>
+                        <dd id="detail-vote"></dd>
+                    </div>
+                </dl>
+
+                <span class="detail-unwatched" id="detail-unwatched" hidden></span>
+
+                <button type="button" class="btn detail-mark-all" id="btn-mark-all-aired" onclick="markAllAiredWatched()" hidden>
+                    ✓ Segna tutte le uscite come viste
+                </button>
+
+                <div class="detail-actions">
+                    <button type="button" class="btn btn--rosso" id="btn-watch" onclick="openPlayer()">▶ Guarda ora</button>
+                    <button type="button" class="btn btn--stamp" id="btn-watchlist" onclick="toggleWatchlist()">+ Aggiungi ai salvati</button>
+                </div>
+
+                <div id="tv-controls" class="season-controls" hidden>
+                    <label for="input-season">Stagione</label>
+                    <select id="input-season" onchange="onSeasonChange(value)"></select>
+
+                    <div id="custom-controls" class="season-controls__custom" hidden>
+                        <label for="input-season-custom">Stagione</label>
+                        <input type="number" id="input-season-custom" min="1" step="1" inputmode="numeric" value="1">
+                        <label for="input-episode-custom">Episodio</label>
+                        <input type="number" id="input-episode-custom" min="1" step="1" inputmode="numeric" value="1">
+                        <p class="season-controls__custom-hint">Stagioni o episodi non elencati da TMDB</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <section class="episode-section" id="episode-section" hidden>
+            <div class="episode-section__head">
+                <h3 class="episode-section__title">Episodi</h3>
+                <button type="button" class="btn episode-section__mark" id="btn-mark-season" onclick="markSeasonWatched()">✓ Segna tutte come viste</button>
+            </div>
+            <div id="episode-list" class="episode-list"></div>
+        </section>
+    </main>
+</div>
+
+<div id="settings-overlay" class="overlay" hidden>
+    <div class="settings-panel" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+        <div class="settings-head">
+            <div>
+                <span class="eyebrow">Preferenze</span>
+                <h2 id="settings-title">Impostazioni</h2>
+            </div>
+            <button type="button" class="btn btn--ghost" onclick="closeSettings()">&times; Chiudi</button>
+        </div>
+
+        <div class="settings-field">
+            <label for="settings-api-key">Chiave API TMDB</label>
+            <input type="text" id="settings-api-key" inputmode="text" autocomplete="off"
+                   placeholder="Inserisci la tua chiave personale">
+            <p class="settings-hint">La chiave personale si ottiene gratuitamente su themoviedb.org → Settings → API. Senza chiave non puoi cercare titoli.</p>
+        </div>
+
+        <div class="settings-field settings-field--divider">
+            <label for="settings-resolver-movie">Resolver film</label>
+            <input type="url" id="settings-resolver-movie" autocomplete="off"
+                   placeholder="https://esempio.com/movie/{id}/">
+            <label for="settings-resolver-tv">Resolver serie</label>
+            <input type="url" id="settings-resolver-tv" autocomplete="off"
+                   placeholder="https://esempio.com/tv/{id}/{season}/{episode}/">
+            <p class="settings-hint">L'app apre l'URL del resolver che tu configuri. Puoi inserire solo l'URL base: l'app accoda automaticamente l'id (e stagione/episodio per le serie). Oppure usa i segnaposto {id}, {type}, {season}, {episode} per i resolver con parametri. Se lasci vuoto, «Guarda ora» non è attivo.</p>
+        </div>
+
+        <div class="settings-field settings-field--divider">
+            <label>Notifiche di rilascio</label>
+            <p class="settings-hint">Ti avvisiamo quando esce una nuova puntata di una serie della tua sala. Le novità restano anche nella cronologia «Novità» in home. Il controllo avviene all'apertura dell'app, automaticamente a intervalli regolari e con il tasto «⟳ Sync» nella sala. Su Android serve il permesso di notifica di sistema.</p>
+            <label class="settings-check">
+                <input type="checkbox" id="settings-notify-enabled">
+                Abilita notifiche
+            </label>
+            <label class="settings-check">
+                <input type="checkbox" id="settings-notify-tv">
+                Notifiche per le nuove puntate
+            </label>
+            <label for="settings-notify-interval">Sincronizzazione automatica</label>
+            <select id="settings-notify-interval">
+                <option value="8">Ogni 8 ore</option>
+                <option value="12">Ogni 12 ore</option>
+                <option value="24">Ogni 24 ore</option>
+                <option value="48">Ogni 48 ore</option>
+            </select>
+            <div class="settings-actions">
+                <button type="button" class="btn" onclick="sendTestNotification()">🔔 Prova notifica</button>
+            </div>
+            <span class="settings-status" id="notify-status" hidden></span>
+        </div>
+
+        <div class="settings-actions">
+            <button type="button" class="btn btn--rosso" onclick="saveSettings()">Salva</button>
+            <span class="settings-status" id="settings-status" hidden></span>
+        </div>
+
+        <div class="settings-field settings-field--divider">
+            <label for="backup-status">Backup dati</label>
+            <p class="settings-hint">Salva i tuoi dati (salvati, puntate viste, ultime riproduzioni, stagioni personalizzate, novità e preferenze) e ripristinali in un secondo momento. Il backup contiene solo gli identificativi dei titoli: al ripristino i dettagli vengono riscaricati da TMDB (serve la connessione).</p>
+            <div class="settings-actions">
+                <button type="button" class="btn" onclick="createBackup()">⬇ Crea backup</button>
+                <button type="button" class="btn" onclick="restoreBackup()">⬆ Ripristina</button>
+                <input type="file" id="backup-file" accept="application/json,.json" hidden>
+            </div>
+            <span class="settings-status" id="backup-status" hidden></span>
+        </div>
+
+        <div class="settings-field settings-field--divider">
+            <label for="docs-status">Aiuto</label>
+            <p class="settings-hint">Hai domande su come usare BlameFlix? Trovi tutto spiegato nella guida.</p>
+            <div class="settings-actions">
+                <button type="button" class="btn" onclick="openDocs()">❓ Documentazione</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="docs-overlay" class="overlay" hidden>
+    <div class="settings-panel docs-panel" role="dialog" aria-modal="true" aria-labelledby="docs-title">
+        <div class="settings-head">
+            <div>
+                <span class="eyebrow">Guida</span>
+                <h2 id="docs-title">Documentazione</h2>
+            </div>
+            <button type="button" class="btn btn--ghost" onclick="closeDocs()">&times; Chiudi</button>
+        </div>
+
+        <div class="docs-body">
+            <p class="docs-hint">Come usare BlameFlix</p>
+
+            <h3>Cos'è BlameFlix</h3>
+            <p>BlameFlix è la tua sala personale: un catalogo dove raccogli i film e le serie TV che ti interessano. Puoi cercare titoli, tenerli nei salvati e guardarli quando vuoi, ripartendo sempre da dove eri rimasto.</p>
+
+            <h3>Cercare e salvare un titolo</h3>
+            <p>Usa la barra di ricerca in alto per trovare un film o una serie. Apri la scheda del titolo che ti interessa e premi <strong>«+ Aggiungi ai salvati»</strong>: il titolo entra nella tua sala, dove resta fino a quando non lo togli. Puoi filtrare la sala per <strong>Tutti</strong>, <strong>Film</strong> o <strong>Serie</strong> e scegliere tra la vista a griglia e quella a lista.</p>
+
+            <h3>Guardare un film</h3>
+            <p>Apri la scheda del film e premi <strong>«▶ Guarda ora»</strong>. BlameFlix apre l'URL del <strong>resolver</strong> che hai configurato nelle Impostazioni. Su telefono si apre l'app esterna, su computer una nuova finestra.</p>
+
+            <h3>Guardare una serie TV</h3>
+            <p>Nella scheda di una serie scegli la <strong>stagione</strong> dal selettore: sotto compaiono le <strong>puntate</strong> di quella stagione, con miniatura, titolo e descrizione. Premi «▶ Guarda» sulla puntata che vuoi vedere. Le puntate già viste appaiono <strong>grigiate</strong> con il badge «✓ VISTO»; quelle non ancora in onda restano bloccate fino alla data di messa in onda.</p>
+            <p>BlameFlix segna automaticamente come vista la puntata che guardi, ma puoi cambiarlo cliccando sul badge «✓ VISTO» di una puntata. Con il tasto <strong>«Segna tutte come viste»</strong> in cima alla lista puoi marcare in un tocco tutte le puntate già in onda della stagione (premilo di nuovo per toglierle). Quando riapri una serie riparti dalla stagione dell'ultima puntata vista. Se una stagione o un episodio non compare nell'elenco (perché non è elencato da TMDB), scegli <strong>«Altro…»</strong> e digita il numero a mano: la tua scelta viene ricordata.</p>
+
+            <h3>Il resolver</h3>
+            <p>BlameFlix non contiene sorgenti di streaming: apre semplicemente l'URL del servizio che scegli tu. Nelle <strong>Impostazioni</strong> inserisci il template per i film e quello per le serie. Puoi mettere solo l'URL base (es. <code>https://esempio.com/movie/</code>): l'app accoda automaticamente l'id e, per le serie, la stagione e l'episodio. Se il servizio usa parametri, usa i segnaposto <code>{id}</code>, <code>{type}</code>, <code>{season}</code> e <code>{episode}</code> (es. <code>https://esempio.com/watch?id={id}&s={season}&e={episode}</code>). Se un template è vuoto, il pulsante «Guarda ora» non è attivo.</p>
+
+            <h3>Notifiche di rilascio</h3>
+            <p>BlameFlix può avvisarti quando esce una <strong>nuova puntata</strong> di una serie della tua sala (alla data di messa in onda). Il controllo avviene automaticamente all'apertura dell'app, a intervalli regolari configurabili nelle Impostazioni (ogni 8, 12, 24 o 48 ore) e manualmente con il tasto <strong>«⟳ Sync»</strong> nella sala.</p>
+            <p>Ogni nuova uscita finisce anche nella cronologia <strong>«Novità»</strong> in home: toccando una voce apri la scheda del titolo e con <strong>«Svuota»</strong> puoi azzerarla. Le puntate che hai già segnato come viste non vengono considerate nuove.</p>
+            <p>Nelle <strong>Impostazioni</strong> la sezione notifiche è semplice: <strong>«Abilita notifiche»</strong> e <strong>«Notifiche per le nuove puntate»</strong>. Puoi regolare la frequenza della <strong>sincronizzazione automatica</strong> e inviare una <strong>notifica di prova</strong>. Su Android la prima notifica chiede il permesso di sistema e toccando una notifica si apre la scheda della serie. Le date arrivano da TMDB: se mancano o cambiano, gli avvisi arrivano al primo controllo utile.</p>
+
+            <h3>Legalità dei contenuti</h3>
+            <p>BlameFlix è un lettore generico: le sorgenti di streaming le configuri tu nelle Impostazioni. Sei <strong>responsabile della legalità dei contenuti</strong> a cui accedi tramite il tuo resolver, secondo le leggi del tuo Paese. In Italia l'accesso a streaming non autorizzato può comportare sanzioni amministrative (legge 93/2023) e sono in discussione multe più severe. BlameFlix non fornisce né segnala alcuna fonte di contenuti.</p>
+
+            <h3>Backup dei dati</h3>
+            <p>Con <strong>«Crea backup»</strong> salvi un file con i tuoi dati: i titoli salvati, le puntate viste (stagione ed episodio per ogni serie), gli ultimi film e serie visti, la cronologia «Novità», la tua chiave personale e le preferenze di visualizzazione. Il programma ti chiede dove salvare il file.</p>
+            <p>Con <strong>«Ripristina»</strong> scegli il file di backup salvato in precedenza e BlameFlix riporta al suo posto tutti i dati. Il backup contiene solo gli identificativi dei titoli: al ripristino i dettagli vengono riscaricati da TMDB, quindi serve una connessione internet. I titoli non scaricabili compaiono comunque come card senza dati e i dettagli si caricano appena li apri.</p>
+
+            <h3>I titoli non si caricano</h3>
+            <p>BlameFlix riceve i dati dei titoli da TMDB. Se la ricerca o le schede non si caricano, assicurati di essere connesso a internet. In caso di problemi, nelle Impostazioni puoi inserire una chiave personale gratuita, ottenibile su themoviedb.org nella sezione API.</p>
+
+            <h3>Privacy</h3>
+            <p>Tutti i tuoi dati restano sul dispositivo e non vengono inviati a nessuno, a parte le normali richieste a TMDB per cercare i titoli. Conserva bene il file di backup: contiene i tuoi dati personali. Per i dettagli, consulta la privacy policy del progetto.</p>
+
+            <h3>Crediti</h3>
+            <p><img src="tmdb.svg" alt="The Movie Database (TMDB)" class="docs-tmdb"></p>
+            <p><em>This product uses the TMDB API but is not endorsed or certified by TMDB.</em></p>
+            <p>Questo prodotto usa l'API TMDB ma non è approvato né certificato da TMDB. Titoli, testi e immagini provengono da <a href="https://www.themoviedb.org" target="_blank" rel="noopener">The Movie Database (TMDB)</a>, che non è affiliato a questa applicazione. Le immagini dei poster sono mostrate per la sola consultazione del catalogo.</p>
+        </div>
+    </div>
+</div>
+
+<footer class="colophon">
+    <a class="colophon__tmdb" href="https://www.themoviedb.org" target="_blank" rel="noopener" aria-label="The Movie Database (TMDB)">
+        <img src="tmdb.svg" alt="The Movie Database (TMDB)">
+    </a>
+    <p class="colophon__note">
+        This product uses the TMDB API but is not endorsed or certified by TMDB.<br>
+        Questo prodotto usa l'API TMDB ma non è approvato né certificato da TMDB. The Movie Database (TMDB) non è affiliato a questa applicazione.
+    </p>
+    <span class="colophon__tag">Schermo: la tua sala</span>
+</footer>
+
+<div id="toast" class="toast" role="status" aria-live="polite">
+    <strong class="toast__title" id="toast-title"></strong>
+    <span class="toast__body" id="toast-body"></span>
+</div>
+
+<script>
+    // CONFIGURAZIONE
+    let API_KEY = localStorage.getItem('myTMDbApiKey') || '';
+    const BASE_URL = 'https://api.themoviedb.org/3';
+    const IMG_BASE = 'https://image.tmdb.org/t/p/w500';
+    const IMG_STILL = 'https://image.tmdb.org/t/p/w300';
+    const IMG_BACKDROP = 'https://image.tmdb.org/t/p/w1280';
+    const PLACEHOLDER = 'data:image/svg+xml;utf8,' + encodeURIComponent(
+        '<svg xmlns="http://www.w3.org/2000/svg" width="200" height="300"><rect width="100%" height="100%" fill="#1F1A15"/><rect x="0" y="0" width="100%" height="100%" fill="none" stroke="#F3EBD9" stroke-width="4"/><text x="50%" y="50%" fill="#A99A85" font-size="15" font-family="Arial" text-anchor="middle" dominant-baseline="middle">No poster</text></svg>'
+    );
+    const EPISODE_PLACEHOLDER = 'data:image/svg+xml;utf8,' + encodeURIComponent(
+        '<svg xmlns="http://www.w3.org/2000/svg" width="300" height="169"><rect width="100%" height="100%" fill="#1F1A15"/><rect x="0" y="0" width="100%" height="100%" fill="none" stroke="#F3EBD9" stroke-width="4"/><text x="50%" y="50%" fill="#A99A85" font-size="15" font-family="Arial" text-anchor="middle" dominant-baseline="middle">No still</text></svg>'
+    );
+
+    let currentMedia = null; // Memorizza il media attualmente visualizzato nei dettagli
+    let watchlist = JSON.parse(localStorage.getItem('myWatchlist')) || [];
+    const watchlistDetails = new Map(); // cache in-memory: chiave 'media_type:id' -> oggetto completo (mai persistito)
+    let lastPlayed = JSON.parse(localStorage.getItem('myLastPlayed')) || [];
+    let customSelections = JSON.parse(localStorage.getItem('myCustomSelections')) || {}; // stagioni/episodi manuali per titolo
+    let customMode = false; // true quando si usano gli input manuali per una serie
+    let currentSeason = 1; // stagione selezionata nella lista puntate
+    let currentEpisode = 1; // episodio selezionato nella lista puntate
+    let watchedEpisodes = loadWatchedEpisodes(); // puntate viste: { showId: { stagione: { episodio: true } } }
+    let newsHistory = loadNewsHistory(); // cronologia in-app delle nuove uscite
+    let searching = false;
+    let currentList = []; // Ultimi titoli renderizzati (watchlist o risultati ricerca)
+    let viewMode = ['grid', 'list'].includes(localStorage.getItem('myViewMode')) ? localStorage.getItem('myViewMode') : 'grid';
+    let typeFilter = localStorage.getItem('myTypeFilter') || 'all'; // 'all' | 'movie' | 'tv'
+    let resolver = JSON.parse(localStorage.getItem('myResolver')) || {}; // template URL scelti dall'utente { movie, tv }
+
+    // Notifiche di rilascio
+    const DEFAULT_NOTIFY_SETTINGS = { enabled: true, tv: true, autoSyncHours: 24 };
+    let notifySettings = loadNotifySettings();
+    let releaseState = loadReleaseState();
+
+    const homeView = document.getElementById('home-view');
+    const detailView = document.getElementById('detail-view');
+    const searchInput = document.getElementById('search-input');
+    const searchClear = document.getElementById('search-clear');
+    const grid = document.getElementById('results-grid');
+    const emptyState = document.getElementById('empty-state');
+    const sectionEyebrow = document.getElementById('section-eyebrow');
+    const sectionTitle = document.getElementById('section-title');
+    const sectionCount = document.getElementById('section-count');
+    const countTag = document.getElementById('count-tag');
+
+    function escapeHtml(str) {
+        return String(str).replace(/[&<>"']/g, c => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        })[c]);
+    }
+
+    function isSaved(id, media_type) {
+        return watchlist.some(w => w.id === id && w.media_type === media_type);
+    }
+
+    function watchlistKey(id, media_type) {
+        return `${media_type}:${id}`;
+    }
+
+    // In localStorage salviamo solo gli identificativi (conformità ai termini
+    // TMDB sul caching); i dettagli vivono solo in memoria.
+    function persistWatchlist() {
+        localStorage.setItem('myWatchlist', JSON.stringify(watchlist));
+    }
+
+    // Ritorna i dettagli in cache per una voce, altrimenti la voce stessa
+    // (così la griglia funziona anche con dati minimi o risultati di ricerca).
+    function detailFor(item) {
+        return watchlistDetails.get(watchlistKey(item.id, item.media_type)) || item;
+    }
+
+    function formatVote(vote) {
+        return vote ? Number(vote).toFixed(1).replace('.', ',') + ' / 10' : '—';
+    }
+
+    // --- NOTIFICHE DI RILASCIO ---
+
+    const AUTO_SYNC_HOURS = [8, 12, 24, 48];
+
+    function loadNotifySettings() {
+        try {
+            const raw = JSON.parse(localStorage.getItem('myNotifySettings'));
+            return Object.assign({}, DEFAULT_NOTIFY_SETTINGS, raw);
+        } catch (err) {
+            return Object.assign({}, DEFAULT_NOTIFY_SETTINGS);
+        }
+    }
+
+    // Rende coerente l'intervallo di auto-sync, ammettendo solo i valori previsti.
+    function sanitizeAutoSyncHours(hours) {
+        const n = Number(hours);
+        return AUTO_SYNC_HOURS.includes(n) ? n : DEFAULT_NOTIFY_SETTINGS.autoSyncHours;
+    }
+
+    function persistNotifySettings() {
+        localStorage.setItem('myNotifySettings', JSON.stringify(notifySettings));
+    }
+
+    function loadReleaseState() {
+        let s = {};
+        try { s = JSON.parse(localStorage.getItem('myReleaseState')) || {}; } catch (err) { s = {}; }
+        if (!s || typeof s !== 'object') s = {};
+        if (!s.shows || typeof s.shows !== 'object') s.shows = {};
+        if (!s.moviesNotified || typeof s.moviesNotified !== 'object') s.moviesNotified = {};
+        return s;
+    }
+
+    function persistReleaseState() {
+        localStorage.setItem('myReleaseState', JSON.stringify(releaseState));
+    }
+
+    // --- PUNTATE VISTE ---
+    // Formato interno: { showId: { stagione: [numeri...] } } (lista ordinata unica).
+    // Al salvataggio viene compresso in intervalli [[inizio,fine],...] dove più corto.
+
+    // Legge una stagione in qualsiasi formato (vecchio {ep:true}, lista di numeri,
+    // intervalli) e restituisce la lista ordinata e unica dei numeri.
+    function seasonToList(value) {
+        if (value === null || typeof value !== 'object') return [];
+        const nums = [];
+        if (Array.isArray(value)) {
+            value.forEach(v => {
+                if (Array.isArray(v) && v.length === 2) {
+                    const a = Number(v[0]), b = Number(v[1]);
+                    if (Number.isFinite(a) && Number.isFinite(b)) {
+                        const lo = Math.min(a, b), hi = Math.max(a, b);
+                        for (let i = lo; i <= hi; i++) nums.push(i);
+                    }
+                } else {
+                    const n = Number(v);
+                    if (Number.isFinite(n)) nums.push(n);
+                }
+            });
+        } else {
+            Object.keys(value).forEach(k => {
+                if (value[k]) {
+                    const n = Number(k);
+                    if (Number.isFinite(n)) nums.push(n);
+                }
+            });
+        }
+        return [...new Set(nums)].sort((a, b) => a - b);
+    }
+
+    // Converte qualsiasi formato salvato nella lista interna per ogni stagione.
+    function normalizeWatched(raw) {
+        const out = {};
+        if (!raw || typeof raw !== 'object') return out;
+        for (const showId of Object.keys(raw)) {
+            const seasons = raw[showId];
+            if (!seasons || typeof seasons !== 'object') continue;
+            const showOut = {};
+            for (const season of Object.keys(seasons)) {
+                const list = seasonToList(seasons[season]);
+                if (list.length) showOut[season] = list;
+            }
+            if (Object.keys(showOut).length) out[showId] = showOut;
+        }
+        return out;
+    }
+
+    // Comprime una lista ordinata in intervalli [[inizio,fine],...].
+    function listToRanges(list) {
+        if (!list.length) return [];
+        const ranges = [];
+        let start = list[0], prev = list[0];
+        for (let i = 1; i < list.length; i++) {
+            const cur = list[i];
+            if (cur === prev + 1) { prev = cur; continue; }
+            ranges.push([start, prev]);
+            start = cur; prev = cur;
+        }
+        ranges.push([start, prev]);
+        return ranges;
+    }
+
+    // Per una stagione sceglie la forma più corta: lista di numeri o intervalli.
+    function compactSeason(list) {
+        if (!list.length) return [];
+        const ranges = listToRanges(list);
+        return JSON.stringify(ranges).length < JSON.stringify(list).length ? ranges : list;
+    }
+
+    // Compatta tutte le stagioni per il salvataggio. Non muta l'input.
+    function compressWatched(w) {
+        const out = {};
+        for (const showId of Object.keys(w)) {
+            const seasons = w[showId];
+            if (!seasons || typeof seasons !== 'object') continue;
+            const showOut = {};
+            for (const season of Object.keys(seasons)) {
+                const c = compactSeason(seasons[season]);
+                if (c.length) showOut[season] = c;
+            }
+            if (Object.keys(showOut).length) out[showId] = showOut;
+        }
+        return out;
+    }
+
+    function loadWatchedEpisodes() {
+        let w = {};
+        try { w = JSON.parse(localStorage.getItem('myWatchedEpisodes')) || {}; } catch (err) { w = {}; }
+        return normalizeWatched(w);
+    }
+
+    function persistWatchedEpisodes() {
+        localStorage.setItem('myWatchedEpisodes', JSON.stringify(compressWatched(watchedEpisodes)));
+    }
+
+    function isEpisodeWatched(showId, season, episode) {
+        const list = watchedEpisodes[showId] && watchedEpisodes[showId][season];
+        return !!list && list.includes(episode);
+    }
+
+    // Segna (true) o toglie (false) una puntata dalle viste; senza force inverte.
+    function toggleEpisodeWatched(showId, season, episode, force) {
+        const seasons = watchedEpisodes[showId] || (watchedEpisodes[showId] = {});
+        const list = seasons[season] || [];
+        const next = force === undefined ? !list.includes(episode) : !!force;
+        let updated;
+        if (next) {
+            updated = list.includes(episode) ? list : [...list, episode].sort((a, b) => a - b);
+        } else {
+            updated = list.filter(n => n !== episode);
+        }
+        if (updated.length) seasons[season] = updated;
+        else delete seasons[season];
+        if (!Object.keys(seasons).length) delete watchedEpisodes[showId];
+        persistWatchedEpisodes();
+        return next;
+    }
+
+    // --- CRONOLOGIA NOVITÀ ---
+
+    const NEWS_HISTORY_MAX = 30;
+
+    function loadNewsHistory() {
+        let h = [];
+        try { h = JSON.parse(localStorage.getItem('myNewsHistory')) || []; } catch (err) { h = []; }
+        return Array.isArray(h) ? h : [];
+    }
+
+    function persistNewsHistory() {
+        localStorage.setItem('myNewsHistory', JSON.stringify(newsHistory));
+    }
+
+    // Aggiunge una voce alla cronologia, deduplicando per media/Stagione/Episodio.
+    function addNewsEntry(entry) {
+        const key = n => `${n.media_type}:${n.id}:${n.season ?? ''}:${n.episode ?? ''}`;
+        newsHistory = newsHistory.filter(n => key(n) !== key(entry));
+        newsHistory.unshift({ ...entry, date: Date.now() });
+        if (newsHistory.length > NEWS_HISTORY_MAX) newsHistory.length = NEWS_HISTORY_MAX;
+        persistNewsHistory();
+    }
+
+    function clearNewsHistory() {
+        newsHistory = [];
+        persistNewsHistory();
+        renderNewsSection();
+    }
+
+    function formatNewsDate(ts) {
+        if (!ts) return '';
+        try { return new Date(ts).toLocaleDateString('it-IT'); } catch (err) { return ''; }
+    }
+
+    function renderNewsSection() {
+        const section = document.getElementById('news-section');
+        if (!section) return;
+        section.hidden = newsHistory.length === 0;
+        const list = document.getElementById('news-list');
+        list.innerHTML = '';
+        newsHistory.forEach(n => {
+            const li = document.createElement('li');
+            li.className = 'news-item';
+            const kind = n.media_type === 'tv' ? 'SERIE' : 'FILM';
+            const sub = n.media_type === 'tv' && n.season ? ` · S${n.season}E${n.episode}` : '';
+            li.innerHTML = `
+                <span class="news-item__kind">${kind}</span>
+                <button type="button" class="news-item__title" onclick="showDetails(${n.id}, '${n.media_type}')">${escapeHtml(n.title || 'Senza titolo')}${escapeHtml(sub)}</button>
+                <time class="news-item__date">${escapeHtml(formatNewsDate(n.date))}</time>
+            `;
+            list.appendChild(li);
+        });
+    }
+
+    const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+    // Timestamp di messa in onda di un episodio. TMDB di norma fornisce solo la
+    // data (YYYY-MM-DD): in quel caso si usa la mezzanotte del giorno. Se la
+    // stringa contiene anche l'orario (es. "2026-08-16T21:00:00Z") viene usato.
+    function airDateTs(airDate) {
+        if (!airDate) return null;
+        const s = String(airDate);
+        if (/^\d{4}-\d{2}-\d{2}$/.test(s)) {
+            return new Date(`${s}T00:00:00`).getTime();
+        }
+        const t = new Date(s).getTime();
+        return Number.isFinite(t) ? t : null;
+    }
+
+    // True se la messa in onda è già avvenuta (incluso l'orario, se disponibile).
+    // Senza data l'episodio si considera già in onda.
+    function isAired(airDate) {
+        const ts = airDateTs(airDate);
+        if (ts === null) return true;
+        return ts <= Date.now();
+    }
+
+    async function fetchJson(url) {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+    }
+
+    // Richiede il permesso di sistema per le notifiche (Android / browser).
+    async function ensureNotifyPermission() {
+        if (window.Capacitor?.Plugins?.LocalNotifications) {
+            try {
+                const perms = await window.Capacitor.Plugins.LocalNotifications.requestPermissions();
+                return perms?.display === 'granted';
+            } catch (err) {
+                return false;
+            }
+        }
+        if ('Notification' in window && window.Notification) {
+            if (window.Notification.permission === 'granted') return true;
+            if (window.Notification.permission === 'denied') return false;
+            try {
+                const result = await window.Notification.requestPermission();
+                return result === 'granted';
+            } catch (err) {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    // Invia una notifica di sistema sul canale giusto (Android, Electron, web).
+    // Restituisce false se nessun canale di sistema è disponibile.
+    // data (facoltativo): { media_type, id, season?, episode? } per aprire la scheda al click.
+    async function notify(title, body, data) {
+        if (window.Capacitor?.Plugins?.LocalNotifications) {
+            try {
+                await window.Capacitor.Plugins.LocalNotifications.schedule({
+                    notifications: [{
+                        id: Date.now() % 2147483647,
+                        title,
+                        body,
+                        extra: data || {}
+                    }]
+                });
+                return true;
+            } catch (err) {
+                return false;
+            }
+        }
+        if (window.blameflixNotify) {
+            try {
+                return await window.blameflixNotify.notify(title, body);
+            } catch (err) {
+                return false;
+            }
+        }
+        if ('Notification' in window && window.Notification && window.Notification.permission === 'granted') {
+            try {
+                const n = new window.Notification(title, { body });
+                if (data && data.id) {
+                    n.onclick = () => {
+                        window.focus();
+                        showDetails(data.id, data.media_type, data);
+                        n.close();
+                    };
+                }
+                return true;
+            } catch (err) {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    // --- TOAST IN-APP ---
+
+    const toastEl = document.getElementById('toast');
+    let toastTimer = null;
+
+    function showToast(title, body, ms = 5000) {
+        document.getElementById('toast-title').innerText = title;
+        document.getElementById('toast-body').innerText = body;
+        toastEl.classList.add('is-visible');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toastEl.classList.remove('is-visible'), ms);
+    }
+
+    // Confronta lo stato TMDB dei titoli salvati con l'ultimo controllo e
+    // segnala le nuove uscite (film usciti o puntate andate in onda).
+    // La prima sincronizzazione fa solo da "baseline": registra lo stato
+    // corrente senza notificare, per evitare una raffica di avvisi vecchi.
+    async function checkReleases(manual = false) {
+        if (!API_KEY) {
+            if (manual) showToast('Sync', 'Serve la chiave TMDB per verificare le uscite. Impostala nelle Impostazioni.');
+            return { newCount: 0, baseline: false };
+        }
+        if (!watchlist.length) {
+            if (manual) showToast('Sync', 'La sala è vuota: non c\'è nulla da controllare.');
+            return { newCount: 0, baseline: false };
+        }
+
+        const newReleases = [];
+        const isBaseline = !releaseState.baseline;
+        releaseState.baseline = true;
+
+        for (const item of watchlist) {
+            if (item.media_type !== 'tv') continue;
+            try {
+                const data = await fetchJson(`${BASE_URL}/tv/${item.id}?api_key=${API_KEY}&language=it-IT`);
+                const last = data.last_episode_to_air;
+                if (last && last.air_date && isAired(last.air_date)) {
+                    const cur = { season: last.season_number, episode: last.episode_number };
+                    const stored = releaseState.shows[item.id];
+                    const isNew = !stored || stored.season !== cur.season || stored.episode !== cur.episode;
+                    releaseState.shows[item.id] = cur;
+                    // Le puntate già viste non contano come nuove uscite.
+                    if (!isBaseline && isNew && notifySettings.tv && !isEpisodeWatched(item.id, cur.season, cur.episode)) {
+                        const title = data.name || data.title || 'Senza titolo';
+                        newReleases.push({ media_type: 'tv', id: item.id, title, season: cur.season, episode: cur.episode });
+                    }
+                }
+            } catch (err) {
+                // Titolo non disponibile (offline o rimosso): si passa al successivo.
+            }
+            await sleep(150);
+        }
+
+        releaseState.lastSync = Date.now();
+        persistReleaseState();
+
+        function releaseBody(r) {
+            return `«${r.title}» · nuova puntata S${r.season}E${r.episode} in catalogo`;
+        }
+
+        for (const r of newReleases) {
+            addNewsEntry({ ...r });
+        }
+        renderNewsSection();
+
+        if (newReleases.length && notifySettings.enabled) {
+            const granted = await ensureNotifyPermission();
+            for (const r of newReleases) {
+                if (granted) await notify('BlameFlix · Rilasci', releaseBody(r), { ...r });
+            }
+        }
+
+        if (newReleases.length) {
+            const list = newReleases.slice(0, 4).map(releaseBody).join('\n');
+            const extra = newReleases.length > 4 ? `\n+${newReleases.length - 4} altro` : '';
+            showToast('Nuove uscite in sala', list + extra, 8000);
+        } else if (manual) {
+            showToast('Sync', isBaseline
+                ? 'Prima sincronizzazione completata: da ora riceverai gli avvisi di rilascio.'
+                : 'Nessuna nuova uscita: tutto aggiornato.');
+        }
+
+        return { newCount: newReleases.length, baseline: isBaseline };
+    }
+
+    const btnSync = document.getElementById('btn-sync');
+
+    async function syncReleases() {
+        if (btnSync.classList.contains('is-busy')) return;
+        btnSync.classList.add('is-busy');
+        btnSync.innerText = '⟳ …';
+        try {
+            await checkReleases(true);
+        } finally {
+            btnSync.classList.remove('is-busy');
+            btnSync.innerText = '⟳ Sync';
+        }
+    }
+
+    // --- AUTO-SYNC PERIODICO ---
+
+    function autoSyncIntervalMs() {
+        return sanitizeAutoSyncHours(notifySettings.autoSyncHours) * 3600 * 1000;
+    }
+
+    // True se è ora di fare un controllo (intervallo configurato trascorso).
+    function shouldAutoSync() {
+        return !releaseState.lastSync || Date.now() - releaseState.lastSync >= autoSyncIntervalMs();
+    }
+
+    let autoSyncTimer = null;
+
+    // Riarma il timer periodico ogni volta che cambia l'intervallo configurato.
+    function startAutoSyncTimer() {
+        if (autoSyncTimer) clearInterval(autoSyncTimer);
+        autoSyncTimer = setInterval(() => {
+            if (shouldAutoSync()) checkReleases(false);
+        }, autoSyncIntervalMs());
+    }
+
+    // --- GESTIONE VISTE ---
+
+    function renderHome() {
+        searching = false;
+        homeView.hidden = false;
+        detailView.hidden = true;
+        sectionEyebrow.innerText = 'La tua sala';
+        sectionTitle.innerText = 'BlameFlix';
+        sectionCount.innerText = watchlist.length ? `${watchlist.length} TITOLI` : '';
+        searchClear.hidden = searchInput.value.length === 0;
+        currentList = watchlist;
+        renderGrid(currentList);
+        renderNewsSection();
+        refreshHomeUnwatchedCount();
+    }
+
+    function showHome() {
+        searchInput.value = '';
+        searchClear.hidden = true;
+        renderHome();
+    }
+
+    function clearSearch() {
+        showHome();
+    }
+
+    async function handleSearch(query) {
+        const q = query.trim();
+        if (q.length < 2) {
+            searchClear.hidden = query.length === 0;
+            if (!searching) return;
+            renderHome();
+            return;
+        }
+
+        searching = true;
+        searchClear.hidden = false;
+        homeView.hidden = false;
+        detailView.hidden = true;
+        sectionEyebrow.innerText = 'Archivio TMDB';
+        sectionTitle.innerText = `Risultati per «${q}»`;
+        sectionCount.innerText = '';
+
+        try {
+            const res = await fetch(`${BASE_URL}/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(q)}&language=it-IT`);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const data = await res.json();
+            // Filtra solo movie e tv
+            const results = data.results.filter(item => item.media_type === 'movie' || item.media_type === 'tv');
+            currentList = results;
+            renderGrid(currentList);
+        } catch (err) {
+            console.error('Errore ricerca:', err);
+            showEmpty('Errore di rete', 'Non riusciamo a contattare l\'archivio. Controlla la connessione e riprova.');
+        }
+    }
+
+    // --- RENDERING ---
+
+    function showEmpty(kicker, text) {
+        grid.style.display = 'none';
+        emptyState.querySelector('.empty-kicker').innerText = kicker;
+        emptyState.querySelector('p:last-child').innerText = text;
+        emptyState.hidden = false;
+    }
+
+    function renderGrid(items) {
+        const filtered = typeFilter === 'all' ? items : items.filter(item => item.media_type === typeFilter);
+        grid.innerHTML = '';
+
+        if (!filtered.length) {
+            if (items.length && typeFilter !== 'all') {
+                showEmpty('Nessun titolo', filterLabel(typeFilter) + ' non trovati con questi criteri.');
+            } else if (searching) {
+                showEmpty('Nessun risultato', 'Non abbiamo trovato nulla con questa ricerca. Prova un altro titolo.');
+            } else {
+                showEmpty('Nessun titolo in sala', 'La tua sala è vuota. Cerca il primo film o la prima serie qui sopra per iniziare.');
+            }
+            return;
+        }
+
+        grid.style.display = '';
+        emptyState.hidden = true;
+
+        grid.classList.toggle('grid--list', viewMode === 'list');
+
+        filtered.forEach((item) => {
+            const d = detailFor(item);
+            const poster = d.poster_path ? `${IMG_BASE}${d.poster_path}` : PLACEHOLDER;
+            const title = d.title || d.name || 'Senza titolo';
+            const date = d.release_date || d.first_air_date || '';
+            const year = date ? date.substring(0, 4) : '—';
+            const vote = d.vote_average ? Number(d.vote_average).toFixed(1).replace('.', ',') : '—';
+            const kind = d.media_type === 'tv' ? 'SERIE' : 'FILM';
+            const saved = isSaved(item.id, item.media_type);
+
+            const card = document.createElement('div');
+            card.className = 'card';
+            if (viewMode === 'list') card.classList.add('card--list');
+            card.dataset.id = item.id;
+            card.dataset.type = item.media_type;
+            card.tabIndex = 0;
+            card.addEventListener('click', () => showDetails(item.id, item.media_type));
+            card.addEventListener('keydown', e => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    showDetails(item.id, item.media_type);
+                }
+            });
+
+            const unwatched = item.media_type === 'tv' ? showUnwatchedCache.get(item.id) : 0;
+
+            card.innerHTML = `
+                <div class="card-poster">
+                    <img src="${poster}" alt="${escapeHtml(title)}" loading="lazy">
+                    <span class="card-kind">${kind}</span>
+                    ${saved ? '<span class="stamp">SALVATO</span>' : ''}
+                    ${unwatched > 0 ? `<span class="card-unwatched">${unwatched} da vedere</span>` : ''}
+                </div>
+                <div class="credit-block">
+                    <h3 class="credit-title">${escapeHtml(title)}</h3>
+                    <p class="credit-meta">${escapeHtml(year)} · <span class="star">★</span> ${vote}</p>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+    }
+
+    // --- FILTRI E VISUALIZZAZIONE CATALOGO ---
+
+    function filterLabel(type) {
+        return type === 'movie' ? 'film' : type === 'tv' ? 'serie' : 'titoli';
+    }
+
+    function syncTools() {
+        document.querySelectorAll('.ctl[data-type]').forEach(btn => {
+            btn.setAttribute('aria-pressed', btn.dataset.type === typeFilter ? 'true' : 'false');
+        });
+        document.querySelectorAll('.ctl[data-view]').forEach(btn => {
+            btn.setAttribute('aria-pressed', btn.dataset.view === viewMode ? 'true' : 'false');
+        });
+    }
+
+    function setFilter(type) {
+        if (typeFilter === type) return;
+        typeFilter = type;
+        localStorage.setItem('myTypeFilter', typeFilter);
+        syncTools();
+        renderGrid(currentList);
+    }
+
+    function setView(mode) {
+        if (viewMode === mode) return;
+        viewMode = mode;
+        localStorage.setItem('myViewMode', viewMode);
+        syncTools();
+        renderGrid(currentList);
+    }
+
+    async function showDetails(id, type, opts) {
+        window.scrollTo(0, 0);
+        homeView.hidden = true;
+        detailView.hidden = false;
+
+        try {
+            const res = await fetch(`${BASE_URL}/${type}/${id}?api_key=${API_KEY}&language=it-IT`);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const data = await res.json();
+            if (!data.id) throw new Error('Dati non validi');
+            currentMedia = { ...data, media_type: type }; // Salva i dati completi
+
+            // Popola UI
+            document.getElementById('detail-title').innerText = data.title || data.name || 'Senza titolo';
+            document.getElementById('detail-overview').innerText = data.overview || 'Nessuna descrizione disponibile.';
+            document.getElementById('detail-date').innerText = data.release_date || data.first_air_date || '—';
+            document.getElementById('detail-vote').innerText = formatVote(data.vote_average);
+            document.getElementById('detail-poster').src = data.poster_path ? `${IMG_BASE}${data.poster_path}` : PLACEHOLDER;
+            document.getElementById('detail-kind').innerText = type === 'tv' ? 'SERIE TV' : 'FILM';
+
+            // Hero backdrop
+            const backdrop = document.getElementById('detail-backdrop');
+            if (data.backdrop_path) {
+                backdrop.style.backgroundImage = `url(${IMG_BACKDROP}${data.backdrop_path})`;
+                backdrop.hidden = false;
+            } else {
+                backdrop.hidden = true;
+            }
+
+            // Gestione controlli TV vs Film
+            const tvControls = document.getElementById('tv-controls');
+            const episodeSection = document.getElementById('episode-section');
+            if (type === 'tv') {
+                tvControls.hidden = false;
+                episodeSection.hidden = false;
+                document.getElementById('btn-mark-all-aired').hidden = false;
+                setupSeasonControls(data, opts);
+                refreshUnwatchedCount();
+            } else {
+                tvControls.hidden = true;
+                episodeSection.hidden = true;
+                document.getElementById('btn-mark-all-aired').hidden = true;
+                refreshUnwatchedCount();
+            }
+
+            updateWatchlistBtn();
+
+        } catch (err) {
+            alert('Errore nel caricamento dei dettagli');
+            showHome();
+        }
+    }
+
+    // --- SELEZIONI STAGIONE / EPISODI ---
+
+    const inputSeason = document.getElementById('input-season');
+    const customControls = document.getElementById('custom-controls');
+    const inputSeasonCustom = document.getElementById('input-season-custom');
+    const inputEpisodeCustom = document.getElementById('input-episode-custom');
+    const episodeSection = document.getElementById('episode-section');
+    const episodeList = document.getElementById('episode-list');
+    const seasonEpisodesCache = new Map(); // chiave 'showId:stagione' -> array episodi TMDB
+
+    // Costruisce le stagioni del titolo nel selettore:
+    // numerate da 1 in su, poi la stagione speciale (0) rinominata "Speciale".
+    // In fondo è disponibile l'opzione "Altro…" per valori non presenti su TMDB.
+    function setupSeasonControls(tv, opts) {
+        customMode = false;
+        customControls.hidden = true;
+        episodeSection.hidden = false;
+
+        const special = (tv.seasons || []).find(s => s.season_number === 0);
+        const numbered = (tv.seasons || [])
+            .filter(s => s.season_number >= 1)
+            .sort((a, b) => a.season_number - b.season_number);
+        const seasons = [...numbered, special].filter(Boolean);
+
+        inputSeason.innerHTML = '';
+        seasons.forEach(s => {
+            const opt = document.createElement('option');
+            opt.value = s.season_number;
+            opt.textContent = s.season_number === 0 ? 'Speciale' : String(s.season_number);
+            inputSeason.appendChild(opt);
+        });
+        const otherSeason = document.createElement('option');
+        otherSeason.value = 'custom';
+        otherSeason.textContent = 'Altro…';
+        inputSeason.appendChild(otherSeason);
+
+        // Ripristina la stagione richiesta (es. da una notifica), poi l'ultima
+        // riprodotta, altrimenti la prima stagione. Se la stagione non è
+        // elencata da TMDB riapre in modalità manuale.
+        const desired = (opts && opts.season)
+            ? { season: Number(opts.season), episode: Number(opts.episode) || 1 }
+            : getLastPlayed(tv.id);
+        const known = desired && seasons.some(s => s.season_number === desired.season);
+        if (desired && !known && desired.season >= 1) {
+            inputSeason.value = 'custom';
+            inputSeasonCustom.value = desired.season;
+            inputEpisodeCustom.value = desired.episode;
+            enterCustomMode();
+            return;
+        }
+        const season = known ? desired.season : (seasons.length ? seasons[0].season_number : 1);
+        inputSeason.value = season;
+        loadEpisodes(season, known ? desired.episode : null);
+    }
+
+    // Carica gli episodi della stagione da TMDB (con cache in memoria) e li mostra.
+    async function loadEpisodes(season, highlightEpisode = null) {
+        currentSeason = Number(season);
+        currentEpisode = highlightEpisode || 1;
+        if (!currentMedia || currentMedia.media_type !== 'tv') return;
+        episodeList.innerHTML = `
+            <div class="episode-row episode-row--skeleton" aria-hidden="true">
+                <div class="episode-row__thumb skeleton-block"></div>
+                <div class="episode-row__body">
+                    <div class="skeleton-block sk-title"></div>
+                    <div class="skeleton-block sk-meta"></div>
+                    <div class="skeleton-block sk-line"></div>
+                </div>
+            </div>
+            <div class="episode-row episode-row--skeleton" aria-hidden="true">
+                <div class="episode-row__thumb skeleton-block"></div>
+                <div class="episode-row__body">
+                    <div class="skeleton-block sk-title"></div>
+                    <div class="skeleton-block sk-meta"></div>
+                    <div class="skeleton-block sk-line"></div>
+                </div>
+            </div>
+            <div class="episode-row episode-row--skeleton" aria-hidden="true">
+                <div class="episode-row__thumb skeleton-block"></div>
+                <div class="episode-row__body">
+                    <div class="skeleton-block sk-title"></div>
+                    <div class="skeleton-block sk-meta"></div>
+                    <div class="skeleton-block sk-line"></div>
+                </div>
+            </div>`;
+
+        const cacheKey = `${currentMedia.id}:${currentSeason}`;
+        let eps;
+        if (seasonEpisodesCache.has(cacheKey)) {
+            eps = seasonEpisodesCache.get(cacheKey);
+        } else {
+            try {
+                const data = await fetchJson(`${BASE_URL}/tv/${currentMedia.id}/season/${currentSeason}?api_key=${API_KEY}&language=it-IT`);
+                eps = data.episodes || [];
+                seasonEpisodesCache.set(cacheKey, eps);
+            } catch (err) {
+                episodeList.innerHTML = '<p class="episode-list__empty">Impossibile caricare gli episodi. Controlla la connessione e riprova.</p>';
+                return;
+            }
+        }
+        renderEpisodeList(eps, highlightEpisode);
+    }
+
+    function formatAirDateTime(dateStr) {
+        if (!dateStr) return '';
+        let s = String(dateStr);
+        let datePart = s;
+        let timePart = '';
+        const tIdx = s.indexOf('T');
+        if (tIdx !== -1) {
+            datePart = s.slice(0, tIdx);
+            const m = s.slice(tIdx + 1).match(/^(\d{1,2}):(\d{2})/);
+            if (m) timePart = `${m[1]}:${m[2]}`;
+        }
+        const parts = datePart.split('-').map(Number);
+        if (parts.length !== 3 || !parts[0] || !parts[1] || !parts[2]) return dateStr;
+        const dt = new Date(parts[0], parts[1] - 1, parts[2]);
+        let out;
+        try { out = dt.toLocaleDateString('it-IT', { year: 'numeric', month: 'short', day: 'numeric' }); }
+        catch (err) { out = dateStr; }
+        if (timePart) out += ` · ${timePart}`;
+        return out;
+    }
+
+    // Rende la lista puntate in stile streaming: miniatura, numero, titolo,
+    // meta, sinossi e pulsante play. Viste = grigiate con badge "✓ Visto";
+    // non ancora in onda = disattivate con la data di uscita.
+    function renderEpisodeList(eps, highlightEpisode) {
+        episodeList.innerHTML = '';
+        if (!eps.length) {
+            episodeList.innerHTML = '<p class="episode-list__empty">Nessun episodio elencato da TMDB per questa stagione. Usa «Altro…» per sceglierne uno a mano.</p>';
+            return;
+        }
+
+        eps.forEach(ep => {
+            const epNum = ep.episode_number;
+            const watched = isEpisodeWatched(currentMedia.id, currentSeason, epNum);
+            const future = !!ep.air_date && !isAired(ep.air_date);
+            const resume = highlightEpisode === epNum;
+
+            const row = document.createElement('div');
+            row.className = 'episode-row'
+                + (watched ? ' is-watched' : '')
+                + (future ? ' is-future' : '')
+                + (resume ? ' is-resume' : '');
+
+            const still = ep.still_path ? `${IMG_STILL}${ep.still_path}` : EPISODE_PLACEHOLDER;
+            const title = ep.name || `Episodio ${epNum}`;
+            const meta = [];
+            if (ep.runtime) meta.push(`${ep.runtime} min`);
+            if (ep.air_date) meta.push(formatAirDateTime(ep.air_date));
+            if (ep.vote_average) meta.push(`★ ${Number(ep.vote_average).toFixed(1).replace('.', ',')}`);
+
+            row.innerHTML = `
+                <div class="episode-row__thumb">
+                    <img src="${still}" alt="${escapeHtml(title)}" loading="lazy">
+                    <span class="episode-row__num">${currentSeason === 0 ? 'Speciale' : currentSeason}-${epNum}</span>
+                </div>
+                <div class="episode-row__body">
+                    <div class="episode-row__head">
+                        <h4 class="episode-row__title">${escapeHtml(title)}</h4>
+                        ${watched ? `<span class="episode-row__badge" title="Togli da viste" onclick="toggleWatchedFromList(${currentSeason}, ${epNum})">✓ Visto</span>` : ''}
+                    </div>
+                    <p class="episode-row__meta">${escapeHtml(meta.join(' · '))}</p>
+                    <p class="episode-row__overview">${escapeHtml(ep.overview || 'Nessuna descrizione disponibile.')}</p>
+                </div>
+                <div class="episode-row__actions">
+                    <button type="button" class="btn episode-row__play" ${future ? 'disabled' : ''}
+                        onclick="playEpisode(${currentSeason}, ${epNum})"
+                        ${future ? `title="${escapeHtml(formatAirDateTime(ep.air_date))}"` : ''}>
+                        ${future ? `In uscita il ${escapeHtml(formatAirDateTime(ep.air_date))}` : (watched ? '↻ Rivisualizza' : '▶ Guarda')}
+                    </button>
+                    <button type="button" class="episode-row__toggle" ${future ? 'disabled' : ''}
+                        onclick="toggleWatchedFromList(${currentSeason}, ${epNum})"
+                        title="${watched ? 'Togli da viste' : 'Segna come vista'}">
+                        ${watched ? '✓' : '○'}
+                    </button>
+                </div>
+            `;
+            episodeList.appendChild(row);
+        });
+
+        const markBtn = document.getElementById('btn-mark-season');
+        if (markBtn) {
+            const aired = eps.filter(ep => isAired(ep.air_date));
+            const allWatched = aired.length > 0 && aired.every(ep => isEpisodeWatched(currentMedia.id, currentSeason, ep.episode_number));
+            markBtn.disabled = aired.length === 0;
+            markBtn.innerText = allWatched ? 'Segna tutte come non viste' : '✓ Segna tutte come viste';
+        }
+    }
+
+    // Play da una riga della lista: segna come vista e apre il player.
+    function playEpisode(season, episode) {
+        currentSeason = Number(season);
+        currentEpisode = Number(episode);
+        toggleEpisodeWatched(currentMedia.id, currentSeason, currentEpisode, true);
+        openPlayer();
+        refreshUnwatchedCount();
+        refreshHomeUnwatchedCount();
+    }
+
+    // Toggle manuale visto/non visto da una riga della lista.
+    function toggleWatchedFromList(season, episode) {
+        toggleEpisodeWatched(currentMedia.id, Number(season), Number(episode));
+        const cached = seasonEpisodesCache.get(`${currentMedia.id}:${currentSeason}`);
+        if (cached) renderEpisodeList(cached, null);
+        refreshUnwatchedCount();
+        refreshHomeUnwatchedCount();
+    }
+
+    // Segna come viste (o come non viste) tutte le puntate già in onda della
+    // stagione corrente con un solo tocco. Le puntate future restano bloccate.
+    function markSeasonWatched() {
+        if (!currentMedia || currentMedia.media_type !== 'tv') return;
+        const eps = seasonEpisodesCache.get(`${currentMedia.id}:${currentSeason}`);
+        if (!eps || !eps.length) return;
+
+        const aired = eps.filter(ep => isAired(ep.air_date));
+        if (!aired.length) return;
+
+        const allWatched = aired.every(ep => isEpisodeWatched(currentMedia.id, currentSeason, ep.episode_number));
+        const seasons = watchedEpisodes[currentMedia.id] || (watchedEpisodes[currentMedia.id] = {});
+        const existing = seasons[currentSeason] || [];
+        const airedNums = new Set(aired.map(ep => ep.episode_number));
+        if (allWatched) {
+            const remaining = existing.filter(n => !airedNums.has(n));
+            if (remaining.length) seasons[currentSeason] = remaining;
+            else delete seasons[currentSeason];
+        } else {
+            seasons[currentSeason] = [...new Set([...existing, ...airedNums])].sort((a, b) => a - b);
+        }
+        if (!Object.keys(seasons).length) delete watchedEpisodes[currentMedia.id];
+        persistWatchedEpisodes();
+        renderEpisodeList(eps, null);
+        refreshUnwatchedCount();
+        refreshHomeUnwatchedCount();
+    }
+
+    // Segna come viste tutte le puntate già in onda di ogni stagione (fino a
+    // oggi). Le puntate future restano bloccate.
+    async function markAllAiredWatched() {
+        if (!currentMedia || currentMedia.media_type !== 'tv') return;
+        const btn = document.getElementById('btn-mark-all-aired');
+        if (btn) btn.disabled = true;
+
+        const seasons = (currentMedia.seasons || []).filter(s => s.season_number >= 0);
+        const results = await Promise.allSettled(seasons.map(async s => {
+            const sn = s.season_number;
+            const key = `${currentMedia.id}:${sn}`;
+            let eps = seasonEpisodesCache.get(key);
+            if (!eps) {
+                const data = await fetchJson(`${BASE_URL}/tv/${currentMedia.id}/season/${sn}?api_key=${API_KEY}&language=it-IT`);
+                eps = data.episodes || [];
+                seasonEpisodesCache.set(key, eps);
+            }
+            return { sn, eps };
+        }));
+
+        const seasonsStore = watchedEpisodes[currentMedia.id] || (watchedEpisodes[currentMedia.id] = {});
+        results.forEach(r => {
+            if (r.status !== 'fulfilled') return;
+            const sn = r.value.sn;
+            const nums = r.value.eps
+                .filter(ep => !(ep.air_date && !isAired(ep.air_date)))
+                .map(ep => ep.episode_number);
+            if (!nums.length) return;
+            const existing = seasonsStore[sn] || [];
+            seasonsStore[sn] = [...new Set([...existing, ...nums])].sort((a, b) => a - b);
+        });
+        if (!Object.keys(seasonsStore).length) delete watchedEpisodes[currentMedia.id];
+        persistWatchedEpisodes();
+
+        const cached = seasonEpisodesCache.get(`${currentMedia.id}:${currentSeason}`);
+        if (cached) renderEpisodeList(cached, null);
+        refreshUnwatchedCount();
+        refreshHomeUnwatchedCount();
+        if (btn) btn.disabled = false;
+    }
+
+    const unwatchedEl = document.getElementById('detail-unwatched');
+
+    // Conta le puntate già in onda non ancora viste della serie e aggiorna il
+    // contatore sull'hero. Scarica (in cache) le stagioni non ancora caricate.
+    async function refreshUnwatchedCount() {
+        if (!currentMedia || currentMedia.media_type !== 'tv' || !unwatchedEl) {
+            if (unwatchedEl) unwatchedEl.hidden = true;
+            return;
+        }
+        const seasons = (currentMedia.seasons || []).filter(s => s.season_number >= 0);
+        const results = await Promise.allSettled(seasons.map(async s => {
+            const sn = s.season_number;
+            const key = `${currentMedia.id}:${sn}`;
+            let eps = seasonEpisodesCache.get(key);
+            if (!eps) {
+                const data = await fetchJson(`${BASE_URL}/tv/${currentMedia.id}/season/${sn}?api_key=${API_KEY}&language=it-IT`);
+                eps = data.episodes || [];
+                seasonEpisodesCache.set(key, eps);
+            }
+            return eps;
+        }));
+
+        let total = 0;
+        for (const r of results) {
+            if (r.status !== 'fulfilled') continue;
+            for (const ep of r.value) {
+                const aired = isAired(ep.air_date);
+                if (aired && !isEpisodeWatched(currentMedia.id, ep.season_number, ep.episode_number)) total++;
+            }
+        }
+
+        unwatchedEl.classList.toggle('is-all-clear', total === 0);
+        unwatchedEl.innerText = total === 0
+            ? '✓ Tutto visto'
+            : `${total} puntata${total === 1 ? '' : 'e'} da vedere`;
+        unwatchedEl.hidden = false;
+        return total;
+    }
+
+    // --- CONTATORE HOME (puntate da vedere in tutta la sala) ---
+
+    const homeUnwatchedEl = document.getElementById('home-unwatched');
+    const tvSeasonsCache = new Map(); // id -> array di stagioni (per il contatore home)
+    const showUnwatchedCache = new Map(); // id -> puntate non viste (badge sui poster)
+    let homeCountBusy = false;
+
+    async function fetchSeasons(showId) {
+        if (tvSeasonsCache.has(showId)) return tvSeasonsCache.get(showId);
+        try {
+            const data = await fetchJson(`${BASE_URL}/tv/${showId}?api_key=${API_KEY}&language=it-IT`);
+            const seasons = (data.seasons || []).filter(s => s.season_number >= 0);
+            tvSeasonsCache.set(showId, seasons);
+            return seasons;
+        } catch (err) {
+            return [];
+        }
+    }
+
+    // Puntate già in onda non viste di una singola serie (usa la cache stagioni).
+    async function countUnwatchedForShow(showId) {
+        const seasons = await fetchSeasons(showId);
+        const results = await Promise.allSettled(seasons.map(async s => {
+            const key = `${showId}:${s.season_number}`;
+            let eps = seasonEpisodesCache.get(key);
+            if (!eps) {
+                const data = await fetchJson(`${BASE_URL}/tv/${showId}/season/${s.season_number}?api_key=${API_KEY}&language=it-IT`);
+                eps = data.episodes || [];
+                seasonEpisodesCache.set(key, eps);
+            }
+            return eps;
+        }));
+
+        let total = 0;
+        for (const r of results) {
+            if (r.status !== 'fulfilled') continue;
+            for (const ep of r.value) {
+                const aired = isAired(ep.air_date);
+                if (aired && !isEpisodeWatched(showId, ep.season_number, ep.episode_number)) total++;
+            }
+        }
+        showUnwatchedCache.set(showId, total);
+        return total;
+    }
+
+    // Aggiorna in-place i badge "N da vedere" sui poster delle serie in home.
+    function updateGridUnwatchedBadges() {
+        grid.querySelectorAll('.card[data-type="tv"]').forEach(card => {
+            const id = Number(card.dataset.id);
+            let badge = card.querySelector('.card-unwatched');
+            const count = showUnwatchedCache.get(id);
+            if (count > 0) {
+                if (!badge) {
+                    badge = document.createElement('span');
+                    badge.className = 'card-unwatched';
+                    card.querySelector('.card-poster').appendChild(badge);
+                }
+                badge.textContent = `${count} da vedere`;
+            } else if (badge) {
+                badge.remove();
+            }
+        });
+    }
+
+    async function refreshHomeUnwatchedCount() {
+        if (!homeUnwatchedEl || homeCountBusy) return;
+        const tvShows = watchlist.filter(w => w.media_type === 'tv');
+        if (!tvShows.length || !API_KEY) {
+            homeUnwatchedEl.hidden = true;
+            return;
+        }
+
+        homeCountBusy = true;
+        homeUnwatchedEl.innerText = 'Conto puntate…';
+        homeUnwatchedEl.hidden = false;
+        try {
+            let total = 0;
+            const results = await Promise.allSettled(tvShows.map(w => countUnwatchedForShow(w.id)));
+            results.forEach(r => { if (r.status === 'fulfilled') total += r.value; });
+            homeUnwatchedEl.classList.toggle('is-all-clear', total === 0);
+            homeUnwatchedEl.innerText = total === 0
+                ? '✓ Tutto visto'
+                : `${total} puntata${total === 1 ? '' : 'e'} da vedere`;
+            updateGridUnwatchedBadges();
+        } finally {
+            homeCountBusy = false;
+        }
+    }
+
+    // Entra in modalità manuale: mostra gli input Stagione/Episodio liberi.
+    function enterCustomMode() {
+        customMode = true;
+        customControls.hidden = false;
+        episodeSection.hidden = true;
+        const c = currentMedia ? customSelections[currentMedia.id] : null;
+        const seasonVal = Number(inputSeason.value);
+        inputSeasonCustom.value = c?.season ?? (Number.isFinite(seasonVal) && seasonVal >= 1 ? seasonVal : 1);
+        inputEpisodeCustom.value = c?.episode ?? 1;
+    }
+
+    // Esce dalla modalità manuale tornando al selettore stagione e alla lista puntate.
+    function exitCustomMode() {
+        customMode = false;
+        customControls.hidden = true;
+        episodeSection.hidden = false;
+    }
+
+    function onSeasonChange(value) {
+        if (value === 'custom') {
+            enterCustomMode();
+        } else {
+            exitCustomMode();
+            loadEpisodes(value, null);
+        }
+    }
+
+    // --- LOGICA PLAYER ---
+
+    // Rileva se si sta usando l'app da telefono o da PC
+    function isMobile() {
+        if (window.Capacitor?.isNativePlatform?.()) return true;
+        const ua = navigator.userAgent || '';
+        const mobileUA = /Android|iPhone|iPad|iPod|Mobile/i.test(ua);
+        const coarse = window.matchMedia?.('(pointer: coarse)').matches;
+        return mobileUA || (('ontouchstart' in window || navigator.maxTouchPoints > 0) && coarse);
+    }
+
+    // Apre il player in una finestra/scheda nuova (browser desktop)
+    function openWindow(url) {
+        window.open(url, '_blank', 'noopener');
+    }
+
+    // Apre il player nel browser esterno (telefono, tramite plugin Capacitor)
+    async function openBrowser(url) {
+        if (window.Capacitor?.Plugins?.Browser) {
+            await window.Capacitor.Plugins.Browser.open({ url });
+        } else {
+            openWindow(url);
+        }
+    }
+
+    // --- RIPRESA SERIE (ultime stagioni/episodi riprodotti) ---
+
+    function saveLastPlayed(media, season, episode) {
+        const index = lastPlayed.findIndex(l => l.id === media.id);
+        const entry = { id: media.id, media_type: media.media_type, title: media.name, season: Number(season), episode: Number(episode), timestamp: Date.now() };
+        if (index === -1) {
+            lastPlayed.push(entry);
+        } else {
+            lastPlayed[index] = entry;
+        }
+        localStorage.setItem('myLastPlayed', JSON.stringify(lastPlayed));
+    }
+
+    function getLastPlayed(id) {
+        return lastPlayed.find(l => l.id === id);
+    }
+
+    // Sostituisce i segnaposto ({id}, {type}, {season}, {episode}) nel template
+    // scelto dall'utente e accoda i segmenti canonici mancanti (id → season →
+    // episode) così l'URL è sempre completo. Restituisce null se il template
+    // non è valido o lascia segnaposto non risolti.
+    function resolveTemplate(template, vars) {
+        let url = String(template).trim();
+        if (!url) return null;
+
+        const hasId = /\{id\}/.test(url);
+        const hasSeason = /\{season\}/.test(url);
+        const hasEpisode = /\{episode\}/.test(url);
+
+        url = url
+            .replaceAll('{id}', vars.id)
+            .replaceAll('{type}', vars.media_type);
+        if (vars.season !== undefined) {
+            url = url.replaceAll('{season}', vars.season)
+                     .replaceAll('{episode}', vars.episode);
+        }
+
+        // Separa path e query per non corrompere i parametri dei resolver
+        const qi = url.indexOf('?');
+        const query = qi === -1 ? '' : url.slice(qi);
+        let path = (qi === -1 ? url : url.slice(0, qi)).replace(/\/+$/, '');
+
+        const missing = [];
+        if (!hasId) missing.push(vars.id);
+        if (vars.season !== undefined) {
+            if (!hasSeason) missing.push(vars.season);
+            if (!hasEpisode) missing.push(vars.episode);
+        }
+        for (const seg of missing) path += '/' + seg;
+
+        url = path + query;
+        if (/[{][a-z]+[}]/.test(url) || !/^https?:\/\//i.test(url)) return null;
+        return url;
+    }
+
+    async function openPlayer() {
+        if (!currentMedia) return;
+
+        let streamUrl = '';
+
+        if (currentMedia.media_type === 'movie') {
+            streamUrl = resolveTemplate(resolver.movie, { id: currentMedia.id, media_type: currentMedia.media_type });
+        } else if (currentMedia.media_type === 'tv') {
+            let season, episode;
+            if (customMode) {
+                // Valori manuali (stagioni/episodi non presenti su TMDB)
+                season = Math.max(1, Number(inputSeasonCustom.value) || 1);
+                episode = Math.max(1, Number(inputEpisodeCustom.value) || 1);
+                customSelections[currentMedia.id] = { season, episode };
+                localStorage.setItem('myCustomSelections', JSON.stringify(customSelections));
+            } else {
+                season = currentSeason || 1;
+                episode = currentEpisode || 1;
+            }
+            streamUrl = resolveTemplate(resolver.tv, { id: currentMedia.id, media_type: currentMedia.media_type, season, episode });
+            if (streamUrl) saveLastPlayed(currentMedia, season, episode);
+        } else {
+            return;
+        }
+
+        if (!streamUrl) {
+            syncResolverNotice();
+            return;
+        }
+
+        // Da telefono usa il browser esterno, da PC apre una finestra nuova
+        if (isMobile()) {
+            await openBrowser(streamUrl);
+        } else {
+            openWindow(streamUrl);
+        }
+    }
+
+    // --- WATCHLIST LOGIC ---
+
+    function toggleWatchlist() {
+        if (!currentMedia) return;
+
+        const index = watchlist.findIndex(item => item.id === currentMedia.id && item.media_type === currentMedia.media_type);
+        if (index === -1) {
+            // Salviamo solo gli identificativi; i dettagli stanno in memoria
+            watchlist.push({ id: currentMedia.id, media_type: currentMedia.media_type });
+            watchlistDetails.set(watchlistKey(currentMedia.id, currentMedia.media_type), currentMedia);
+        } else {
+            watchlist.splice(index, 1);
+            watchlistDetails.delete(watchlistKey(currentMedia.id, currentMedia.media_type));
+        }
+
+        persistWatchlist();
+        updateCount();
+        updateWatchlistBtn();
+        renderGrid(currentList);
+    }
+
+    function updateCount() {
+        countTag.innerText = watchlist.length;
+    }
+
+    function updateWatchlistBtn() {
+        const btn = document.getElementById('btn-watchlist');
+        const saved = isSaved(currentMedia.id, currentMedia.media_type);
+        btn.innerText = saved ? '✓ Salvato · rimuovi' : '+ Aggiungi ai salvati';
+        btn.classList.toggle('btn--saved', saved);
+    }
+
+    // --- IMPOSTAZIONI ---
+
+    const settingsOverlay = document.getElementById('settings-overlay');
+    const settingsKeyInput = document.getElementById('settings-api-key');
+    const settingsResolverMovieInput = document.getElementById('settings-resolver-movie');
+    const settingsResolverTvInput = document.getElementById('settings-resolver-tv');
+    const settingsStatus = document.getElementById('settings-status');
+    const keyNotice = document.getElementById('key-notice');
+    const resolverNotice = document.getElementById('resolver-notice');
+    const settingsNotifyEnabled = document.getElementById('settings-notify-enabled');
+    const settingsNotifyTv = document.getElementById('settings-notify-tv');
+    const settingsNotifyInterval = document.getElementById('settings-notify-interval');
+
+    function syncNotifySettingsInputs() {
+        settingsNotifyEnabled.checked = notifySettings.enabled;
+        settingsNotifyTv.checked = notifySettings.tv;
+        settingsNotifyInterval.value = sanitizeAutoSyncHours(notifySettings.autoSyncHours);
+    }
+
+    // Mostra la notifica in-app quando manca la chiave TMDB.
+    function syncApiKeyNotice() {
+        keyNotice.hidden = Boolean(API_KEY);
+    }
+
+    // Mostra la notifica in-app quando manca il resolver per il player.
+    function syncResolverNotice() {
+        resolverNotice.hidden = Boolean(resolver.movie && resolver.tv);
+    }
+
+    function openSettings() {
+        settingsKeyInput.value = API_KEY;
+        settingsResolverMovieInput.value = resolver.movie || '';
+        settingsResolverTvInput.value = resolver.tv || '';
+        settingsStatus.hidden = true;
+        settingsStatus.classList.remove('is-error');
+        syncNotifySettingsInputs();
+        settingsOverlay.hidden = false;
+        settingsKeyInput.focus();
+    }
+
+    function closeSettings() {
+        settingsOverlay.hidden = true;
+    }
+
+    // --- DOCUMENTAZIONE ---
+
+    const docsOverlay = document.getElementById('docs-overlay');
+
+    function openDocs() {
+        settingsOverlay.hidden = true;
+        docsOverlay.hidden = false;
+    }
+
+    function closeDocs() {
+        docsOverlay.hidden = true;
+    }
+
+    docsOverlay.addEventListener('click', e => {
+        if (e.target === docsOverlay) closeDocs();
+    });
+
+    function saveSettings() {
+        const key = settingsKeyInput.value.trim();
+        API_KEY = key;
+        localStorage.setItem('myTMDbApiKey', key);
+
+        resolver = {
+            movie: settingsResolverMovieInput.value.trim(),
+            tv: settingsResolverTvInput.value.trim()
+        };
+        localStorage.setItem('myResolver', JSON.stringify(resolver));
+
+        notifySettings = {
+            enabled: settingsNotifyEnabled.checked,
+            tv: settingsNotifyTv.checked,
+            autoSyncHours: sanitizeAutoSyncHours(Number(settingsNotifyInterval.value))
+        };
+        persistNotifySettings();
+        startAutoSyncTimer();
+
+        syncApiKeyNotice();
+        syncResolverNotice();
+        settingsStatus.classList.remove('is-error');
+        settingsStatus.innerText = key ? 'Salvato ✓' : 'Chiave rimossa · imposta una chiave per cercare';
+        settingsStatus.hidden = false;
+        setTimeout(() => { settingsStatus.hidden = true; }, 2500);
+    }
+
+    // Invia una notifica di prova per verificare che il canale funzioni.
+    async function sendTestNotification() {
+        const status = document.getElementById('notify-status');
+        status.classList.remove('is-error');
+        status.innerText = 'Richiesta permessi…';
+        status.hidden = false;
+        const granted = await ensureNotifyPermission();
+        if (!granted) {
+            status.classList.add('is-error');
+            status.innerText = 'Permesso di notifica non concesso';
+            return;
+        }
+        const ok = await notify('BlameFlix', 'Notifica di prova: così ti avviseremo delle nuove uscite.');
+        status.classList.toggle('is-error', !ok);
+        status.innerText = ok ? 'Notifica di prova inviata ✓' : 'Notifiche di sistema non disponibili qui';
+        clearTimeout(sendTestNotification._t);
+        sendTestNotification._t = setTimeout(() => { status.hidden = true; }, 3500);
+    }
+
+    // --- BACKUP / RIPRISTINO ---
+
+    const backupFile = document.getElementById('backup-file');
+    const backupStatus = document.getElementById('backup-status');
+
+    function backupData() {
+        return {
+            app: 'BlameFlix',
+            version: 7,
+            exportedAt: new Date().toISOString(),
+            data: {
+                myWatchlist: watchlist.map(({ id, media_type }) => ({ id, media_type })),
+                myLastPlayed: lastPlayed.map(({ id, season, episode }) => ({ id, season, episode })),
+                myCustomSelections: customSelections,
+                myWatchedEpisodes: compressWatched(watchedEpisodes),
+                myNewsHistory: newsHistory,
+                myTMDbApiKey: API_KEY,
+                myResolver: resolver,
+                myViewMode: viewMode,
+                myTypeFilter: typeFilter,
+                myNotifySettings: notifySettings,
+                myReleaseState: releaseState
+            }
+        };
+    }
+
+    function showBackupStatus(msg, isError = false) {
+        backupStatus.classList.toggle('is-error', isError);
+        backupStatus.innerText = msg;
+        backupStatus.hidden = false;
+        clearTimeout(showBackupStatus._t);
+        showBackupStatus._t = setTimeout(() => { backupStatus.hidden = true; }, 3500);
+    }
+
+    function backupFileName() {
+        return `blameflix-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    }
+
+    // Salva il backup chiedendo all'utente dove metterlo.
+    // Android: scrive in un file nella cartella Documenti dell'app.
+    // Electron: apre il dialogo nativo "Salva con nome".
+    // Browser desktop: apre il dialogo di salvataggio del sistema (se supportato).
+    // Fallback: scarica il file nella cartella Download.
+    async function createBackup() {
+        const json = JSON.stringify(backupData(), null, 2);
+
+        // Android (Capacitor Filesystem)
+        if (window.Capacitor?.isNativePlatform?.() && window.Capacitor?.Plugins?.Filesystem) {
+            const Filesystem = window.Capacitor.Plugins.Filesystem;
+            try {
+                const perms = await Filesystem.requestPermissions();
+                if (perms.publicStorage !== 'granted') {
+                    showBackupStatus('Permesso di scrittura negato', true);
+                    return;
+                }
+                const path = `BlameFlix/${backupFileName()}`;
+                await Filesystem.writeFile({
+                    path,
+                    directory: 'EXTERNAL',
+                    data: json,
+                    encoding: 'utf8',
+                    recursive: true
+                });
+                if (window.Capacitor?.Plugins?.Share) {
+                    const { uri } = await Filesystem.getUri({ path, directory: 'EXTERNAL' });
+                    try {
+                        await window.Capacitor.Plugins.Share.share({
+                            title: 'Backup BlameFlix',
+                            dialogTitle: 'Salva il backup',
+                            files: [uri]
+                        });
+                        showBackupStatus('Backup creato: scegli dove salvarlo ✓');
+                    } catch (shareErr) {
+                        showBackupStatus(/cancel|annul/i.test(String(shareErr?.message || shareErr))
+                            ? 'Backup creato ✓ · condivisione annullata'
+                            : 'Backup creato, ma non condiviso');
+                    }
+                } else {
+                    showBackupStatus('Backup salvato ✓');
+                }
+            } catch (err) {
+                showBackupStatus('Impossibile salvare il file', true);
+            }
+            return;
+        }
+
+        // Electron: dialogo nativo "Salva con nome"
+        if (window.blameflixSave) {
+            try {
+                const saved = await window.blameflixSave.save(backupFileName(), json);
+                showBackupStatus(saved ? 'Backup salvato ✓' : 'Salvataggio annullato');
+            } catch (err) {
+                showBackupStatus('Impossibile salvare il file', true);
+            }
+            return;
+        }
+
+        // Browser desktop: dialogo di salvataggio del sistema
+        if (window.showSaveFilePicker) {
+            try {
+                const handle = await window.showSaveFilePicker({
+                    suggestedName: backupFileName(),
+                    types: [{ description: 'Backup BlameFlix', accept: { 'application/json': ['.json'] } }]
+                });
+                const writable = await handle.createWritable();
+                await writable.write(json);
+                await writable.close();
+                showBackupStatus('Backup salvato ✓');
+            } catch (err) {
+                if (err && err.name === 'AbortError') {
+                    showBackupStatus('Salvataggio annullato');
+                } else {
+                    downloadBackupFile(json);
+                }
+            }
+            return;
+        }
+
+        downloadBackupFile(json);
+    }
+
+    function downloadBackupFile(json) {
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = backupFileName();
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        showBackupStatus('Backup salvato ✓');
+    }
+
+    function restoreBackup() {
+        backupFile.value = '';
+        backupFile.click();
+    }
+
+    // Ricostruisce la libreria dai soli identificativi (id + media_type) presenti
+    // nel backup, richiedendo i dettagli a TMDB. Se una voce ha già i campi
+    // completi (backup vecchio) viene usata senza chiamate di rete.
+    function hasWatchlistDetails(item) {
+        return item && (item.poster_path !== undefined || item.name !== undefined ||
+            item.title !== undefined || item.vote_average !== undefined);
+    }
+
+    async function hydrateWatchlist(items) {
+        const out = [];
+        for (const item of items) {
+            if (!item || typeof item !== 'object') continue;
+            if (hasWatchlistDetails(item)) {
+                out.push(item);
+                continue;
+            }
+            if (!item.id || !item.media_type) continue;
+            try {
+                const res = await fetch(`${BASE_URL}/${item.media_type}/${item.id}?api_key=${API_KEY}&language=it-IT`);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const d = await res.json();
+                if (!d.id) throw new Error('Dati non validi');
+                out.push({
+                    id: d.id,
+                    media_type: item.media_type,
+                    title: d.title,
+                    name: d.name,
+                    poster_path: d.poster_path,
+                    release_date: d.release_date,
+                    first_air_date: d.first_air_date,
+                    vote_average: d.vote_average
+                });
+            } catch (err) {
+                // Dettagli non scaricabili (offline o titolo rimosso): resta la
+                // card segnaposto, i dettagli si riscaricano all'apertura.
+                out.push({ id: item.id, media_type: item.media_type });
+            }
+        }
+        return out;
+    }
+
+    // All'avvio scarica i dettagli mancanti dei titoli salvati nella cache
+    // in-memory, così la griglia mostra poster e info. Offline restano card
+    // segnaposto e i dettagli si caricano all'apertura del titolo.
+    async function hydrateWatchlistGrid() {
+        const missing = watchlist.filter(item => !watchlistDetails.has(watchlistKey(item.id, item.media_type)));
+        if (!missing.length) return;
+        const hydrated = await hydrateWatchlist(missing);
+        hydrated.forEach(h => watchlistDetails.set(watchlistKey(h.id, h.media_type), h));
+        if (!homeView.hidden) renderGrid(currentList);
+    }
+
+    backupFile.addEventListener('change', e => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = async () => {
+            try {
+                const payload = JSON.parse(reader.result);
+                const data = payload && typeof payload === 'object' && payload.data ? payload.data : payload;
+                if (!data || typeof data !== 'object') throw new Error('Struttura non valida');
+
+                const wl = Array.isArray(data.myWatchlist) ? data.myWatchlist : [];
+                const lp = Array.isArray(data.myLastPlayed) ? data.myLastPlayed : [];
+                const cs = data.myCustomSelections && typeof data.myCustomSelections === 'object' ? data.myCustomSelections : {};
+                const we = data.myWatchedEpisodes && typeof data.myWatchedEpisodes === 'object' ? data.myWatchedEpisodes : {};
+                const nh = Array.isArray(data.myNewsHistory) ? data.myNewsHistory : [];
+                const key = typeof data.myTMDbApiKey === 'string' ? data.myTMDbApiKey : localStorage.getItem('myTMDbApiKey') || '';
+                const rs = data.myResolver && typeof data.myResolver === 'object'
+                    ? { movie: String(data.myResolver.movie || ''), tv: String(data.myResolver.tv || '') }
+                    : { movie: '', tv: '' };
+                const ns = data.myNotifySettings && typeof data.myNotifySettings === 'object'
+                    ? Object.assign({}, DEFAULT_NOTIFY_SETTINGS, data.myNotifySettings)
+                    : Object.assign({}, DEFAULT_NOTIFY_SETTINGS);
+                ns.autoSyncHours = sanitizeAutoSyncHours(ns.autoSyncHours);
+                const rl = data.myReleaseState && typeof data.myReleaseState === 'object'
+                    ? {
+                        baseline: data.myReleaseState.baseline === true,
+                        lastSync: data.myReleaseState.lastSync || null,
+                        shows: data.myReleaseState.shows && typeof data.myReleaseState.shows === 'object' ? data.myReleaseState.shows : {},
+                        moviesNotified: data.myReleaseState.moviesNotified && typeof data.myReleaseState.moviesNotified === 'object' ? data.myReleaseState.moviesNotified : {}
+                    }
+                    : { baseline: false, lastSync: null, shows: {}, moviesNotified: {} };
+
+                API_KEY = key;
+                syncApiKeyNotice();
+                const hydrated = await hydrateWatchlist(wl);
+                watchlist = [];
+                watchlistDetails.clear();
+                hydrated.forEach(h => {
+                    watchlist.push({ id: h.id, media_type: h.media_type });
+                    watchlistDetails.set(watchlistKey(h.id, h.media_type), h);
+                });
+                lastPlayed = lp.map(l => ({
+                    id: l.id,
+                    media_type: 'tv',
+                    season: Number(l.season) || 1,
+                    episode: Number(l.episode) || 1
+                }));
+                customSelections = cs;
+                watchedEpisodes = normalizeWatched(we);
+                newsHistory = nh.slice(0, NEWS_HISTORY_MAX);
+                resolver = rs;
+                notifySettings = ns;
+                releaseState = rl;
+                persistWatchlist();
+                localStorage.setItem('myLastPlayed', JSON.stringify(lastPlayed));
+                localStorage.setItem('myCustomSelections', JSON.stringify(customSelections));
+                persistWatchedEpisodes();
+                persistNewsHistory();
+                localStorage.setItem('myTMDbApiKey', key);
+                localStorage.setItem('myResolver', JSON.stringify(resolver));
+                persistNotifySettings();
+                persistReleaseState();
+                syncNotifySettingsInputs();
+                startAutoSyncTimer();
+                syncResolverNotice();
+
+                if (['grid', 'list'].includes(data.myViewMode)) {
+                    viewMode = data.myViewMode;
+                    localStorage.setItem('myViewMode', viewMode);
+                }
+                if (['all', 'movie', 'tv'].includes(data.myTypeFilter)) {
+                    typeFilter = data.myTypeFilter;
+                    localStorage.setItem('myTypeFilter', typeFilter);
+                }
+
+                settingsKeyInput.value = API_KEY;
+                updateCount();
+                syncTools();
+                showHome();
+                showBackupStatus('Backup ripristinato ✓');
+            } catch (err) {
+                showBackupStatus('File di backup non valido', true);
+            }
+        };
+        reader.onerror = () => showBackupStatus('Impossibile leggere il file', true);
+        reader.readAsText(file);
+    });
+
+    settingsOverlay.addEventListener('click', e => {
+        if (e.target === settingsOverlay) closeSettings();
+    });
+
+    // Avvio iniziale
+    syncApiKeyNotice();
+    syncResolverNotice();
+    updateCount();
+    syncTools();
+    showHome();
+    hydrateWatchlistGrid().then(() => checkReleases(false));
+    startAutoSyncTimer();
+
+    // Al tocco di una notifica di sistema apre la scheda del titolo
+    // (con stagione/episodio per le serie) tramite il payload della notifica.
+    if (window.Capacitor?.Plugins?.LocalNotifications) {
+        window.Capacitor.Plugins.LocalNotifications.addListener('localNotificationReceived', (notif) => {
+            const d = notif && notif.extra;
+            if (d && d.id) showDetails(d.id, d.media_type, d);
+        });
+    }
+
+    // Al ritorno in primo piano verifica se l'intervallo di auto-sync è scaduto
+    // (gli OS possono sospendere i timer quando l'app è in background).
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible' && API_KEY && shouldAutoSync()) {
+            checkReleases(false);
+        }
+    });
+</script>
+
+</body>
+</html>
