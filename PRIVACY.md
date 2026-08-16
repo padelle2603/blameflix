@@ -60,6 +60,11 @@ mostrarne dati e immagini. Quando cerchi o apri un titolo, la tua app invia a
 TMDB la richiesta necessaria secondo i suoi termini di servizio. Non trasmettiamo
 altri dati a TMDB oltre a quelli richiesti dalle normali funzioni di ricerca.
 
+Lo sviluppatore segue **in buona fede i termini di servizio (TOS) di TMDB**:
+l'app usa l'API esclusivamente per le funzioni di catalogo previste, con
+attribuzione visibile e conforme alle linee guida ufficiali, e senza aggirare
+limiti o restrizioni d'uso.
+
 BlameFlix **non è affiliato, approvato o certificato da TMDB**. Il logo TMDB
 mostrato nell'app è usato esclusivamente a scopo di attribuzione, secondo le
 linee guida ufficiali di TMDB.
