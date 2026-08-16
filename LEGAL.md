@@ -160,10 +160,3 @@ discussione misure più severe. La normativa varia da Paese a Paese.
 
 Raccomandazione: usa BlameFlix esclusivamente con servizi di streaming
 autorizzati, abbonamenti e piattaforme legali.
-
-## 8. Disclaimer
-
-Questo documento ha finalità esclusivamente informative e non costituisce
-consulenza legale. Non è stato redatto da un legale e può essere **rivisionato**
-in qualsiasi momento. Per valutazioni su casi specifici (responsabilità,
-giurisdizione, uso commerciale) rivolgiti a un professionista abilitato.
