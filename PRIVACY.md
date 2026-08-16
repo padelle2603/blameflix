@@ -1,6 +1,6 @@
 # Informativa sulla privacy — BlameFlix
 
-_Ultimo aggiornamento: 14 agosto 2026_
+_Ultimo aggiornamento: 16 agosto 2026_
 
 Questa informativa descrive come BlameFlix tratta i dati quando la usi.
 
@@ -10,8 +10,36 @@ Tutti i dati della tua libreria personale — titoli salvati, ultime riproduzion
 stagioni/episodi scelti a mano, chiave API TMDB, preferenze di visualizzazione,
 template del resolver e impostazioni di notifica — vengono **memorizzati
 esclusivamente sul tuo dispositivo** (memoria locale dell'app e file di backup).
-BlameFlix non gestisce né possiede alcun server e **non invia i tuoi dati a
-nessuno**.
+
+BlameFlix **non gestisce, non possiede e non mette in ascolto alcun server**:
+nessuna macchina in ascolto su internet, nessun servizio cloud, nessun backend.
+L'app non apre porte, non riceve connessioni e non ospita nulla. Di
+conseguenza **non invia i tuoi dati a nessuno**: non esiste alcun server a cui
+mandarli.
+
+### Accessi a internet effettuati dall'app
+
+L'app effettua solo richieste in **uscita**, tutte avviate dall'app stessa, e
+sempre connesse alle funzioni che usi:
+
+- **TMDB (The Movie Database)** — quando cerchi un titolo o apri una scheda,
+  l'app invia a `api.themoviedb.org` una richiesta con la chiave API che hai
+  inserito tu (es. ricerca, dettagli film/serie, date di rilascio). Quando le
+  notifiche di rilascio sono attive, l'app interroga periodicamente TMDB per le
+  date di uscita dei soli titoli nella tua libreria.
+- **Immagini TMDB** — per mostrare poster e locandine, l'app scarica le immagini
+  da `image.tmdb.org` per i titoli che visualizzi.
+- **Google Fonts** — all'avvio l'app carica i caratteri usati nell'interfaccia
+  da `fonts.googleapis.com` / `fonts.gstatic.com`.
+- **Il tuo resolver** — quando tocchi «Guarda ora», l'app apre l'URL che hai
+  configurato tu **nel browser del sistema**: l'app non scarica né legge il
+  contenuto di quella pagina, si limita ad aprirla, come farebbe un browser.
+- **Collegamento a TMDB** — se tocchi il logo/footer che punta a
+  `themoviedb.org`, si apre la pagina in una scheda separata.
+
+Tutte le richieste sono **dirette e anonime** verso i servizi sopra elencati:
+BlameFlix non fa da intermediario, non aggiunge propri server al percorso e non
+ha alcun modo di vedere, intercettare o registrare le richieste che inoltri.
 
 ## 2. Dati trattati
 
