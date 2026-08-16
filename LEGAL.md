@@ -128,9 +128,10 @@ personale che non veicola contenuti.
 
 ## 6. Posizione di BlameFlix
 
-**BlameFlix non effettua alcuna delle condotte sanzionate dal quadro normativo
-sopra citato: non diffonde, non comunica al pubblico, non mette a disposizione
-né collega opere protette.**
+**BlameFlix non è sanzionato, né penalmente né amministrativamente, da nessuna
+delle leggi citate nella sezione 5.** Non effettua alcuna delle condotte da esse
+vietate: non diffonde, non comunica al pubblico, non mette a disposizione né
+collega opere protette, non elude protezioni e non è un intermediario di rete.
 
 **Il Regolamento AGCOM, principale strumento italiano di contrasto alla
 pirateria online, è rivolto ai soggetti che diffondono contenuti e agli
