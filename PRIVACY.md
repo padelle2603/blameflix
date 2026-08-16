@@ -108,6 +108,12 @@ dialogo di sistema di Android (mai da finestre dell'app), e possono essere
 concessi, negati o revocati in ogni momento dal pannello dei permessi del
 sistema operativo.
 
+**La tua privacy non viene mai violata**: i permessi non danno all'app accesso
+a contenuti, file, contatti, posizione, fotocamera o microfono; servono solo a
+eseguire le funzioni che scegli tu (avvisi e backup), i tuoi dati restano sul
+tuo dispositivo e nulla viene letto, raccolto o inviato a terzi al di fuori
+degli accessi di rete esplicitamente descritti nel paragrafo 1.
+
 ## 5. Backup
 
 Il file di backup contiene i tuoi dati personali (inclusa la chiave API TMDB).
