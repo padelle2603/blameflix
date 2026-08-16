@@ -116,8 +116,33 @@ degli accessi di rete esplicitamente descritti nel paragrafo 1.
 
 ## 5. Backup
 
-Il file di backup contiene i tuoi dati personali (inclusa la chiave API TMDB).
-Conservalo in un luogo sicuro: chi lo possiede può ripristinarlo nell'app.
+Il file di backup (un singolo `.json` creato da te quando tocchi "Crea backup")
+contiene **una copia fedele dei dati dell'app presenti sul tuo dispositivo**,
+cioè:
+
+- **libreria personale**: l'elenco dei titoli che hai salvato, come semplici
+  identificativi TMDB (id del titolo e tipo film/serie);
+- **ultime riproduzioni**: per le serie, quale stagione/episodio hai riprodotto
+  per ultimo;
+- **stagioni e episodi scelti a mano**: le puntate che hai marcato come viste e
+  le eventuali selezioni manuali per ogni serie;
+- **cronologia avvisi**: l'elenco delle notifiche di rilascio già generate
+  (titolo, stagione/episodio);
+- **chiave API TMDB**: la chiave che hai inserito tu nelle Impostazioni;
+- **template del resolver**: gli URL che hai configurato per «Guarda ora»
+  (film e serie);
+- **preferenze e impostazioni**: modalità di visualizzazione, filtro
+  film/serie, impostazioni delle notifiche e stato dell'ultima sincronizzazione
+  delle uscite (per evitare di notificare due volte lo stesso rilascio).
+
+Il file include anche la **data di esportazione** e il **numero di versione del
+formato**, solo per gestire le importazioni future.
+
+Non contiene poster, immagini, file video o contenuti audiovisivi di alcun tipo:
+solo dati di testo. Il backup **non viene inviato da nessuna parte** — lo
+crei, salvi e condividi tu dove preferisci. **Conservalo in un luogo sicuro**:
+chi lo possiede può ripristinarlo nell'app e quindi vedere la tua libreria e la
+tua chiave API TMDB.
 
 ## 6. Contenuti e responsabilità dell'utente
 
