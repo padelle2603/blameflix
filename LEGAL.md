@@ -35,8 +35,28 @@ Nelle Impostazioni puoi configurare un **template URL** (il "resolver") per la
 funzione «Guarda ora». BlameFlix apre semplicemente l'URL che hai inserito,
 accodando l'identificativo del titolo (e, per le serie, stagione ed episodio).
 
-L'app non conosce né valuta il contenuto di quell'URL: la scelta di dove
-guardare un titolo è interamente tua.
+Il resolver è **vuoto per impostazione predefinita**: se non configuri alcun
+template, il pulsante «Guarda ora» non è attivo e l'app non apre nulla.
+BlameFlix non include, né di default né in nessun altro modo, elenchi di siti,
+indirizzi o servizi suggeriti: l'unico URL mai aperto è quello che digiti tu.
+
+L'app **non conosce né valuta il contenuto** di quell'URL: non sa se il servizio
+a cui rimandi è legale o meno, non interroga la pagina, non ne estrae video o
+flussi, non la indicizza e non la mette a disposizione di terzi. Si limita a
+chiamare l'URL con il browser o il lettore del sistema, esattamente come
+accadrebbe se digitassi lo stesso indirizzo a mano in un browser.
+
+La scelta di quale servizio usare, e quindi la legalità dei contenuti a cui
+accedi attraverso di esso, è **interamente tua**: BlameFlix non fornisce né
+segnala alcuna fonte di contenuti, non ospita opere e non agevola alcun
+servizio specifico.
+
+Da un punto di vista giuridico, la funzione è paragonabile alla barra degli
+indirizzi di un browser o all'URL di un lettore generico: uno strumento neutro
+che si limita a trasportare un indirizzo scelto dall'utente. Chi guarda
+contenuti protetti senza il consenso dei titolari è responsabile in prima
+persona (vedi sezione 7), mentre lo strumento neutro non compie alcuna condotta
+sanzionabile.
 
 ## 4. Dati e TMDB
 
