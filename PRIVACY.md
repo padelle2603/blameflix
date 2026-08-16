@@ -146,9 +146,21 @@ tua chiave API TMDB.
 
 ## 6. Contenuti e responsabilità dell'utente
 
-BlameFlix è un lettore generico: le sorgenti di streaming le configuri tu. Non
-forniamo né segnaliamo contenuti. Sei responsabile della legalità dei contenuti
-a cui accedi tramite il tuo resolver, secondo le leggi del tuo Paese.
+BlameFlix è uno **strumento neutro**: non contiene sorgenti di streaming, non
+fornisce né segnala contenuti, non ospita opere e non conosce le sorgenti a cui
+accedi. Le sorgenti di streaming sono una tua **scelta personale ed esclusiva**:
+sei tu a decidere dove guardare un titolo, configurando il template del resolver
+nelle Impostazioni (che resta vuoto finché non lo compili tu).
+
+Questa libertà di scelta comporta anche la tua responsabilità: sei tu, e non
+BlameFlix, a rispondere della legalità dei contenuti a cui accedi tramite il tuo
+resolver, secondo le leggi del tuo Paese. BlameFlix non agevola alcun servizio
+specifico e non compie alcuna delle condotte sanzionate dalla normativa sul
+diritto d'autore.
+
+Per l'analisi dettagliata del quadro normativo, del perché BlameFlix non vi
+rientra e della responsabilità dell'utente finale, consulta il documento
+**[LEGAL.md](LEGAL.md)**.
 
 ## 7. Modifiche
 
