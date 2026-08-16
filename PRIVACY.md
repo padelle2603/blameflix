@@ -2,6 +2,9 @@
 
 _Ultimo aggiornamento: 16 agosto 2026_
 
+> **Disclaimer.** Questa informativa può essere aggiornata nel tempo. La
+> versione corrente è quella pubblicata in questo documento.
+
 Questa informativa descrive come BlameFlix tratta i dati quando la usi.
 
 ## 1. Dove stanno i tuoi dati
@@ -161,8 +164,3 @@ diritto d'autore.
 Per l'analisi dettagliata del quadro normativo, del perché BlameFlix non vi
 rientra e della responsabilità dell'utente finale, consulta il documento
 **[LEGAL.md](LEGAL.md)**.
-
-## 7. Modifiche
-
-Questa informativa può essere aggiornata nel tempo. La versione corrente è
-quella pubblicata in questo documento.
