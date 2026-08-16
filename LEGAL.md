@@ -90,6 +90,11 @@ segnala alcuna fonte di contenuti.
 
 ## 7. Responsabilità dell'utente
 
+**La responsabilità per i contenuti a cui accedi ricade interamente su di te,
+utente finale.** Se guardi prodotti protetti da copyright senza il consenso
+dei titolari dei diritti, sei tu a risponderne, secondo le leggi del tuo Paese,
+e non BlameFlix, che non fornisce né segnala alcuna fonte di contenuti.
+
 In Italia l'accesso a contenuti protetti diffusi senza autorizzazione può
 comportare sanzioni amministrative ai sensi della L. 633/1941; sono in
 discussione misure più severe. La normativa varia da Paese a Paese.
