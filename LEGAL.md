@@ -2,9 +2,14 @@
 
 _Ultimo aggiornamento: 16 agosto 2026_
 
-Questo documento descrive la posizione legale di BlameFlix in materia di diritto
-d'autore e contenuti audiovisivi. È un documento **informativo**, non una
-consulenza legale.
+> **Disclaimer.** Questo documento ha finalità **esclusivamente informative** e
+> **non costituisce consulenza legale**. Non è stato redatto da un avvocato o
+> da un professionista abilitato: chi lo ha scritto non è un legale. Le
+> valutazioni contenute in questo documento si basano su un'interpretazione
+> ragionata della normativa e possono quindi essere **rivisionate**, aggiornate
+> o corrette in qualsiasi momento. Per pareri vincolanti o per questioni
+> specifiche (responsabilità, giurisdizione, uso commerciale) rivolgiti a un
+> professionista abilitato.
 
 ## 1. Premessa
 
@@ -159,5 +164,6 @@ autorizzati, abbonamenti e piattaforme legali.
 ## 8. Disclaimer
 
 Questo documento ha finalità esclusivamente informative e non costituisce
-consulenza legale. Per valutazioni su casi specifici (responsabilità,
+consulenza legale. Non è stato redatto da un legale e può essere **rivisionato**
+in qualsiasi momento. Per valutazioni su casi specifici (responsabilità,
 giurisdizione, uso commerciale) rivolgiti a un professionista abilitato.
