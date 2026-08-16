@@ -47,9 +47,11 @@ npm run dist
 L'AppImage viene generata in `dist/linux/`.
 
 ### Build automatica su GitHub Actions
-Ad ogni tag `v*` (o manualmente), il workflow
-[`.github/workflows/build.yml`](.github/workflows/build.yml) compila e pubblica
-**APK e AppImage** nella sezione *Releases* del repository.
+Ad ogni push sul branch `main` (o manualmente), il workflow
+[`.github/workflows/build.yml`](.github/workflows/build.yml) compila **APK e
+AppImage** e crea/aggiorna una **Release** su GitHub, usando la versione dal
+`package.json` radice (tag `v<versione>`). Per pubblicare una nuova versione
+basta incrementare il campo `version` in `package.json` e fare push.
 
 Per firmare l'APK di release da GitHub Actions, imposta nel repository questi
 **secrets** (vedi *Settings → Secrets and variables → Actions*):

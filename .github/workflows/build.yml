@@ -2,8 +2,8 @@ name: Build APK e AppImage
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
@@ -16,6 +16,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Compute version
+        run: echo "APP_VERSION=$(node -p \"require('./package.json').version\")" >> "$GITHUB_ENV"
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -59,7 +62,7 @@ jobs:
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleRelease
+          ./gradlew assembleRelease -PappVersion=$APP_VERSION
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
@@ -82,13 +85,16 @@ jobs:
           cache: npm
           cache-dependency-path: electron/package-lock.json
 
+      - name: Compute version
+        run: echo "APP_VERSION=$(node -p \"require('./package.json').version\")" >> "$GITHUB_ENV"
+
       - name: Install Electron dependencies
         working-directory: electron
         run: npm ci
 
       - name: Build AppImage
         working-directory: electron
-        run: npm run dist
+        run: npm run dist -- --config.version=$APP_VERSION
 
       - name: Upload AppImage artifact
         uses: actions/upload-artifact@v4
@@ -101,8 +107,13 @@ jobs:
     name: Release
     needs: [android, appimage]
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/v')
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Compute version
+        run: echo "APP_VERSION=$(node -p \"require('./package.json').version\")" >> "$GITHUB_ENV"
+
       - name: Download APK
         uses: actions/download-artifact@v4
         with:
@@ -115,11 +126,11 @@ jobs:
           name: appimage
           path: release
 
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ github.ref_name }}
-          name: BlameFlix ${{ github.ref_name }}
-          draft: false
-          prerelease: false
-          files: release/*
+      - name: Create or update GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "v$APP_VERSION" release/* \
+            --title "BlameFlix v$APP_VERSION" \
+            --notes "Release automatica di BlameFlix $APP_VERSION. APK Android (com.padelle.blameflix) e AppImage Linux." \
+            --clobber
