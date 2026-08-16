@@ -71,10 +71,42 @@ linee guida ufficiali di TMDB.
 
 ## 4. Permessi
 
-Su **Android**, l'app può chiedere l'accesso alla memoria per salvare il file di
-backup nella cartella Documenti, e il **permesso di notifica** per inviare gli
-avvisi di rilascio. I permessi vengono richiesti solo quando servono (creazione
-di un backup, prima notifica) e non vengono usati per altri scopi.
+Su **Android** l'app dichiara tre permessi, ma solo due comportano una richiesta
+a runtime all'utente. Nessun permesso viene chiesto all'avvio: la richiesta
+compare **solo nel momento in cui la funzione che lo richiede viene usata**, e
+puoi sempre negarla o revocarla in qualsiasi momento dalle Impostazioni di
+sistema (Impostazioni → App → BlameFlix → Permessi), senza che l'app smetta di
+funzionare.
+
+- **Permesso di notifica**: serve per inviare gli avvisi di rilascio
+  ("nuova puntata in catalogo"). Viene richiesto la **prima volta che una
+  notifica deve essere mostrata** (es. alla prima sincronizzazione che trova una
+  nuova uscita, o quando invii una notifica di prova dalle Impostazioni). In quel
+  momento il sistema mostra il **dialogo ufficiale di Android** ("BlameFlix può
+  inviare notifiche?"): se accetti, l'app può mostrare gli avvisi; se neghi, il
+  resto dell'app continua a funzionare normalmente e puoi riabilitare il permesso
+  in seguito. Il permesso viene usato **esclusivamente** per questi avvisi locali:
+  le notifiche sono generate sul dispositivo e non vengono inviate a nessun
+  server.
+- **Permesso di accesso alla memoria**: serve **solo** per salvare il file di
+  backup. Viene richiesto quando tocchi "Crea backup" (o importi un backup): il
+  sistema mostra il dialogo di Android per l'accesso ai file, e se accetti l'app
+  scrive **un solo file** (`BlameFlix/...json`) nella cartella Documenti (o lo
+  apre con il dialogo di salvataggio di sistema). Se lo neghi, il backup non
+  viene creato ma l'app continua a funzionare. Il permesso non viene usato per
+  leggere, modificare o condividere altri file sul dispositivo.
+- **Permesso INTERNET** (dichiarato nel manifest, **senza dialogo**): è il
+  permesso di sistema che consente all'app di fare le richieste di rete descritte
+  nel paragrafo 1 (TMDB, immagini, font, apertura del resolver). Non viene chiesto
+  all'utente: su Android è concesso automaticamente con l'installazione. L'app lo
+  usa solo per gli accessi elencati, e nulla di ciò che invia identifica i tuoi
+  dati personali.
+
+In sintesi: i permessi richiesti sono strettamente **funzionali** (notifiche per
+gli avvisi, memoria per il backup), vengono chiesti **al bisogno**, mostrati dal
+dialogo di sistema di Android (mai da finestre dell'app), e possono essere
+concessi, negati o revocati in ogni momento dal pannello dei permessi del
+sistema operativo.
 
 ## 5. Backup
 
