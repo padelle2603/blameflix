@@ -37,12 +37,13 @@ function createWindow() {
     });
 }
 
-ipcMain.handle('save-backup', async (event, { defaultName, content }) => {
+ipcMain.handle('save-backup', async (event, { defaultName, content, lang }) => {
     const win = BrowserWindow.fromWebContents(event.sender);
+    const isEn = lang === 'en';
     const { canceled, filePath } = await dialog.showSaveDialog(win, {
-        title: 'Salva backup BlameFlix',
+        title: isEn ? 'Save BlameFlix backup' : 'Salva backup BlameFlix',
         defaultPath: defaultName,
-        filters: [{ name: 'Backup BlameFlix', extensions: ['json'] }]
+        filters: [{ name: isEn ? 'BlameFlix backup' : 'Backup BlameFlix', extensions: ['json'] }]
     });
     if (canceled || !filePath) return false;
     await fs.promises.writeFile(filePath, content, 'utf8');

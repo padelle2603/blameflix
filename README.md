@@ -1,107 +1,110 @@
 # BlameFlix
 
-BlameFlix è il tuo **catalogo personale** per film e serie TV: un unico posto dove
-cercare un titolo, salvarlo nella tua libreria, ricordare quali puntate hai visto
-e quale stagione ti aspetta, e ricevere un avviso quando esce la prossima.
+> **Language / Lingua**: [Italiano](README.it.md) | **English** (this document)
 
-Non sostituisce le piattaforme di streaming: vive *sopra* di esse. Le piattaforme
-restano ciò che sono — i luoghi dove si guarda — mentre BlameFlix diventa ciò che
-a loro manca — il luogo dove si *ricorda*. L'idea è semplice: **tu scegli dove
-guardare, BlameFlix ricorda tutto il resto.**
+BlameFlix is your **personal catalog** for movies and TV series: a single place
+where you can search a title, save it to your library, remember which episodes
+you have watched and which season is waiting for you, and get a notification
+when the next one is released.
 
-## Perché esiste
+It does not replace streaming platforms: it lives *on top* of them. The
+platforms remain what they are — the places where you watch — while BlameFlix
+becomes what they are missing — the place where you *remember*. The idea is
+simple: **you choose where to watch, BlameFlix remembers everything else.**
 
-La visione oggi è frammentata: un titolo su una piattaforma, un altro su una
-seconda, un terzo in televisione. Ogni servizio è un universo chiuso, con il
-proprio catalogo, il proprio "visto / da vedere" e le proprie notifiche. Nessuna
-piattaforma parla con le altre, e la memoria di ciò che guardiamo resta
-confinata dentro ciascuna di esse. Perdi il filo: non ricordi dove hai lasciato
-una serie, a che stagione sei, quando esce la puntata successiva.
+## Why it exists
 
-BlameFlix nasce per riunire ciò che è disperso: uno strato personale e privato,
-interamente sul tuo dispositivo, che ti restituisce un'immagine unica della tua
-visione. Tutto senza account, senza server, senza tracciamento. Per la missione
-completa e i principi guida (privacy by design, neutralità, legalità, libertà
-dell'utente) vedi il [manifesto](Note%20Legali/MANIFEST.md).
+Watching today is fragmented: a title on one platform, another on a second one,
+a third on TV. Every service is a closed universe, with its own catalog, its
+own "watched / to watch" and its own notifications. No platform talks to the
+others, and the memory of what we watch stays locked inside each of them. You
+lose the thread: you don't remember where you left a series, which season you
+are on, when the next episode airs.
 
-## Come funziona
+BlameFlix was born to reunite what is scattered: a personal, private layer,
+entirely on your device, that gives you back a single picture of your viewing.
+All without accounts, without servers, without tracking. For the full mission
+and the guiding principles (privacy by design, neutrality, legality, user
+freedom) see the [manifesto](Note%20Legali/MANIFEST_EN.md).
 
-L'app è un'unica pagina web in JavaScript puro (nessun framework), racchiusa in
-`www/index.html`, e viene impacchettata come app Android e come app desktop Linux.
+## How it works
 
-- **Ricerca**: scrivi un titolo e BlameFlix lo cerca nell'API pubblica di
-  The Movie Database (TMDB). Ti basta inserire una chiave personale gratuita
-  nelle Impostazioni.
-- **Libreria**: salvi i titoli (solo i loro identificativi: i dettagli stanno in
-  memoria e vengono riscaricati da TMDB quando servono). Tutto resta in
-  `localStorage` sul dispositivo.
-- **Tracciamento**: segni puntate viste (compresse in intervalli per occupare
-  poco spazio), riprendi da dove eri rimasto, salvi stagioni/episodi anche quando
-  TMDB non li elenca.
-- **Notifiche di rilascio**: all'avvio, a intervalli regolari e al ritorno in
-  primo piano, l'app confronta lo stato TMDB dei tuoi titoli salvati e ti avvisa
-  quando esce una puntata nuova. Tutto locale, nessun server.
-- **«Guarda ora»**: da ogni scheda puoi aprire il servizio che scegli tu tramite
-  una **sorgente** configurata nelle Impostazioni (un template URL, anche diverso
-  per ogni titolo). L'app apre l'URL che configuri, sostituendo i segnaposto
-  `{id}`, `{type}`, `{season}`, `{episode}` con i valori del titolo (senza
-  segnaposto, l'URL viene aperto così com'è) e lo apre nel browser o nel lettore
-  del sistema.
-  Sono accettati **solo collegamenti http/https**: magnet, torrent e altri
-  protocolli di file-sharing vengono rifiutati al salvataggio. Se la sorgente è
-  vuota, il pulsante resta inattivo.
-- **Backup**: puoi esportare e ripristinare tutto in un singolo file JSON.
-- **Aggiornamenti**: l'app controlla le release su GitHub e ti avvisa quando c'è
-  una versione nuova. Su Android l'APK si installa sopra il precedente senza
-  perdere dati.
+The app is a single web page in pure JavaScript (no framework), contained in
+`www/index.html`, packaged as an Android app and as a Linux desktop app.
+
+- **Search**: type a title and BlameFlix searches it in the public API of The
+  Movie Database (TMDB). You just need to enter a free personal key in the
+  Settings.
+- **Library**: you save titles (only their identifiers: the details live in
+  memory and are re-fetched from TMDB when needed). Everything stays in
+  `localStorage` on the device.
+- **Tracking**: you mark watched episodes (compressed into ranges to take little
+  space), resume where you left off, and save seasons/episodes even when TMDB
+  does not list them.
+- **Release notifications**: on startup, at regular intervals and when returning
+  to the foreground, the app compares the TMDB state of your saved titles and
+  notifies you when a new episode airs. All local, no server.
+- **«Watch now»**: from any page you can open the service you choose through a
+  **source** configured in the Settings (a URL template, even different per
+  title). The app opens the URL you configure, replacing the placeholders
+  `{id}`, `{type}`, `{season}`, `{episode}` with the title's values (without
+  placeholders, the URL is opened as-is) and opens it in the browser or the
+  system player.
+  Only **http/https links** are accepted: magnet, torrent and other
+  file-sharing protocols are rejected on save. If the source is empty, the
+  button stays inactive.
+- **Backup**: you can export and restore everything in a single JSON file.
+- **Updates**: the app checks the releases on GitHub and notifies you when a new
+  version is out. On Android the APK installs over the previous one without
+  losing data.
 
 ## Privacy
 
-BlameFlix memorizza **tutto sul tuo dispositivo** e non ha alcun server: nessuna
-macchina in ascolto, nessun cloud, nessun account. Le uniche richieste in uscita
-sono quelle che avvii tu (TMDB per cercare e scaricare i metadati, GitHub per il
-controllo aggiornamenti, Google Fonts per i caratteri, e l'URL della sorgente che
-hai configurato). L'app non legge, non intercetta e non registra nulla: si limita
-a fare da ponte tra te e i servizi che usi. I permessi Android sono chiesti solo
-al bisogno (notifiche e backup), mai all'avvio. Dettagli nel documento
-[informativa sulla privacy](Note%20Legali/PRIVACY.md).
+BlameFlix stores **everything on your device** and has no server: no machine
+listening, no cloud, no account. The only outgoing requests are the ones you
+start (TMDB to search and download metadata, GitHub for the update check,
+Google Fonts for the typefaces, and the URL of the source you configured). The
+app does not read, intercept or log anything: it only acts as a bridge between
+you and the services you use. Android permissions are requested only when
+needed (notifications and backup), never at startup. Details in the [privacy
+policy](Note%20Legali/PRIVACY_EN.md).
 
-## Legalità
+## Legality
 
-BlameFlix è uno **strumento neutro**, come un browser o un lettore generico: non
-ospita, non fornisce e non suggerisce alcuna fonte di contenuti. Non include
-elenchi di siti, né di default né in nessun altro modo, e **non mantiene liste di
-siti "sicuri" o "non sicuri"**: non conosce le sorgenti, e per questo resta
-neutro. L'unico URL mai aperto è quello che digiti tu, e la responsabilità della
-legalità dei contenuti a cui accedi è interamente tua, secondo le leggi del tuo
-Paese. Il blocco di magnet e torrent riguarda una *categoria di protocollo*, non
-singoli siti: non è un giudizio su nessun servizio. Per l'analisi completa del
-quadro normativo (Berna, TRIPS, WCT, direttive UE, legge italiana 633/1941 e
-L. 93/2023) vedi la [nota sulla legalità](Note%20Legali/LEGAL.md). Al primo avvio
-l'app mostra inoltre un **disclaimer** obbligatorio che l'utente deve accettare
-prima di poterla usare.
+BlameFlix is a **neutral tool**, like a browser or a generic player: it does not
+host, provide or suggest any source of content. It includes no site lists, not
+by default nor in any other way, and it **does not keep lists of "safe" or
+"unsafe" sites**: it does not know the sources, and therefore stays neutral. The
+only URL ever opened is the one you type, and the responsibility for the
+legality of the content you access is entirely yours, according to the laws of
+your country. The magnet/torrent block concerns a *protocol category*, not
+single sites: it is not a judgment on any service. For the full analysis of the
+legal framework (Berne, TRIPS, WCT, EU directives, Italian law 633/1941 and
+L. 93/2023) see the [note on legality](Note%20Legali/LEGAL_EN.md). On first
+launch the app also shows a mandatory **disclaimer** that the user must accept
+before using it.
 
-## Piattaforme
+## Platforms
 
-| Piattaforma | Tecnologia | Artefatto |
+| Platform | Technology | Artifact |
 |---|---|---|
-| Android | Capacitor | `BlameFlix-<versione>.apk` |
-| Linux desktop | Electron | `BlameFlix-<versione>.AppImage` |
-| Web | HTML/CSS/JS statico | `www/` |
+| Android | Capacitor | `BlameFlix-<version>.apk` |
+| Linux desktop | Electron | `BlameFlix-<version>.AppImage` |
+| Web | Static HTML/CSS/JS | `www/` |
 
-## Aggiornamenti
+## Updates
 
-Le release vengono create automaticamente dalla pipeline a ogni `push` sul ramo
-`main`, con tag `v<versione>`. Su Android l'aggiornamento è **in-place**: ogni
-release ha un `versionCode` crescente e firma con la stessa chiave, quindi il
-nuovo APK si installa sopra il precedente e i tuoi dati restano intatti.
+Releases are created automatically by the pipeline on every `push` to the `main`
+branch, tagged `v<version>`. On Android the update is **in-place**: every
+release has an increasing `versionCode` and is signed with the same key, so the
+new APK installs over the previous one and your data stays intact.
 
-## Ringraziamenti
+## Acknowledgements
 
-- [TMDB](https://www.themoviedb.org/) per i metadati e le immagini
-- [Capacitor](https://capacitorjs.com/) e [Electron](https://www.electronjs.org/)
-  per il packaging delle app
+- [TMDB](https://www.themoviedb.org/) for the metadata and the images
+- [Capacitor](https://capacitorjs.com/) and [Electron](https://www.electronjs.org/)
+  for the app packaging
 
 ---
 
-*BlameFlix non è affiliato, approvato o certificato da TMDB.*
+*BlameFlix is not affiliated with, endorsed or certified by TMDB.*

@@ -1,5 +1,7 @@
 # Informativa sulla privacy — BlameFlix
 
+> **Lingua / Language**: **Italiano** (questo documento) | [English](PRIVACY_EN.md)
+
 _Ultimo aggiornamento: 16 agosto 2026_
 
 > **Disclaimer.** Questa informativa può essere aggiornata nel tempo. La

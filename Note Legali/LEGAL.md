@@ -1,5 +1,7 @@
 # Nota sulla legalità — BlameFlix
 
+> **Lingua / Language**: **Italiano** (questo documento) | [English](LEGAL_EN.md)
+
 _Ultimo aggiornamento: 16 agosto 2026_
 
 > **Disclaimer.** Questo documento ha finalità **esclusivamente informative** e

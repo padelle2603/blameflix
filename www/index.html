@@ -118,7 +118,7 @@
             color: var(--paper);
         }
 
-        /* ===== CHIAVE API MANCANTE ===== */
+        /* ===== MISSING API KEY ===== */
         .key-notice {
             max-width: 1240px;
             margin: 0 auto;
@@ -936,7 +936,7 @@
 
         .detail-header { position: relative; z-index: 1; }
 
-        /* ===== EPISODI (lista stile streaming) ===== */
+        /* ===== EPISODES (streaming-style list) ===== */
         .episode-section {
             margin-top: 2.8rem;
             border-top: 1px solid var(--ink);
@@ -1146,7 +1146,7 @@
 
         .episode-row.is-future .episode-row__toggle { cursor: not-allowed; opacity: 0.5; }
 
-        /* ===== NOVITÀ (cronologia in-app) ===== */
+        /* ===== NEWS (in-app history) ===== */
         .news-section {
             border: 1px solid var(--ink);
             background: var(--paper-hi);
@@ -1224,7 +1224,7 @@
             padding-top: 1.2rem;
         }
 
-        /* ===== TOAST (avvisi in-app) ===== */
+        /* ===== TOAST (in-app notices) ===== */
         .toast {
             position: fixed;
             left: 50%;
@@ -1346,7 +1346,7 @@
             background: rgba(51, 163, 155, 0.08);
         }
 
-        /* ===== AVVISO AGGIORNAMENTI ===== */
+        /* ===== UPDATE NOTICE ===== */
         .update-notice__actions {
             display: flex;
             align-items: center;
@@ -1354,7 +1354,7 @@
             flex-wrap: wrap;
         }
 
-        /* ===== DISCLAIMER DI AVVIO ===== */
+        /* ===== STARTUP DISCLAIMER ===== */
         .disclaimer-overlay { z-index: 100; }
 
         .disclaimer-panel {
@@ -1380,7 +1380,7 @@
             text-transform: uppercase;
         }
 
-        /* ===== SORGENTE PER TITOLO ===== */
+        /* ===== TITLE-SPECIFIC SOURCE ===== */
         .resolver-override {
             margin-top: 1rem;
             border-top: 1px dashed var(--ink);
@@ -1509,24 +1509,24 @@
 <body>
 
 <header class="topbar">
-    <button class="brand" onclick="showHome()" aria-label="Torna alla tua homepage">
+    <button class="brand" onclick="showHome()" data-i18n-aria="nav.home">
         <span class="brand__mark" aria-hidden="true"></span>BLAMEFLIX
     </button>
-    <span class="count-tag">SALVATI: <em id="count-tag">0</em></span>
-    <button type="button" class="btn-settings" onclick="openSettings()" aria-label="Impostazioni" title="Impostazioni">⚙</button>
+    <span class="count-tag"><span data-i18n="nav.saved">SALVATI:</span> <em id="count-tag">0</em></span>
+    <button type="button" class="btn-settings" onclick="openSettings()" data-i18n-aria="nav.settings" data-i18n-title="nav.settings">⚙</button>
 </header>
 
 <div class="key-notice" id="key-notice" hidden>
     <div class="key-notice__inner">
-        <p>⚠ Nessuna chiave TMDB · impossibile cercare</p>
-        <button type="button" class="btn" onclick="openSettings()">Imposta la chiave</button>
+        <p data-i18n="notice.nokey">⚠ Nessuna chiave TMDB · impossibile cercare</p>
+        <button type="button" class="btn" onclick="openSettings()" data-i18n="notice.setkey">Imposta la chiave</button>
     </div>
 </div>
 
 <div class="key-notice" id="resolver-notice" hidden>
     <div class="key-notice__inner">
-        <p>⚠ Nessuna sorgente configurata · «Guarda ora» non attivo</p>
-        <button type="button" class="btn" onclick="openSettings()">Configura la sorgente</button>
+        <p data-i18n="notice.noresolver">⚠ Nessuna sorgente configurata · «Guarda ora» non attivo</p>
+        <button type="button" class="btn" onclick="openSettings()" data-i18n="notice.configsource">Configura la sorgente</button>
     </div>
 </div>
 
@@ -1534,9 +1534,9 @@
     <div class="key-notice__inner">
         <p id="update-notice-text">⚠ Nuova versione disponibile</p>
         <div class="update-notice__actions">
-            <button type="button" class="btn" onclick="openLatestRelease()">Scarica dal GitHub</button>
-            <button type="button" class="btn" id="update-notice-apk" onclick="downloadLatestApk()" hidden>Scarica APK</button>
-            <button type="button" class="btn btn--ghost" onclick="dismissUpdate()" aria-label="Ignora questo aggiornamento" title="Ignora">✕</button>
+            <button type="button" class="btn" onclick="openLatestRelease()" data-i18n="notice.downloadGitHub">Scarica dal GitHub</button>
+            <button type="button" class="btn" id="update-notice-apk" onclick="downloadLatestApk()" hidden data-i18n="notice.downloadApk">Scarica APK</button>
+            <button type="button" class="btn btn--ghost" onclick="dismissUpdate()" data-i18n-aria="notice.dismiss" data-i18n-title="notice.dismiss">✕</button>
         </div>
     </div>
 </div>
@@ -1544,12 +1544,12 @@
 <div class="container">
 
     <div class="searchbar">
-        <label class="searchbar-label" for="search-input">Cerca un titolo</label>
+        <label class="searchbar-label" for="search-input" data-i18n="search.label">Cerca un titolo</label>
         <div class="searchbar-row">
             <input type="text" id="search-input" placeholder="Cerca film o serie TV…" autocomplete="off"
-                   onkeyup="handleSearch(this.value)">
+                   onkeyup="handleSearch(this.value)" data-i18n-placeholder="search.placeholder">
             <button type="button" class="searchbar-clear" id="search-clear" onclick="clearSearch()"
-                    aria-label="Torna alla tua homepage" hidden>&times;</button>
+                    aria-label="Torna alla tua homepage" hidden data-i18n-aria="search.clearAria">&times;</button>
         </div>
     </div>
 
@@ -1564,24 +1564,24 @@
 
         <section class="news-section" id="news-section" hidden>
             <div class="news-section__head">
-                <h3 class="news-section__title">Novità</h3>
-                <button type="button" class="btn btn--ghost news-section__clear" onclick="clearNewsHistory()">Svuota</button>
+                <h3 class="news-section__title" data-i18n="home.news">Novità</h3>
+                <button type="button" class="btn btn--ghost news-section__clear" onclick="clearNewsHistory()" data-i18n="home.clearNews">Svuota</button>
             </div>
             <ul class="news-list" id="news-list"></ul>
         </section>
 
         <div class="catalog-tools" id="catalog-tools">
-            <div class="catalog-tools__group" role="group" aria-label="Filtra per tipo">
-                <button type="button" class="ctl" data-type="all" aria-pressed="true" onclick="setFilter('all')">Tutti</button>
-                <button type="button" class="ctl" data-type="movie" aria-pressed="false" onclick="setFilter('movie')">Film</button>
-                <button type="button" class="ctl" data-type="tv" aria-pressed="false" onclick="setFilter('tv')">Serie</button>
+            <div class="catalog-tools__group" role="group" aria-label="Filtra per tipo" data-i18n-aria="tools.filterBy">
+                <button type="button" class="ctl" data-type="all" aria-pressed="true" onclick="setFilter('all')" data-i18n="tools.all">Tutti</button>
+                <button type="button" class="ctl" data-type="movie" aria-pressed="false" onclick="setFilter('movie')" data-i18n="tools.movie">Film</button>
+                <button type="button" class="ctl" data-type="tv" aria-pressed="false" onclick="setFilter('tv')" data-i18n="tools.tv">Serie</button>
             </div>
-            <div class="catalog-tools__group" role="group" aria-label="Cambia visualizzazione">
-                <button type="button" class="ctl ctl--icon" data-view="grid" aria-pressed="true" onclick="setView('grid')" title="Griglia">▦ Griglia</button>
-                <button type="button" class="ctl ctl--icon" data-view="list" aria-pressed="false" onclick="setView('list')" title="Lista">☰ Lista</button>
+            <div class="catalog-tools__group" role="group" aria-label="Cambia visualizzazione" data-i18n-aria="tools.viewMode">
+                <button type="button" class="ctl ctl--icon" data-view="grid" aria-pressed="true" onclick="setView('grid')" title="Griglia" data-i18n="tools.grid" data-i18n-title="tools.grid">▦ Griglia</button>
+                <button type="button" class="ctl ctl--icon" data-view="list" aria-pressed="false" onclick="setView('list')" title="Lista" data-i18n="tools.list" data-i18n-title="tools.list">☰ Lista</button>
             </div>
-            <div class="catalog-tools__group" role="group" aria-label="Verifica nuove uscite">
-                <button type="button" class="ctl" id="btn-sync" onclick="syncReleases()" title="Verifica nuove uscite">⟳ Sync</button>
+            <div class="catalog-tools__group" role="group" aria-label="Verifica nuove uscite" data-i18n-aria="tools.sync">
+                <button type="button" class="ctl" id="btn-sync" onclick="syncReleases()" title="Verifica nuove uscite" data-i18n="common.sync" data-i18n-title="tools.sync">⟳ Sync</button>
             </div>
         </div>
 
@@ -1595,66 +1595,66 @@
 
     <!-- DETAIL (overlay, nessuna pagina nuova) -->
     <main id="detail-view" hidden>
-        <button class="btn btn--ghost" onclick="showHome()">&larr; BlameFlix</button>
+        <button class="btn btn--ghost" onclick="showHome()" data-i18n="detail.back">&larr; BlameFlix</button>
 
         <div class="detail-backdrop" id="detail-backdrop" hidden aria-hidden="true"></div>
 
         <div class="detail-header">
             <div class="detail-poster-wrap">
-                <img id="detail-poster" class="detail-poster" src="" alt="Poster">
+                <img id="detail-poster" class="detail-poster" src="" alt="Poster" data-i18n-alt="detail.posterAlt">
                 <span id="detail-kind" class="detail-kind">FILM</span>
             </div>
             <div class="detail-content">
-                <span class="eyebrow">Scheda titolo</span>
+                <span class="eyebrow" data-i18n="detail.sheet">Scheda titolo</span>
                 <h2 id="detail-title" class="detail-title"></h2>
                 <p id="detail-overview" class="detail-overview"></p>
 
                 <dl class="detail-facts">
                     <div>
-                        <dt>Anno</dt>
+                        <dt data-i18n="detail.year">Anno</dt>
                         <dd id="detail-date"></dd>
                     </div>
                     <div>
-                        <dt>Voto</dt>
+                        <dt data-i18n="detail.vote">Voto</dt>
                         <dd id="detail-vote"></dd>
                     </div>
                 </dl>
 
                 <span class="detail-unwatched" id="detail-unwatched" hidden></span>
 
-                <button type="button" class="btn detail-mark-all" id="btn-mark-all-aired" onclick="markAllAiredWatched()" hidden>
+                <button type="button" class="btn detail-mark-all" id="btn-mark-all-aired" onclick="markAllAiredWatched()" hidden data-i18n="detail.markAllAired">
                     ✓ Segna tutte le uscite come viste
                 </button>
 
                 <div class="detail-actions">
-                    <button type="button" class="btn btn--rosso" id="btn-watch" onclick="openPlayer()">▶ Guarda ora</button>
+                    <button type="button" class="btn btn--rosso" id="btn-watch" onclick="openPlayer()" data-i18n="detail.watchNow">▶ Guarda ora</button>
                     <button type="button" class="btn btn--stamp" id="btn-watchlist" onclick="toggleWatchlist()">+ Aggiungi ai salvati</button>
                 </div>
 
                 <div class="resolver-override">
 <button type="button" class="btn btn--ghost" id="btn-resolver-override" onclick="toggleResolverOverride()">Sorgente: globale</button>
                     <div class="resolver-override__panel" id="resolver-override-panel" hidden>
-                        <label for="resolver-override-input">Sorgente per questo titolo</label>
+                        <label for="resolver-override-input" data-i18n="detail.sourceForTitle">Sorgente per questo titolo</label>
                         <input type="url" id="resolver-override-input" autocomplete="off"
-                               placeholder="https://esempio.com/title/{id}/">
-                        <p class="settings-hint">Se vuoto, «Guarda ora» usa la sorgente globale delle Impostazioni. Usa i segnaposto {id}, {type}, {season}, {episode} per inserire id, stagione ed episodio nell'URL: senza segnaposto l'URL viene aperto così com'è. Solo collegamenti http/https.</p>
+                               placeholder="https://esempio.com/title/{id}/" data-i18n-placeholder="detail.sourceOverridePlaceholder">
+                        <p class="settings-hint" data-i18n="detail.sourceOverrideHint">Se vuoto, «Guarda ora» usa la sorgente globale delle Impostazioni. Usa i segnaposto {id}, {type}, {season}, {episode} per inserire id, stagione ed episodio nell'URL: senza segnaposto l'URL viene aperto così com'è. Solo collegamenti http/https.</p>
                         <div class="settings-actions">
-                            <button type="button" class="btn btn--rosso" onclick="saveResolverOverride()">Usa per questo titolo</button>
-                            <button type="button" class="btn" onclick="clearResolverOverride()">Usa quello globale</button>
+                            <button type="button" class="btn btn--rosso" onclick="saveResolverOverride()" data-i18n="detail.useForTitle">Usa per questo titolo</button>
+                            <button type="button" class="btn" onclick="clearResolverOverride()" data-i18n="detail.useGlobal">Usa quello globale</button>
                         </div>
                     </div>
                 </div>
 
                 <div id="tv-controls" class="season-controls" hidden>
-                    <label for="input-season">Stagione</label>
+                    <label for="input-season" data-i18n="detail.season">Stagione</label>
                     <select id="input-season" onchange="onSeasonChange(value)"></select>
 
                     <div id="custom-controls" class="season-controls__custom" hidden>
-                        <label for="input-season-custom">Stagione</label>
+                        <label for="input-season-custom" data-i18n="detail.season">Stagione</label>
                         <input type="number" id="input-season-custom" min="1" step="1" inputmode="numeric" value="1">
-                        <label for="input-episode-custom">Episodio</label>
+                        <label for="input-episode-custom" data-i18n="detail.episode">Episodio</label>
                         <input type="number" id="input-episode-custom" min="1" step="1" inputmode="numeric" value="1">
-                        <p class="season-controls__custom-hint">Stagioni o episodi non elencati da TMDB</p>
+                        <p class="season-controls__custom-hint" data-i18n="detail.customHint">Stagioni o episodi non elencati da TMDB</p>
                     </div>
                 </div>
             </div>
@@ -1662,7 +1662,7 @@
 
         <section class="episode-section" id="episode-section" hidden>
             <div class="episode-section__head">
-                <h3 class="episode-section__title">Episodi</h3>
+                <h3 class="episode-section__title" data-i18n="detail.episodes">Episodi</h3>
                 <button type="button" class="btn episode-section__mark" id="btn-mark-season" onclick="markSeasonWatched()">✓ Segna tutte come viste</button>
             </div>
             <div id="episode-list" class="episode-list"></div>
@@ -1674,85 +1674,94 @@
     <div class="settings-panel" role="dialog" aria-modal="true" aria-labelledby="settings-title">
         <div class="settings-head">
             <div>
-                <span class="eyebrow">Preferenze</span>
-                <h2 id="settings-title">Impostazioni</h2>
+                <span class="eyebrow" data-i18n="settings.preferences">Preferenze</span>
+                <h2 id="settings-title" data-i18n="settings.title">Impostazioni</h2>
             </div>
-            <button type="button" class="btn btn--ghost" onclick="closeSettings()">&times; Chiudi</button>
+            <button type="button" class="btn btn--ghost" onclick="closeSettings()" data-i18n="settings.close">&times; Chiudi</button>
         </div>
 
         <div class="settings-field">
-            <label for="settings-api-key">Chiave API TMDB</label>
+            <label for="settings-api-key" data-i18n="settings.apiKey">Chiave API TMDB</label>
             <input type="text" id="settings-api-key" inputmode="text" autocomplete="off"
-                   placeholder="Inserisci la tua chiave personale">
-            <p class="settings-hint">La chiave personale si ottiene gratuitamente su themoviedb.org → Settings → API. Senza chiave non puoi cercare titoli.</p>
+                   placeholder="Inserisci la tua chiave personale" data-i18n-placeholder="settings.apiKeyPlaceholder">
+            <p class="settings-hint" data-i18n="settings.apiKeyHint">La chiave personale si ottiene gratuitamente su themoviedb.org → Settings → API. Senza chiave non puoi cercare titoli.</p>
         </div>
 
         <div class="settings-field settings-field--divider">
-            <label for="settings-resolver-movie">Sorgente film</label>
+            <label for="settings-resolver-movie" data-i18n="settings.sourceMovie">Sorgente film</label>
             <input type="url" id="settings-resolver-movie" autocomplete="off"
-                   placeholder="https://esempio.com/movie/{id}/">
-            <label for="settings-resolver-tv">Sorgente serie</label>
+                   placeholder="https://esempio.com/movie/{id}/" data-i18n-placeholder="settings.sourceMoviePlaceholder">
+            <label for="settings-resolver-tv" data-i18n="settings.sourceTv">Sorgente serie</label>
             <input type="url" id="settings-resolver-tv" autocomplete="off"
-                   placeholder="https://esempio.com/tv/{id}/{season}/{episode}/">
-            <p class="settings-hint">L'app apre l'URL della sorgente che tu configuri, sostituendo i segnaposto {id}, {type}, {season}, {episode} con i valori del titolo. Senza segnaposto l'URL viene aperto esattamente com'è. Solo collegamenti http/https: magnet, torrent e altri protocolli non sono supportati. Se lasci vuoto, «Guarda ora» non è attivo.</p>
+                   placeholder="https://esempio.com/tv/{id}/{season}/{episode}/" data-i18n-placeholder="settings.sourceTvPlaceholder">
+            <p class="settings-hint" data-i18n="settings.sourceHint">L'app apre l'URL della sorgente che tu configuri, sostituendo i segnaposto {id}, {type}, {season}, {episode} con i valori del titolo. Senza segnaposto l'URL viene aperto esattamente com'è. Solo collegamenti http/https: magnet, torrent e altri protocolli non sono supportati. Se lasci vuoto, «Guarda ora» non è attivo.</p>
         </div>
 
         <div class="settings-field settings-field--divider">
-            <label>Notifiche di rilascio</label>
-            <p class="settings-hint">Ti avvisiamo quando esce una nuova puntata di una serie della tua sala. Le novità restano anche nella cronologia «Novità» in home. Il controllo avviene all'apertura dell'app, automaticamente a intervalli regolari e con il tasto «⟳ Sync» nella sala. Su Android serve il permesso di notifica di sistema.</p>
+            <label data-i18n="settings.notify">Notifiche di rilascio</label>
+            <p class="settings-hint" data-i18n="settings.notifyHint">Ti avvisiamo quando esce una nuova puntata di una serie della tua sala. Le novità restano anche nella cronologia «Novità» in home. Il controllo avviene all'apertura dell'app, automaticamente a intervalli regolari e con il tasto «⟳ Sync» nella sala. Su Android serve il permesso di notifica di sistema.</p>
             <label class="settings-check">
                 <input type="checkbox" id="settings-notify-enabled">
-                Abilita notifiche
+                <span data-i18n="settings.notifyEnable">Abilita notifiche</span>
             </label>
             <label class="settings-check">
                 <input type="checkbox" id="settings-notify-tv">
-                Notifiche per le nuove puntate
+                <span data-i18n="settings.notifyTv">Notifiche per le nuove puntate</span>
             </label>
-            <label for="settings-notify-interval">Sincronizzazione automatica</label>
+            <label for="settings-notify-interval" data-i18n="settings.notifyInterval">Sincronizzazione automatica</label>
             <select id="settings-notify-interval">
-                <option value="8">Ogni 8 ore</option>
-                <option value="12">Ogni 12 ore</option>
-                <option value="24">Ogni 24 ore</option>
-                <option value="48">Ogni 48 ore</option>
+                <option value="8" data-i18n="settings.every8">Ogni 8 ore</option>
+                <option value="12" data-i18n="settings.every12">Ogni 12 ore</option>
+                <option value="24" data-i18n="settings.every24">Ogni 24 ore</option>
+                <option value="48" data-i18n="settings.every48">Ogni 48 ore</option>
             </select>
             <div class="settings-actions">
-                <button type="button" class="btn" onclick="sendTestNotification()">🔔 Prova notifica</button>
+                <button type="button" class="btn" onclick="sendTestNotification()" data-i18n="settings.testNotify">🔔 Prova notifica</button>
             </div>
             <span class="settings-status" id="notify-status" hidden></span>
         </div>
 
         <div class="settings-actions">
-            <button type="button" class="btn btn--rosso" onclick="saveSettings()">Salva</button>
+            <button type="button" class="btn btn--rosso" onclick="saveSettings()" data-i18n="settings.save">Salva</button>
             <span class="settings-status" id="settings-status" hidden></span>
         </div>
 
         <div class="settings-field settings-field--divider">
-            <label for="backup-status">Backup dati</label>
-            <p class="settings-hint">Salva i tuoi dati (salvati, puntate viste, ultime riproduzioni, stagioni personalizzate, novità e preferenze) e ripristinali in un secondo momento. Il backup contiene solo gli identificativi dei titoli: al ripristino i dettagli vengono riscaricati da TMDB (serve la connessione).</p>
+            <label for="settings-lang" data-i18n="settings.language">Lingua</label>
+            <select id="settings-lang">
+                <option value="it">Italiano</option>
+                <option value="en">English</option>
+            </select>
+            <p class="settings-hint" data-i18n="settings.langHint">Lingua dell'interfaccia. Al primo avvio viene rilevata automaticamente.</p>
+        </div>
+
+        <div class="settings-field settings-field--divider">
+            <label for="backup-status" data-i18n="settings.backup">Backup dati</label>
+            <p class="settings-hint" data-i18n="settings.backupHint">Salva i tuoi dati (salvati, puntate viste, ultime riproduzioni, stagioni personalizzate, novità e preferenze) e ripristinali in un secondo momento. Il backup contiene solo gli identificativi dei titoli: al ripristino i dettagli vengono riscaricati da TMDB (serve la connessione).</p>
             <div class="settings-actions">
-                <button type="button" class="btn" onclick="createBackup()">⬇ Crea backup</button>
-                <button type="button" class="btn" onclick="restoreBackup()">⬆ Ripristina</button>
+                <button type="button" class="btn" onclick="createBackup()" data-i18n="settings.backupCreate">⬇ Crea backup</button>
+                <button type="button" class="btn" onclick="restoreBackup()" data-i18n="settings.backupRestore">⬆ Ripristina</button>
                 <input type="file" id="backup-file" accept="application/json,.json" hidden>
             </div>
             <span class="settings-status" id="backup-status" hidden></span>
         </div>
 
         <div class="settings-field settings-field--divider">
-            <label for="update-status">Aggiornamenti</label>
+            <label for="update-status" data-i18n="settings.updates">Aggiornamenti</label>
             <p class="settings-hint" id="settings-version">Versione installata: 1.0.0</p>
-            <p class="settings-hint">BlameFlix controlla su GitHub se è disponibile una nuova versione e te la segnala all'avvio. Puoi verificare manualmente quando vuoi.</p>
+            <p class="settings-hint" data-i18n="settings.updatesHint">BlameFlix controlla su GitHub se è disponibile una nuova versione e te la segnala all'avvio. Puoi verificare manualmente quando vuoi.</p>
             <div class="settings-actions">
-                <button type="button" class="btn" onclick="checkForUpdates(true)">⟳ Verifica aggiornamenti</button>
-                <button type="button" class="btn" id="settings-update-open" onclick="openLatestRelease()" hidden>Vai alla release</button>
+                <button type="button" class="btn" onclick="checkForUpdates(true)" data-i18n="settings.checkUpdates">⟳ Verifica aggiornamenti</button>
+                <button type="button" class="btn" id="settings-update-open" onclick="openLatestRelease()" hidden data-i18n="settings.goRelease">Vai alla release</button>
             </div>
             <span class="settings-status" id="update-status" hidden></span>
         </div>
 
         <div class="settings-field settings-field--divider">
-            <label for="docs-status">Aiuto</label>
-            <p class="settings-hint">Hai domande su come usare BlameFlix? Trovi tutto spiegato nella guida.</p>
+            <label for="docs-status" data-i18n="settings.help">Aiuto</label>
+            <p class="settings-hint" data-i18n="settings.helpHint">Hai domande su come usare BlameFlix? Trovi tutto spiegato nella guida.</p>
             <div class="settings-actions">
-                <button type="button" class="btn" onclick="openDocs()">❓ Documentazione</button>
+                <button type="button" class="btn" onclick="openDocs()" data-i18n="settings.docs">❓ Documentazione</button>
             </div>
         </div>
     </div>
@@ -1762,13 +1771,13 @@
     <div class="settings-panel docs-panel" role="dialog" aria-modal="true" aria-labelledby="docs-title">
         <div class="settings-head">
             <div>
-                <span class="eyebrow">Guida</span>
-                <h2 id="docs-title">Documentazione</h2>
+                <span class="eyebrow" data-i18n="docs.guide">Guida</span>
+                <h2 id="docs-title" data-i18n="docs.title">Documentazione</h2>
             </div>
-            <button type="button" class="btn btn--ghost" onclick="closeDocs()">&times; Chiudi</button>
+            <button type="button" class="btn btn--ghost" onclick="closeDocs()" data-i18n="docs.close">&times; Chiudi</button>
         </div>
 
-        <div class="docs-body">
+        <div class="docs-body" data-i18n-html="docs.body">
             <p class="docs-hint">Come usare BlameFlix</p>
 
             <h3>Cos'è BlameFlix</h3>
@@ -1824,26 +1833,26 @@
     <a class="colophon__tmdb" href="https://www.themoviedb.org" target="_blank" rel="noopener" aria-label="The Movie Database (TMDB)">
         <img src="tmdb.svg" alt="The Movie Database (TMDB)">
     </a>
-    <p class="colophon__note">
+    <p class="colophon__note" data-i18n-html="footer.tmdb">
         This product uses the TMDB API but is not endorsed or certified by TMDB.<br>
         Questo prodotto usa l'API TMDB ma non è approvato né certificato da TMDB. The Movie Database (TMDB) non è affiliato a questa applicazione.
     </p>
-    <span class="colophon__tag">Schermo: la tua sala</span>
+    <span class="colophon__tag" data-i18n="footer.tag">Schermo: la tua sala</span>
 </footer>
 
 <div id="disclaimer-overlay" class="overlay disclaimer-overlay" hidden role="alertdialog" aria-modal="true" aria-labelledby="disclaimer-title">
     <div class="settings-panel disclaimer-panel">
         <div class="settings-head">
             <div>
-                <span class="eyebrow">Avviso legale</span>
-                <h2 id="disclaimer-title">ATTENZIONE</h2>
+                <span class="eyebrow" data-i18n="disclaimer.legal">Avviso legale</span>
+                <h2 id="disclaimer-title" data-i18n="disclaimer.title">ATTENZIONE</h2>
             </div>
         </div>
-        <div class="disclaimer-body">
+        <div class="disclaimer-body" data-i18n-html="disclaimer.body">
             <p>Questa applicazione è di proprietà di <strong>padelle2603</strong> e tutelata dalla legge sul diritto d'autore, va usata nel rispetto delle norme europee ed italiane sulla visione di contenuti soggetti a proprietà intellettuale, il proprietario non assume alcuna responsabilità sull'uso illegale della stessa, e si riserva ogni diritto ragione ed azione a propria tutela compreso il ricorso alle autorità competenti qualora dall'uso illecito che ne fa l'utente, gliene derivi un danno di qualsiasi natura, solo cliccando su accetta queste condizioni, il programma si avvierà.</p>
         </div>
         <div class="settings-actions">
-            <button type="button" class="btn btn--rosso" id="disclaimer-accept" onclick="acceptDisclaimer()" disabled>Accetta</button>
+            <button type="button" class="btn btn--rosso" id="disclaimer-accept" onclick="acceptDisclaimer()" disabled data-i18n="disclaimer.accept">Accetta</button>
             <span class="disclaimer-status" id="disclaimer-status">Accettabile tra 10s</span>
         </div>
     </div>
@@ -1855,8 +1864,8 @@
 </div>
 
 <script>
-    // CONFIGURAZIONE
-    const APP_VERSION = '1.0.0'; // versione installata (iniettata dalla CI a ogni build)
+    // CONFIGURATION
+    const APP_VERSION = '1.0.0'; // installed version (injected by the CI on every build)
     const GITHUB_REPO = 'padelle2603/blameflix';
     const GITHUB_LATEST_URL = `https://api.github.com/repos/${GITHUB_REPO}/releases/latest`;
     const UPDATE_CHECK_STORAGE = 'myUpdateCheck'; // { lastCheck, lastTag, dismissedTag }
@@ -1872,25 +1881,522 @@
         '<svg xmlns="http://www.w3.org/2000/svg" width="300" height="169"><rect width="100%" height="100%" fill="#1F1A15"/><rect x="0" y="0" width="100%" height="100%" fill="none" stroke="#F3EBD9" stroke-width="4"/><text x="50%" y="50%" fill="#A99A85" font-size="15" font-family="Arial" text-anchor="middle" dominant-baseline="middle">No still</text></svg>'
     );
 
-    let currentMedia = null; // Memorizza il media attualmente visualizzato nei dettagli
+    // ------------------------------------------------------------------
+    // I18N — all user-facing strings, in Italian and English.
+    // The app code stays in English; only these values change language.
+    // ------------------------------------------------------------------
+    const LANG_STORAGE = 'myLang';
+    const storedLang = localStorage.getItem(LANG_STORAGE);
+    const browserLang = (navigator.language || 'it').toLowerCase().split('-')[0];
+    let lang = (storedLang === 'it' || storedLang === 'en') ? storedLang : (browserLang === 'en' ? 'en' : 'it');
+
+    const I18N = {
+        it: {
+            'nav.home': 'Torna alla tua homepage',
+            'nav.saved': 'SALVATI:',
+            'nav.settings': 'Impostazioni',
+            'notice.nokey': '⚠ Nessuna chiave TMDB · impossibile cercare',
+            'notice.setkey': 'Imposta la chiave',
+            'notice.noresolver': '⚠ Nessuna sorgente configurata · «Guarda ora» non attivo',
+            'notice.configsource': 'Configura la sorgente',
+            'notice.downloadGitHub': 'Scarica dal GitHub',
+            'notice.downloadApk': 'Scarica APK',
+            'notice.dismiss': 'Ignora questo aggiornamento',
+            'notice.updateAvailable': '⚠ Nuova versione {tag} disponibile su GitHub',
+            'search.label': 'Cerca un titolo',
+            'search.placeholder': 'Cerca film o serie TV…',
+            'search.clearAria': 'Torna alla tua homepage',
+            'home.yourroom': 'La tua sala',
+            'home.news': 'Novità',
+            'home.clearNews': 'Svuota',
+            'home.titles': 'TITOLI',
+            'home.tmdbArchive': 'Archivio TMDB',
+            'home.searchResults': 'Risultati per «{q}»',
+            'home.noTitles': 'Nessun titolo in sala',
+            'home.emptyRoom': 'La tua sala è vuota. Cerca il primo film o la prima serie qui sopra per iniziare.',
+            'home.emptyFilter': 'Nessun titolo',
+            'home.emptyFilterDesc': '{label} non trovati con questi criteri.',
+            'home.noResults': 'Nessun risultato',
+            'home.noResultsDesc': 'Non abbiamo trovato nulla con questa ricerca. Prova un altro titolo.',
+            'tools.filterBy': 'Filtra per tipo',
+            'tools.all': 'Tutti',
+            'tools.movie': 'Film',
+            'tools.tv': 'Serie',
+            'tools.viewMode': 'Cambia visualizzazione',
+            'tools.grid': 'Griglia',
+            'tools.list': 'Lista',
+            'tools.sync': 'Verifica nuove uscite',
+            'detail.back': '← BlameFlix',
+            'detail.posterAlt': 'Poster',
+            'detail.sheet': 'Scheda titolo',
+            'detail.year': 'Anno',
+            'detail.vote': 'Voto',
+            'detail.markAllAired': '✓ Segna tutte le uscite come viste',
+            'detail.watchNow': '▶ Guarda ora',
+            'detail.sourceForTitle': 'Sorgente per questo titolo',
+            'detail.sourceOverridePlaceholder': 'https://esempio.com/title/{id}/',
+            'detail.sourceOverrideHint': 'Se vuoto, «Guarda ora» usa la sorgente globale delle Impostazioni. Usa i segnaposto {id}, {type}, {season}, {episode} per inserire id, stagione ed episodio nell\'URL: senza segnaposto l\'URL viene aperto così com\'è. Solo collegamenti http/https.',
+            'detail.useForTitle': 'Usa per questo titolo',
+            'detail.useGlobal': 'Usa quello globale',
+            'detail.season': 'Stagione',
+            'detail.episode': 'Episodio',
+            'detail.customHint': 'Stagioni o episodi non elencati da TMDB',
+            'detail.episodes': 'Episodi',
+            'detail.sourceGlobal': 'Sorgente: globale',
+            'detail.sourceCustom': 'Sorgente: personale',
+            'detail.savedRemove': '✓ Salvato · rimuovi',
+            'detail.addSaved': '+ Aggiungi ai salvati',
+            'detail.noOverview': 'Nessuna descrizione disponibile.',
+            'settings.preferences': 'Preferenze',
+            'settings.title': 'Impostazioni',
+            'settings.close': '× Chiudi',
+            'settings.apiKey': 'Chiave API TMDB',
+            'settings.apiKeyPlaceholder': 'Inserisci la tua chiave personale',
+            'settings.apiKeyHint': 'La chiave personale si ottiene gratuitamente su themoviedb.org → Settings → API. Senza chiave non puoi cercare titoli.',
+            'settings.sourceMovie': 'Sorgente film',
+            'settings.sourceMoviePlaceholder': 'https://esempio.com/movie/{id}/',
+            'settings.sourceTv': 'Sorgente serie',
+            'settings.sourceTvPlaceholder': 'https://esempio.com/tv/{id}/{season}/{episode}/',
+            'settings.sourceHint': 'L\'app apre l\'URL della sorgente che tu configuri, sostituendo i segnaposto {id}, {type}, {season}, {episode} con i valori del titolo. Senza segnaposto l\'URL viene aperto esattamente com\'è. Solo collegamenti http/https: magnet, torrent e altri protocolli non sono supportati. Se lasci vuoto, «Guarda ora» non è attivo.',
+            'settings.notify': 'Notifiche di rilascio',
+            'settings.notifyHint': 'Ti avvisiamo quando esce una nuova puntata di una serie della tua sala. Le novità restano anche nella cronologia «Novità» in home. Il controllo avviene all\'apertura dell\'app, automaticamente a intervalli regolari e con il tasto «⟳ Sync» nella sala. Su Android serve il permesso di notifica di sistema.',
+            'settings.notifyEnable': 'Abilita notifiche',
+            'settings.notifyTv': 'Notifiche per le nuove puntate',
+            'settings.notifyInterval': 'Sincronizzazione automatica',
+            'settings.every8': 'Ogni 8 ore',
+            'settings.every12': 'Ogni 12 ore',
+            'settings.every24': 'Ogni 24 ore',
+            'settings.every48': 'Ogni 48 ore',
+            'settings.testNotify': '🔔 Prova notifica',
+            'settings.save': 'Salva',
+            'settings.language': 'Lingua',
+            'settings.langHint': 'Lingua dell\'interfaccia. Al primo avvio viene rilevata automaticamente.',
+            'settings.backup': 'Backup dati',
+            'settings.backupHint': 'Salva i tuoi dati (salvati, puntate viste, ultime riproduzioni, stagioni personalizzate, novità e preferenze) e ripristinali in un secondo momento. Il backup contiene solo gli identificativi dei titoli: al ripristino i dettagli vengono riscaricati da TMDB (serve la connessione).',
+            'settings.backupCreate': '⬇ Crea backup',
+            'settings.backupRestore': '⬆ Ripristina',
+            'settings.updates': 'Aggiornamenti',
+            'settings.version': 'Versione installata:',
+            'settings.updatesHint': 'BlameFlix controlla su GitHub se è disponibile una nuova versione e te la segnala all\'avvio. Puoi verificare manualmente quando vuoi.',
+            'settings.checkUpdates': '⟳ Verifica aggiornamenti',
+            'settings.goRelease': 'Vai alla release',
+            'settings.help': 'Aiuto',
+            'settings.helpHint': 'Hai domande su come usare BlameFlix? Trovi tutto spiegato nella guida.',
+            'settings.docs': '❓ Documentazione',
+            'docs.guide': 'Guida',
+            'docs.title': 'Documentazione',
+            'docs.close': '× Chiudi',
+            'docs.body': `
+<p class="docs-hint">Come usare BlameFlix</p>
+
+<h3>Cos'è BlameFlix</h3>
+<p>BlameFlix è la tua sala personale: un catalogo dove raccogli i film e le serie TV che ti interessano. Puoi cercare titoli, tenerli nei salvati e guardarli quando vuoi, ripartendo sempre da dove eri rimasto.</p>
+
+<h3>Cercare e salvare un titolo</h3>
+<p>Usa la barra di ricerca in alto per trovare un film o una serie. Apri la scheda del titolo che ti interessa e premi <strong>«+ Aggiungi ai salvati»</strong>: il titolo entra nella tua sala, dove resta fino a quando non lo togli. Puoi filtrare la sala per <strong>Tutti</strong>, <strong>Film</strong> o <strong>Serie</strong> e scegliere tra la vista a griglia e quella a lista.</p>
+
+<h3>Guardare un film</h3>
+<p>Apri la scheda del film e premi <strong>«▶ Guarda ora»</strong>. BlameFlix apre l'URL della <strong>sorgente</strong> che hai configurato nelle Impostazioni. Su telefono si apre l'app esterna, su computer una nuova finestra.</p>
+
+<h3>Guardare una serie TV</h3>
+<p>Nella scheda di una serie scegli la <strong>stagione</strong> dal selettore: sotto compaiono le <strong>puntate</strong> di quella stagione, con miniatura, titolo e descrizione. Premi «▶ Guarda» sulla puntata che vuoi vedere. Le puntate già viste appaiono <strong>grigiate</strong> con il badge «✓ VISTO»; quelle non ancora in onda restano bloccate fino alla data di messa in onda.</p>
+<p>BlameFlix segna automaticamente come vista la puntata che guardi, ma puoi cambiarlo cliccando sul badge «✓ VISTO» di una puntata. Con il tasto <strong>«Segna tutte come viste»</strong> in cima alla lista puoi marcare in un tocco tutte le puntate già in onda della stagione (premilo di nuovo per toglierle). Quando riapri una serie riparti dalla stagione dell'ultima puntata vista. Se una stagione o un episodio non compare nell'elenco (perché non è elencato da TMDB), scegli <strong>«Altro…»</strong> e digita il numero a mano: la tua scelta viene ricordata.</p>
+
+<h3>La sorgente</h3>
+<p>BlameFlix non contiene sorgenti di streaming: apre semplicemente l'URL del servizio che scegli tu. Nelle <strong>Impostazioni</strong> inserisci il template per i film e quello per le serie. L'app sostituisce i segnaposto <code>{id}</code>, <code>{type}</code>, <code>{season}</code> e <code>{episode}</code> con i valori del titolo (es. <code>https://esempio.com/watch?id={id}&s={season}&e={episode}</code>). Se il template non contiene segnaposto, l'URL viene aperto esattamente com'è. Sono accettati solo collegamenti <strong>http/https</strong>: magnet, torrent e altri protocolli non sono supportati. Se un template è vuoto, il pulsante «Guarda ora» non è attivo.</p>
+<p>Nella scheda di un titolo puoi impostare una <strong>sorgente specifica</strong> che ha la precedenza su quella globale: premi <strong>«Sorgente: globale»</strong> sotto i pulsanti, inserisci il template e salvalo con «Usa per questo titolo». Con «Usa quella globale» torni al comportamento predefinito. Le sorgenti per titolo sono salvate nel dispositivo e incluse nel backup.</p>
+
+<h3>Aggiornamenti</h3>
+<p>BlameFlix controlla su GitHub se è disponibile una nuova versione e, se c'è, mostra un avviso con il link alla pagina di download. Puoi anche verificare a mano nelle <strong>Impostazioni</strong> («Verifica aggiornamenti»), dove vedi la versione installata. Su Android l'APK nuovo si installa <strong>sopra</strong> quello già presente, senza disinstallare nulla.</p>
+
+<h3>Disclaimer di avvio</h3>
+<p>Al primo utilizzo BlameFlix mostra un avviso legale sull'uso dell'app: l'avvio è sbloccato solo dopo l'accettazione (attivabile dopo 10 secondi). L'accettazione è ricordata e non viene più richiesta alle aperture successive.</p>
+
+<h3>Notifiche di rilascio</h3>
+<p>BlameFlix può avvisarti quando esce una <strong>nuova puntata</strong> di una serie della tua sala (alla data di messa in onda). Il controllo avviene automaticamente all'apertura dell'app, a intervalli regolari configurabili nelle Impostazioni (ogni 8, 12, 24 o 48 ore) e manualmente con il tasto <strong>«⟳ Sync»</strong> nella sala.</p>
+<p>Ogni nuova uscita finisce anche nella cronologia <strong>«Novità»</strong> in home: toccando una voce apri la scheda del titolo e con <strong>«Svuota»</strong> puoi azzerarla. Le puntate che hai già segnato come viste non vengono considerate nuove.</p>
+<p>Nelle <strong>Impostazioni</strong> la sezione notifiche è semplice: <strong>«Abilita notifiche»</strong> e <strong>«Notifiche per le nuove puntate»</strong>. Puoi regolare la frequenza della <strong>sincronizzazione automatica</strong> e inviare una <strong>notifica di prova</strong>. Su Android la prima notifica chiede il permesso di sistema e toccando una notifica si apre la scheda della serie. Le date arrivano da TMDB: se mancano o cambiano, gli avvisi arrivano al primo controllo utile.</p>
+
+<h3>Legalità dei contenuti</h3>
+<p>BlameFlix è un lettore generico: le sorgenti di streaming le configuri tu nelle Impostazioni. Sei <strong>responsabile della legalità dei contenuti</strong> a cui accedi tramite la tua sorgente, secondo le leggi del tuo Paese. In Italia l'accesso a streaming non autorizzato può comportare sanzioni amministrative (legge 93/2023) e sono in discussione multe più severe. BlameFlix non fornisce né segnala alcuna fonte di contenuti.</p>
+
+<h3>Backup dei dati</h3>
+<p>Con <strong>«Crea backup»</strong> salvi un file con i tuoi dati: i titoli salvati, le puntate viste (stagione ed episodio per ogni serie), gli ultimi film e serie visti, la cronologia «Novità», la tua chiave personale e le preferenze di visualizzazione. Il programma ti chiede dove salvare il file.</p>
+<p>Con <strong>«Ripristina»</strong> scegli il file di backup salvato in precedenza e BlameFlix riporta al suo posto tutti i dati. Il backup contiene solo gli identificativi dei titoli: al ripristino i dettagli vengono riscaricati da TMDB, quindi serve una connessione internet. I titoli non scaricabili compaiono comunque come card senza dati e i dettagli si caricano appena li apri.</p>
+
+<h3>I titoli non si caricano</h3>
+<p>BlameFlix riceve i dati dei titoli da TMDB. Se la ricerca o le schede non si caricano, assicurati di essere connesso a internet. In caso di problemi, nelle Impostazioni puoi inserire una chiave personale gratuita, ottenibile su themoviedb.org nella sezione API.</p>
+
+<h3>Privacy</h3>
+<p>Tutti i tuoi dati restano sul dispositivo e non vengono inviati a nessuno, a parte le normali richieste a TMDB per cercare i titoli. Conserva bene il file di backup: contiene i tuoi dati personali. Per i dettagli, consulta la privacy policy del progetto.</p>
+
+<h3>Crediti</h3>
+<p><img src="tmdb.svg" alt="The Movie Database (TMDB)" class="docs-tmdb"></p>
+<p><em>This product uses the TMDB API but is not endorsed or certified by TMDB.</em></p>
+<p>Questo prodotto usa l'API TMDB ma non è approvato né certificato da TMDB. Titoli, testi e immagini provengono da <a href="https://www.themoviedb.org" target="_blank" rel="noopener">The Movie Database (TMDB)</a>, che non è affiliato a questa applicazione. Le immagini dei poster sono mostrate per la sola consultazione del catalogo.</p>`,
+            'footer.tmdb': `This product uses the TMDB API but is not endorsed or certified by TMDB.<br>Questo prodotto usa l'API TMDB ma non è approvato né certificato da TMDB. The Movie Database (TMDB) non è affiliato a questa applicazione.`,
+            'footer.tag': 'Schermo: la tua sala',
+            'disclaimer.legal': 'Avviso legale',
+            'disclaimer.title': 'ATTENZIONE',
+            'disclaimer.accept': 'Accetta',
+            'disclaimer.body': `<p>Questa applicazione è di proprietà di <strong>padelle2603</strong> e tutelata dalla legge sul diritto d'autore, va usata nel rispetto delle norme europee ed italiane sulla visione di contenuti soggetti a proprietà intellettuale, il proprietario non assume alcuna responsabilità sull'uso illegale della stessa, e si riserva ogni diritto ragione ed azione a propria tutela compreso il ricorso alle autorità competenti qualora dall'uso illecito che ne fa l'utente, gliene derivi un danno di qualsiasi natura, solo cliccando su accetta queste condizioni, il programma si avvierà.</p>`,
+            'common.noTitle': 'Senza titolo',
+            'common.special': 'Speciale',
+            'common.other': 'Altro…',
+            'common.tvKind': 'SERIE',
+            'common.movieKind': 'FILM',
+            'common.tvKindLong': 'SERIE TV',
+            'common.movieKindLong': 'FILM',
+            'common.saved': 'SALVATO',
+            'common.toWatch': 'da vedere',
+            'common.sync': '⟳ Sync',
+            'common.syncing': '⟳ …',
+            'episode.label': 'Episodio {n}',
+            'episode.watched': '✓ Visto',
+            'episode.removeFromWatched': 'Togli da viste',
+            'episode.markWatched': 'Segna come vista',
+            'episode.watch': '▶ Guarda',
+            'episode.watchAgain': '↻ Rivisualizza',
+            'episode.airingOn': 'In uscita il {date}',
+            'episode.markAllWatched': '✓ Segna tutte come viste',
+            'episode.markAllUnwatched': 'Segna tutte come non viste',
+            'msg.allWatched': '✓ Tutto visto',
+            'msg.unwatchedCount': { one: '1 puntata da vedere', other: '{n} puntate da vedere' },
+            'msg.countingEpisodes': 'Conto puntate…',
+            'msg.releaseBody': '«{title}» · nuova puntata S{season}E{episode} in catalogo',
+            'msg.moreReleases': '\n+{n} altro',
+            'msg.firstSync': 'Prima sincronizzazione completata: da ora riceverai gli avvisi di rilascio.',
+            'msg.noNewReleases': 'Nessuna nuova uscita: tutto aggiornato.',
+            'msg.needKey': 'Serve la chiave TMDB per verificare le uscite. Impostala nelle Impostazioni.',
+            'msg.emptyRoomForSync': 'La sala è vuota: non c\'è nulla da controllare.',
+            'msg.networkError': 'Errore di rete',
+            'msg.networkErrorDesc': 'Non riusciamo a contattare l\'archivio. Controlla la connessione e riprova.',
+            'msg.detailLoadError': 'Errore nel caricamento dei dettagli',
+            'msg.episodesLoadError': 'Impossibile caricare gli episodi. Controlla la connessione e riprova.',
+            'msg.noEpisodes': 'Nessun episodio elencato da TMDB per questa stagione. Usa «Altro…» per sceglierne uno a mano.',
+            'msg.errFileSharing': 'Protocolli di file-sharing (magnet, torrent, ed2k) non supportati: usa un collegamento http/https.',
+            'msg.errOnlyHttp': 'Solo collegamenti http/https supportati.',
+            'msg.errInvalidLink': 'Inserisci un collegamento http/https valido.',
+            'msg.saved': 'Salvato ✓',
+            'msg.keyRemoved': 'Chiave rimossa · imposta una chiave per cercare',
+            'msg.requestingPerms': 'Richiesta permessi…',
+            'msg.permsDenied': 'Permesso di notifica non concesso',
+            'msg.testNotifyBody': 'Notifica di prova: così ti avviseremo delle nuove uscite.',
+            'msg.testNotifySent': 'Notifica di prova inviata ✓',
+            'msg.testNotifyUnavailable': 'Notifiche di sistema non disponibili qui',
+            'msg.checkingUpdates': 'Verifica in corso…',
+            'msg.newVersionAvailable': 'Nuova versione {tag} disponibile',
+            'msg.upToDate': 'Sei aggiornato ✓',
+            'msg.updateCheckFailed': 'Impossibile verificare gli aggiornamenti',
+            'msg.writePermDenied': 'Permesso di scrittura negato',
+            'msg.saveBackupDialog': 'Salva il backup',
+            'msg.backupCreatedChoose': 'Backup creato: scegli dove salvarlo ✓',
+            'msg.backupCreatedShareCancelled': 'Backup creato ✓ · condivisione annullata',
+            'msg.backupNotShared': 'Backup creato, ma non condiviso',
+            'msg.backupSaved': 'Backup salvato ✓',
+            'msg.backupSaveError': 'Impossibile salvare il file',
+            'msg.saveCancelled': 'Salvataggio annullato',
+            'msg.backupRestored': 'Backup ripristinato ✓',
+            'msg.backupInvalid': 'File di backup non valido',
+            'msg.backupReadError': 'Impossibile leggere il file',
+            'msg.acceptableIn': 'Accettabile tra {n}s',
+            'msg.acceptToStart': 'Accetta per avviare BlameFlix',
+            'toast.newReleases': 'Nuove uscite in sala',
+            'toast.noSource': 'Sorgente non disponibile',
+            'notify.releases': 'BlameFlix · Rilasci'
+        },
+        en: {
+            'nav.home': 'Back to your homepage',
+            'nav.saved': 'SAVED:',
+            'nav.settings': 'Settings',
+            'notice.nokey': '⚠ No TMDB key · cannot search',
+            'notice.setkey': 'Set the key',
+            'notice.noresolver': '⚠ No source configured · «Watch now» is off',
+            'notice.configsource': 'Configure the source',
+            'notice.downloadGitHub': 'Download from GitHub',
+            'notice.downloadApk': 'Download APK',
+            'notice.dismiss': 'Dismiss this update',
+            'notice.updateAvailable': '⚠ New version {tag} available on GitHub',
+            'search.label': 'Search a title',
+            'search.placeholder': 'Search movies or TV series…',
+            'search.clearAria': 'Back to your homepage',
+            'home.yourroom': 'Your screening room',
+            'home.news': 'News',
+            'home.clearNews': 'Clear',
+            'home.titles': 'TITLES',
+            'home.tmdbArchive': 'TMDB Archive',
+            'home.searchResults': 'Results for «{q}»',
+            'home.noTitles': 'No titles in your room',
+            'home.emptyRoom': 'Your room is empty. Search the first movie or series above to get started.',
+            'home.emptyFilter': 'No titles',
+            'home.emptyFilterDesc': 'No {label} found with these criteria.',
+            'home.noResults': 'No results',
+            'home.noResultsDesc': 'We found nothing for this search. Try another title.',
+            'tools.filterBy': 'Filter by type',
+            'tools.all': 'All',
+            'tools.movie': 'Movies',
+            'tools.tv': 'Series',
+            'tools.viewMode': 'Change the view',
+            'tools.grid': 'Grid',
+            'tools.list': 'List',
+            'tools.sync': 'Check new releases',
+            'detail.back': '← BlameFlix',
+            'detail.posterAlt': 'Poster',
+            'detail.sheet': 'Title sheet',
+            'detail.year': 'Year',
+            'detail.vote': 'Rating',
+            'detail.markAllAired': '✓ Mark all aired episodes as watched',
+            'detail.watchNow': '▶ Watch now',
+            'detail.sourceForTitle': 'Source for this title',
+            'detail.sourceOverridePlaceholder': 'https://example.com/title/{id}/',
+            'detail.sourceOverrideHint': 'If empty, «Watch now» uses the global source from Settings. Use the {id}, {type}, {season}, {episode} placeholders to insert id, season and episode into the URL: without placeholders the URL is opened as it is. Only http/https links.',
+            'detail.useForTitle': 'Use for this title',
+            'detail.useGlobal': 'Use the global one',
+            'detail.season': 'Season',
+            'detail.episode': 'Episode',
+            'detail.customHint': 'Seasons or episodes not listed by TMDB',
+            'detail.episodes': 'Episodes',
+            'detail.sourceGlobal': 'Source: global',
+            'detail.sourceCustom': 'Source: custom',
+            'detail.savedRemove': '✓ Saved · remove',
+            'detail.addSaved': '+ Add to saved',
+            'detail.noOverview': 'No description available.',
+            'settings.preferences': 'Preferences',
+            'settings.title': 'Settings',
+            'settings.close': '× Close',
+            'settings.apiKey': 'TMDB API key',
+            'settings.apiKeyPlaceholder': 'Enter your personal key',
+            'settings.apiKeyHint': 'The personal key is free and obtained on themoviedb.org → Settings → API. Without a key you cannot search titles.',
+            'settings.sourceMovie': 'Movie source',
+            'settings.sourceMoviePlaceholder': 'https://example.com/movie/{id}/',
+            'settings.sourceTv': 'Series source',
+            'settings.sourceTvPlaceholder': 'https://example.com/tv/{id}/{season}/{episode}/',
+            'settings.sourceHint': 'The app opens the URL of the source you configure, replacing the {id}, {type}, {season}, {episode} placeholders with the values of the title. Without placeholders the URL is opened exactly as it is. Only http/https links: magnet, torrent and other protocols are not supported. If you leave it empty, «Watch now» is off.',
+            'settings.notify': 'Release notifications',
+            'settings.notifyHint': 'We warn you when a new episode of a series in your room comes out. The news also stays in the «News» history on the home page. The check happens when the app opens, automatically at regular intervals and with the «⟳ Sync» button in your room. On Android the system notification permission is required.',
+            'settings.notifyEnable': 'Enable notifications',
+            'settings.notifyTv': 'Notifications for new episodes',
+            'settings.notifyInterval': 'Automatic sync',
+            'settings.every8': 'Every 8 hours',
+            'settings.every12': 'Every 12 hours',
+            'settings.every24': 'Every 24 hours',
+            'settings.every48': 'Every 48 hours',
+            'settings.testNotify': '🔔 Test notification',
+            'settings.save': 'Save',
+            'settings.language': 'Language',
+            'settings.langHint': 'Interface language. Automatically detected on first launch.',
+            'settings.backup': 'Data backup',
+            'settings.backupHint': 'Save your data (saved titles, watched episodes, last plays, custom seasons, news and preferences) and restore it later. The backup only contains the identifiers of the titles: on restore the details are downloaded again from TMDB (connection required).',
+            'settings.backupCreate': '⬇ Create backup',
+            'settings.backupRestore': '⬆ Restore',
+            'settings.updates': 'Updates',
+            'settings.version': 'Installed version:',
+            'settings.updatesHint': 'BlameFlix checks GitHub for a new version and notifies you at startup. You can check manually whenever you want.',
+            'settings.checkUpdates': '⟳ Check for updates',
+            'settings.goRelease': 'Go to the release',
+            'settings.help': 'Help',
+            'settings.helpHint': 'Questions about using BlameFlix? Everything is explained in the guide.',
+            'settings.docs': '❓ Documentation',
+            'docs.guide': 'Guide',
+            'docs.title': 'Documentation',
+            'docs.close': '× Close',
+            'docs.body': `
+<p class="docs-hint">How to use BlameFlix</p>
+
+<h3>What is BlameFlix</h3>
+<p>BlameFlix is your personal screening room: a catalog where you collect the movies and TV series you care about. You can search titles, keep them in your saved list and watch them whenever you want, always picking up where you left off.</p>
+
+<h3>Searching and saving a title</h3>
+<p>Use the search bar at the top to find a movie or a series. Open the sheet of the title you are interested in and press <strong>«+ Add to saved»</strong>: the title enters your room, where it stays until you remove it. You can filter your room by <strong>All</strong>, <strong>Movies</strong> or <strong>Series</strong> and choose between the grid and list views.</p>
+
+<h3>Watching a movie</h3>
+<p>Open the movie sheet and press <strong>«▶ Watch now»</strong>. BlameFlix opens the URL of the <strong>source</strong> you configured in the Settings. On a phone it opens the external app, on a computer a new window.</p>
+
+<h3>Watching a TV series</h3>
+<p>In a series sheet choose the <strong>season</strong> from the selector: below you will see the <strong>episodes</strong> of that season, with thumbnail, title and description. Press «▶ Watch» on the episode you want to see. Episodes you already watched appear <strong>greyed out</strong> with the «✓ WATCHED» badge; episodes that have not aired yet stay locked until their air date.</p>
+<p>BlameFlix automatically marks the episode you watch as seen, but you can change this by clicking the «✓ WATCHED» badge of an episode. With the <strong>«Mark all as watched»</strong> button at the top of the list you can mark, in one tap, all the episodes that have already aired in the season (press it again to unmark them). When you reopen a series you restart from the season of the last episode you watched. If a season or an episode does not appear in the list (because TMDB does not list it), choose <strong>«Other…»</strong> and type the number by hand: your choice is remembered.</p>
+
+<h3>The source</h3>
+<p>BlameFlix does not contain streaming sources: it simply opens the URL of the service you choose. In the <strong>Settings</strong> you enter the template for movies and the one for series. The app replaces the <code>{id}</code>, <code>{type}</code>, <code>{season}</code> and <code>{episode}</code> placeholders with the values of the title (e.g. <code>https://example.com/watch?id={id}&s={season}&e={episode}</code>). If the template has no placeholders, the URL is opened exactly as it is. Only <strong>http/https</strong> links are accepted: magnet, torrent and other protocols are not supported. If a template is empty, the «Watch now» button is disabled.</p>
+<p>In a title sheet you can set a <strong>title-specific source</strong> that overrides the global one: press <strong>«Source: global»</strong> under the buttons, enter the template and save it with «Use for this title». With «Use the global one» you go back to the default behaviour. Title-specific sources are stored on the device and included in the backup.</p>
+
+<h3>Updates</h3>
+<p>BlameFlix checks GitHub for a new version and, if there is one, shows a notice with a link to the download page. You can also check manually in the <strong>Settings</strong> («Check for updates»), where you can see the installed version. On Android the new APK installs <strong>over</strong> the existing one, without uninstalling anything.</p>
+
+<h3>Startup disclaimer</h3>
+<p>On first use BlameFlix shows a legal notice about the use of the app: startup is unlocked only after acceptance (available after 10 seconds). The acceptance is remembered and is not requested again on later openings.</p>
+
+<h3>Release notifications</h3>
+<p>BlameFlix can warn you when a <strong>new episode</strong> of a series in your room comes out (on its air date). The check happens automatically when the app opens, at regular configurable intervals in the Settings (every 8, 12, 24 or 48 hours) and manually with the <strong>«⟳ Sync»</strong> button in your room.</p>
+<p>Every new release also lands in the <strong>«News»</strong> history on the home page: tapping an entry opens the title sheet and with <strong>«Clear»</strong> you can empty it. Episodes you already marked as watched are not considered new.</p>
+<p>In the <strong>Settings</strong> the notifications section is simple: <strong>«Enable notifications»</strong> and <strong>«Notifications for new episodes»</strong>. You can adjust the <strong>automatic sync</strong> frequency and send a <strong>test notification</strong>. On Android the first notification asks for the system permission, and tapping a notification opens the series sheet. Dates come from TMDB: if they are missing or change, the alerts arrive at the first useful check.</p>
+
+<h3>Content legality</h3>
+<p>BlameFlix is a generic player: the streaming sources are configured by you in the Settings. You are <strong>responsible for the legality of the content</strong> you access through your source, according to the laws of your country. In Italy, access to unauthorized streaming can lead to administrative fines (law 93/2023) and harsher fines are being discussed. BlameFlix does not provide nor point to any content source.</p>
+
+<h3>Data backup</h3>
+<p>With <strong>«Create backup»</strong> you save a file with your data: the saved titles, the episodes you watched (season and episode for each series), the last movies and series you watched, the «News» history, your personal key and the display preferences. The app asks you where to save the file.</p>
+<p>With <strong>«Restore»</strong> you choose a previously saved backup file and BlameFlix puts all your data back in place. The backup only contains the identifiers of the titles: on restore the details are downloaded again from TMDB, so an internet connection is needed. Titles that cannot be downloaded still appear as cards without data and the details load as soon as you open them.</p>
+
+<h3>Titles don't load</h3>
+<p>BlameFlix receives title data from TMDB. If the search or the sheets don't load, make sure you are connected to the internet. If there are problems, in the Settings you can enter a free personal key, obtainable on themoviedb.org in the API section.</p>
+
+<h3>Privacy</h3>
+<p>All your data stays on your device and is not sent to anyone, apart from the normal requests to TMDB to search titles. Keep your backup file safe: it contains your personal data. For details, see the project's privacy policy.</p>
+
+<h3>Credits</h3>
+<p><img src="tmdb.svg" alt="The Movie Database (TMDB)" class="docs-tmdb"></p>
+<p><em>This product uses the TMDB API but is not endorsed or certified by TMDB.</em></p>
+<p>This product uses the TMDB API but is not endorsed or certified by TMDB. Titles, texts and images come from <a href="https://www.themoviedb.org" target="_blank" rel="noopener">The Movie Database (TMDB)</a>, which is not affiliated with this application. Poster images are shown only for catalog browsing.</p>`,
+            'footer.tmdb': `This product uses the TMDB API but is not endorsed or certified by TMDB.<br>The Movie Database (TMDB) is not affiliated with this application.`,
+            'footer.tag': 'Screen: your screening room',
+            'disclaimer.legal': 'Legal notice',
+            'disclaimer.title': 'WARNING',
+            'disclaimer.accept': 'Accept',
+            'disclaimer.body': `<p>This application is owned by <strong>padelle2603</strong> and protected by copyright law. It must be used in compliance with the European and Italian rules on viewing content subject to intellectual property. The owner assumes no responsibility for its illegal use and reserves every right, reason and action for its own protection, including recourse to the competent authorities, should the user's unlawful use cause it any harm of any kind. The program will start only after you click Accept to these conditions.</p>`,
+            'common.noTitle': 'Untitled',
+            'common.special': 'Special',
+            'common.other': 'Other…',
+            'common.tvKind': 'SERIES',
+            'common.movieKind': 'MOVIE',
+            'common.tvKindLong': 'TV SERIES',
+            'common.movieKindLong': 'MOVIE',
+            'common.saved': 'SAVED',
+            'common.toWatch': 'to watch',
+            'common.sync': '⟳ Sync',
+            'common.syncing': '⟳ …',
+            'episode.label': 'Episode {n}',
+            'episode.watched': '✓ Watched',
+            'episode.removeFromWatched': 'Remove from watched',
+            'episode.markWatched': 'Mark as watched',
+            'episode.watch': '▶ Watch',
+            'episode.watchAgain': '↻ Rewatch',
+            'episode.airingOn': 'Airs on {date}',
+            'episode.markAllWatched': '✓ Mark all as watched',
+            'episode.markAllUnwatched': 'Mark all as unwatched',
+            'msg.allWatched': '✓ All watched',
+            'msg.unwatchedCount': { one: '1 episode to watch', other: '{n} episodes to watch' },
+            'msg.countingEpisodes': 'Counting episodes…',
+            'msg.releaseBody': '«{title}» · new episode S{season}E{episode} in catalog',
+            'msg.moreReleases': '\n+{n} more',
+            'msg.firstSync': 'First sync completed: from now on you will receive release alerts.',
+            'msg.noNewReleases': 'No new releases: everything is up to date.',
+            'msg.needKey': 'A TMDB key is required to check releases. Set it in the Settings.',
+            'msg.emptyRoomForSync': 'The room is empty: nothing to check.',
+            'msg.networkError': 'Network error',
+            'msg.networkErrorDesc': 'We cannot reach the archive. Check your connection and try again.',
+            'msg.detailLoadError': 'Error loading the details',
+            'msg.episodesLoadError': 'Unable to load the episodes. Check your connection and try again.',
+            'msg.noEpisodes': 'No episodes listed by TMDB for this season. Use «Other…» to pick one by hand.',
+            'msg.errFileSharing': 'File-sharing protocols (magnet, torrent, ed2k) are not supported: use an http/https link.',
+            'msg.errOnlyHttp': 'Only http/https links are supported.',
+            'msg.errInvalidLink': 'Enter a valid http/https link.',
+            'msg.saved': 'Saved ✓',
+            'msg.keyRemoved': 'Key removed · set a key to search',
+            'msg.requestingPerms': 'Requesting permissions…',
+            'msg.permsDenied': 'Notification permission not granted',
+            'msg.testNotifyBody': 'Test notification: this is how we will alert you about new releases.',
+            'msg.testNotifySent': 'Test notification sent ✓',
+            'msg.testNotifyUnavailable': 'System notifications are not available here',
+            'msg.checkingUpdates': 'Checking…',
+            'msg.newVersionAvailable': 'New version {tag} available',
+            'msg.upToDate': 'You are up to date ✓',
+            'msg.updateCheckFailed': 'Could not check for updates',
+            'msg.writePermDenied': 'Write permission denied',
+            'msg.saveBackupDialog': 'Save the backup',
+            'msg.backupCreatedChoose': 'Backup created: choose where to save it ✓',
+            'msg.backupCreatedShareCancelled': 'Backup created ✓ · share cancelled',
+            'msg.backupNotShared': 'Backup created, but not shared',
+            'msg.backupSaved': 'Backup saved ✓',
+            'msg.backupSaveError': 'Unable to save the file',
+            'msg.saveCancelled': 'Save cancelled',
+            'msg.backupRestored': 'Backup restored ✓',
+            'msg.backupInvalid': 'Invalid backup file',
+            'msg.backupReadError': 'Unable to read the file',
+            'msg.acceptableIn': 'Can be accepted in {n}s',
+            'msg.acceptToStart': 'Accept to start BlameFlix',
+            'toast.newReleases': 'New releases in your room',
+            'toast.noSource': 'Source not available',
+            'notify.releases': 'BlameFlix · Releases'
+        }
+    };
+
+    // Translation lookup: current language, fallback to Italian.
+    function t(key, vars) {
+        const table = I18N[lang] || I18N.it;
+        let s = table[key];
+        if (s === undefined) s = I18N.it[key];
+        if (s === undefined) s = key;
+        if (vars) {
+            for (const k of Object.keys(vars)) {
+                s = String(s).replaceAll(`{${k}}`, vars[k]);
+            }
+        }
+        return s;
+    }
+
+    // Plural-aware lookup for entries shaped { one, other }.
+    function tp(key, n) {
+        const table = I18N[lang] || I18N.it;
+        const entry = table[key] || I18N.it[key] || { one: key, other: key };
+        const val = n === 1 ? entry.one : entry.other;
+        return String(val).replaceAll('{n}', n);
+    }
+
+    // Locale used for dates and TMDB requests.
+    function locale() {
+        return lang === 'en' ? 'en-US' : 'it-IT';
+    }
+
+    // Applies the current language to every static and dynamic element.
+    function applyLanguage() {
+        document.documentElement.lang = lang;
+        document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => { el.placeholder = t(el.dataset.i18nPlaceholder); });
+        document.querySelectorAll('[data-i18n-aria]').forEach(el => { el.setAttribute('aria-label', t(el.dataset.i18nAria)); });
+        document.querySelectorAll('[data-i18n-title]').forEach(el => { el.setAttribute('title', t(el.dataset.i18nTitle)); });
+        document.querySelectorAll('[data-i18n-alt]').forEach(el => { el.setAttribute('alt', t(el.dataset.i18nAlt)); });
+        document.querySelectorAll('[data-i18n-html]').forEach(el => { el.innerHTML = t(el.dataset.i18nHtml); });
+        syncTools();
+        if (typeof syncNotifySettingsInputs === 'function') syncNotifySettingsInputs();
+        renderNewsSection();
+        if (currentMedia && !detailView.hidden) {
+            showDetails(currentMedia.id, currentMedia.media_type);
+        } else {
+            renderHome();
+        }
+        syncResolverOverrideBtn();
+        if (currentMedia) updateWatchlistBtn();
+        if (latestRelease) showUpdateNotice(latestRelease);
+    }
+
+    // Switches the language (and optionally persists the choice).
+    function setLanguage(newLang, persist) {
+        if (newLang !== 'it' && newLang !== 'en') return;
+        lang = newLang;
+        if (persist) localStorage.setItem(LANG_STORAGE, lang);
+        applyLanguage();
+    }
+
+    let currentMedia = null; // The media currently shown in the details view
     let watchlist = JSON.parse(localStorage.getItem('myWatchlist')) || [];
-    const watchlistDetails = new Map(); // cache in-memory: chiave 'media_type:id' -> oggetto completo (mai persistito)
+    const watchlistDetails = new Map(); // in-memory cache: key 'media_type:id' -> full object (never persisted)
     let lastPlayed = JSON.parse(localStorage.getItem('myLastPlayed')) || [];
-    let customSelections = JSON.parse(localStorage.getItem('myCustomSelections')) || {}; // stagioni/episodi manuali per titolo
-    let customMode = false; // true quando si usano gli input manuali per una serie
-    let currentSeason = 1; // stagione selezionata nella lista puntate
-    let currentEpisode = 1; // episodio selezionato nella lista puntate
-    let watchedEpisodes = loadWatchedEpisodes(); // puntate viste: { showId: { stagione: { episodio: true } } }
-    let newsHistory = loadNewsHistory(); // cronologia in-app delle nuove uscite
+    let customSelections = JSON.parse(localStorage.getItem('myCustomSelections')) || {}; // manual seasons/episodes per title
+    let customMode = false; // true when the manual inputs are used for a series
+    let currentSeason = 1; // season selected in the episode list
+    let currentEpisode = 1; // episode selected in the episode list
+    let watchedEpisodes = loadWatchedEpisodes(); // watched episodes: { showId: { season: { episode: true } } }
+    let newsHistory = loadNewsHistory(); // in-app news history of new releases
     let searching = false;
-    let currentList = []; // Ultimi titoli renderizzati (watchlist o risultati ricerca)
+    let currentList = []; // Last rendered titles (watchlist or search results)
     let viewMode = ['grid', 'list'].includes(localStorage.getItem('myViewMode')) ? localStorage.getItem('myViewMode') : 'grid';
     let typeFilter = localStorage.getItem('myTypeFilter') || 'all'; // 'all' | 'movie' | 'tv'
-    let resolver = JSON.parse(localStorage.getItem('myResolver')) || {}; // template URL scelti dall'utente { movie, tv } (chiave storica, mantenuta per retrocompatibilità)
-    let resolverOverrides = JSON.parse(localStorage.getItem('myResolverOverrides')) || {}; // sorgente per titolo: chiave 'media_type:id' -> template (chiave storica, mantenuta per retrocompatibilità)
-    let latestRelease = null; // { tag, html_url, assets } dell'ultima release GitHub
+    let resolver = JSON.parse(localStorage.getItem('myResolver')) || {}; // user-chosen URL templates { movie, tv } (legacy key, kept for backward compatibility)
+    let resolverOverrides = JSON.parse(localStorage.getItem('myResolverOverrides')) || {}; // per-title source: key 'media_type:id' -> template (legacy key, kept for backward compatibility)
+    let latestRelease = null; // { tag, html_url, assets } of the latest GitHub release
 
-    // Notifiche di rilascio
+    // Release notifications
     const DEFAULT_NOTIFY_SETTINGS = { enabled: true, tv: true, autoSyncHours: 24 };
     let notifySettings = loadNotifySettings();
     let releaseState = loadReleaseState();
@@ -1920,23 +2426,25 @@
         return `${media_type}:${id}`;
     }
 
-    // In localStorage salviamo solo gli identificativi (conformità ai termini
-    // TMDB sul caching); i dettagli vivono solo in memoria.
+    // Only the identifiers are stored in localStorage (compliance with the TMDB
+    // caching terms); the details live only in memory.
     function persistWatchlist() {
         localStorage.setItem('myWatchlist', JSON.stringify(watchlist));
     }
 
-    // Ritorna i dettagli in cache per una voce, altrimenti la voce stessa
-    // (così la griglia funziona anche con dati minimi o risultati di ricerca).
+    // Returns the cached details for an entry, otherwise the entry itself
+    // (so the grid also works with minimal data or search results).
     function detailFor(item) {
         return watchlistDetails.get(watchlistKey(item.id, item.media_type)) || item;
     }
 
     function formatVote(vote) {
-        return vote ? Number(vote).toFixed(1).replace('.', ',') + ' / 10' : '—';
+        if (!vote) return '—';
+        const n = Number(vote).toFixed(1);
+        return (lang === 'it' ? n.replace('.', ',') : n) + ' / 10';
     }
 
-    // --- NOTIFICHE DI RILASCIO ---
+    // --- RELEASE NOTIFICATIONS ---
 
     const AUTO_SYNC_HOURS = [8, 12, 24, 48];
 
@@ -1949,7 +2457,7 @@
         }
     }
 
-    // Rende coerente l'intervallo di auto-sync, ammettendo solo i valori previsti.
+    // Makes the auto-sync interval consistent, accepting only the expected values.
     function sanitizeAutoSyncHours(hours) {
         const n = Number(hours);
         return AUTO_SYNC_HOURS.includes(n) ? n : DEFAULT_NOTIFY_SETTINGS.autoSyncHours;
@@ -1972,12 +2480,12 @@
         localStorage.setItem('myReleaseState', JSON.stringify(releaseState));
     }
 
-    // --- PUNTATE VISTE ---
-    // Formato interno: { showId: { stagione: [numeri...] } } (lista ordinata unica).
-    // Al salvataggio viene compresso in intervalli [[inizio,fine],...] dove più corto.
+    // --- WATCHED EPISODES ---
+    // Internal format: { showId: { season: [numbers...] } } (unique, ordered list).
+    // On save it is compressed into ranges [[start,end],...] when shorter.
 
-    // Legge una stagione in qualsiasi formato (vecchio {ep:true}, lista di numeri,
-    // intervalli) e restituisce la lista ordinata e unica dei numeri.
+    // Reads a season in any format (legacy {ep:true}, list of numbers,
+    // ranges) and returns the unique, ordered list of numbers.
     function seasonToList(value) {
         if (value === null || typeof value !== 'object') return [];
         const nums = [];
@@ -2005,7 +2513,7 @@
         return [...new Set(nums)].sort((a, b) => a - b);
     }
 
-    // Converte qualsiasi formato salvato nella lista interna per ogni stagione.
+    // Converts any saved format into the internal list for every season.
     function normalizeWatched(raw) {
         const out = {};
         if (!raw || typeof raw !== 'object') return out;
@@ -2022,7 +2530,7 @@
         return out;
     }
 
-    // Comprime una lista ordinata in intervalli [[inizio,fine],...].
+    // Compresses an ordered list into ranges [[start,end],...].
     function listToRanges(list) {
         if (!list.length) return [];
         const ranges = [];
@@ -2037,14 +2545,14 @@
         return ranges;
     }
 
-    // Per una stagione sceglie la forma più corta: lista di numeri o intervalli.
+    // For a season it picks the shortest form: list of numbers or ranges.
     function compactSeason(list) {
         if (!list.length) return [];
         const ranges = listToRanges(list);
         return JSON.stringify(ranges).length < JSON.stringify(list).length ? ranges : list;
     }
 
-    // Compatta tutte le stagioni per il salvataggio. Non muta l'input.
+    // Compacts all the seasons for saving. Does not mutate the input.
     function compressWatched(w) {
         const out = {};
         for (const showId of Object.keys(w)) {
@@ -2075,7 +2583,8 @@
         return !!list && list.includes(episode);
     }
 
-    // Segna (true) o toglie (false) una puntata dalle viste; senza force inverte.
+    // Marks (true) or removes (false) an episode from the watched ones; without
+    // force it toggles.
     function toggleEpisodeWatched(showId, season, episode, force) {
         const seasons = watchedEpisodes[showId] || (watchedEpisodes[showId] = {});
         const list = seasons[season] || [];
@@ -2093,7 +2602,7 @@
         return next;
     }
 
-    // --- CRONOLOGIA NOVITÀ ---
+    // --- NEWS HISTORY ---
 
     const NEWS_HISTORY_MAX = 30;
 
@@ -2107,7 +2616,7 @@
         localStorage.setItem('myNewsHistory', JSON.stringify(newsHistory));
     }
 
-    // Aggiunge una voce alla cronologia, deduplicando per media/Stagione/Episodio.
+    // Adds an entry to the history, deduplicating by media/season/episode.
     function addNewsEntry(entry) {
         const key = n => `${n.media_type}:${n.id}:${n.season ?? ''}:${n.episode ?? ''}`;
         newsHistory = newsHistory.filter(n => key(n) !== key(entry));
@@ -2124,7 +2633,7 @@
 
     function formatNewsDate(ts) {
         if (!ts) return '';
-        try { return new Date(ts).toLocaleDateString('it-IT'); } catch (err) { return ''; }
+        try { return new Date(ts).toLocaleDateString(locale()); } catch (err) { return ''; }
     }
 
     function renderNewsSection() {
@@ -2136,11 +2645,11 @@
         newsHistory.forEach(n => {
             const li = document.createElement('li');
             li.className = 'news-item';
-            const kind = n.media_type === 'tv' ? 'SERIE' : 'FILM';
+            const kind = n.media_type === 'tv' ? t('common.tvKind') : t('common.movieKind');
             const sub = n.media_type === 'tv' && n.season ? ` · S${n.season}E${n.episode}` : '';
             li.innerHTML = `
                 <span class="news-item__kind">${kind}</span>
-                <button type="button" class="news-item__title" onclick="showDetails(${n.id}, '${n.media_type}')">${escapeHtml(n.title || 'Senza titolo')}${escapeHtml(sub)}</button>
+                <button type="button" class="news-item__title" onclick="showDetails(${n.id}, '${n.media_type}')">${escapeHtml(n.title || t('common.noTitle'))}${escapeHtml(sub)}</button>
                 <time class="news-item__date">${escapeHtml(formatNewsDate(n.date))}</time>
             `;
             list.appendChild(li);
@@ -2149,9 +2658,9 @@
 
     const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-    // Timestamp di messa in onda di un episodio. TMDB di norma fornisce solo la
-    // data (YYYY-MM-DD): in quel caso si usa la mezzanotte del giorno. Se la
-    // stringa contiene anche l'orario (es. "2026-08-16T21:00:00Z") viene usato.
+    // Air timestamp of an episode. TMDB normally provides only the date
+    // (YYYY-MM-DD): in that case midnight of that day is used. If the string
+    // also contains the time (e.g. "2026-08-16T21:00:00Z") it is used.
     function airDateTs(airDate) {
         if (!airDate) return null;
         const s = String(airDate);
@@ -2162,8 +2671,8 @@
         return Number.isFinite(t) ? t : null;
     }
 
-    // True se la messa in onda è già avvenuta (incluso l'orario, se disponibile).
-    // Senza data l'episodio si considera già in onda.
+    // True if the airing already happened (including the time, when available).
+    // Without a date the episode is considered already aired.
     function isAired(airDate) {
         const ts = airDateTs(airDate);
         if (ts === null) return true;
@@ -2176,7 +2685,7 @@
         return res.json();
     }
 
-    // Richiede il permesso di sistema per le notifiche (Android / browser).
+    // Requests the system permission for notifications (Android / browser).
     async function ensureNotifyPermission() {
         if (window.Capacitor?.Plugins?.LocalNotifications) {
             try {
@@ -2199,9 +2708,9 @@
         return false;
     }
 
-    // Invia una notifica di sistema sul canale giusto (Android, Electron, web).
-    // Restituisce false se nessun canale di sistema è disponibile.
-    // data (facoltativo): { media_type, id, season?, episode? } per aprire la scheda al click.
+    // Sends a system notification on the right channel (Android, Electron, web).
+    // Returns false if no system channel is available.
+    // data (optional): { media_type, id, season?, episode? } to open the page on click.
     async function notify(title, body, data) {
         if (window.Capacitor?.Plugins?.LocalNotifications) {
             try {
@@ -2243,7 +2752,7 @@
         return false;
     }
 
-    // --- TOAST IN-APP ---
+    // --- IN-APP TOAST ---
 
     const toastEl = document.getElementById('toast');
     let toastTimer = null;
@@ -2256,17 +2765,17 @@
         toastTimer = setTimeout(() => toastEl.classList.remove('is-visible'), ms);
     }
 
-    // Confronta lo stato TMDB dei titoli salvati con l'ultimo controllo e
-    // segnala le nuove uscite (film usciti o puntate andate in onda).
-    // La prima sincronizzazione fa solo da "baseline": registra lo stato
-    // corrente senza notificare, per evitare una raffica di avvisi vecchi.
+    // Checks the TMDB state of the saved titles against the last check and
+    // reports new releases (movies released or episodes aired). The first sync
+    // only acts as a "baseline": it records the current state without
+    // notifying, to avoid a burst of stale alerts.
     async function checkReleases(manual = false) {
         if (!API_KEY) {
-            if (manual) showToast('Sync', 'Serve la chiave TMDB per verificare le uscite. Impostala nelle Impostazioni.');
+            if (manual) showToast('Sync', t('msg.needKey'));
             return { newCount: 0, baseline: false };
         }
         if (!watchlist.length) {
-            if (manual) showToast('Sync', 'La sala è vuota: non c\'è nulla da controllare.');
+            if (manual) showToast('Sync', t('msg.emptyRoomForSync'));
             return { newCount: 0, baseline: false };
         }
 
@@ -2277,21 +2786,21 @@
         for (const item of watchlist) {
             if (item.media_type !== 'tv') continue;
             try {
-                const data = await fetchJson(`${BASE_URL}/tv/${item.id}?api_key=${API_KEY}&language=it-IT`);
+                const data = await fetchJson(`${BASE_URL}/tv/${item.id}?api_key=${API_KEY}&language=${locale()}`);
                 const last = data.last_episode_to_air;
                 if (last && last.air_date && isAired(last.air_date)) {
                     const cur = { season: last.season_number, episode: last.episode_number };
                     const stored = releaseState.shows[item.id];
                     const isNew = !stored || stored.season !== cur.season || stored.episode !== cur.episode;
                     releaseState.shows[item.id] = cur;
-                    // Le puntate già viste non contano come nuove uscite.
+                    // Episodes already watched do not count as new releases.
                     if (!isBaseline && isNew && notifySettings.tv && !isEpisodeWatched(item.id, cur.season, cur.episode)) {
-                        const title = data.name || data.title || 'Senza titolo';
+                        const title = data.name || data.title || t('common.noTitle');
                         newReleases.push({ media_type: 'tv', id: item.id, title, season: cur.season, episode: cur.episode });
                     }
                 }
             } catch (err) {
-                // Titolo non disponibile (offline o rimosso): si passa al successivo.
+                // Title unavailable (offline or removed): move to the next one.
             }
             await sleep(150);
         }
@@ -2300,7 +2809,7 @@
         persistReleaseState();
 
         function releaseBody(r) {
-            return `«${r.title}» · nuova puntata S${r.season}E${r.episode} in catalogo`;
+            return t('msg.releaseBody', { title: r.title, season: r.season, episode: r.episode });
         }
 
         for (const r of newReleases) {
@@ -2311,18 +2820,18 @@
         if (newReleases.length && notifySettings.enabled) {
             const granted = await ensureNotifyPermission();
             for (const r of newReleases) {
-                if (granted) await notify('BlameFlix · Rilasci', releaseBody(r), { ...r });
+                if (granted) await notify(t('notify.releases'), releaseBody(r), { ...r });
             }
         }
 
         if (newReleases.length) {
             const list = newReleases.slice(0, 4).map(releaseBody).join('\n');
-            const extra = newReleases.length > 4 ? `\n+${newReleases.length - 4} altro` : '';
-            showToast('Nuove uscite in sala', list + extra, 8000);
+            const extra = newReleases.length > 4 ? t('msg.moreReleases', { n: newReleases.length - 4 }) : '';
+            showToast(t('toast.newReleases'), list + extra, 8000);
         } else if (manual) {
             showToast('Sync', isBaseline
-                ? 'Prima sincronizzazione completata: da ora riceverai gli avvisi di rilascio.'
-                : 'Nessuna nuova uscita: tutto aggiornato.');
+                ? t('msg.firstSync')
+                : t('msg.noNewReleases'));
         }
 
         return { newCount: newReleases.length, baseline: isBaseline };
@@ -2333,29 +2842,29 @@
     async function syncReleases() {
         if (btnSync.classList.contains('is-busy')) return;
         btnSync.classList.add('is-busy');
-        btnSync.innerText = '⟳ …';
+        btnSync.innerText = t('common.syncing');
         try {
             await checkReleases(true);
         } finally {
             btnSync.classList.remove('is-busy');
-            btnSync.innerText = '⟳ Sync';
+            btnSync.innerText = t('common.sync');
         }
     }
 
-    // --- AUTO-SYNC PERIODICO ---
+    // --- PERIODIC AUTO-SYNC ---
 
     function autoSyncIntervalMs() {
         return sanitizeAutoSyncHours(notifySettings.autoSyncHours) * 3600 * 1000;
     }
 
-    // True se è ora di fare un controllo (intervallo configurato trascorso).
+    // True if it is time to run a check (configured interval elapsed).
     function shouldAutoSync() {
         return !releaseState.lastSync || Date.now() - releaseState.lastSync >= autoSyncIntervalMs();
     }
 
     let autoSyncTimer = null;
 
-    // Riarma il timer periodico ogni volta che cambia l'intervallo configurato.
+    // Re-arms the periodic timer every time the configured interval changes.
     function startAutoSyncTimer() {
         if (autoSyncTimer) clearInterval(autoSyncTimer);
         autoSyncTimer = setInterval(() => {
@@ -2363,15 +2872,15 @@
         }, autoSyncIntervalMs());
     }
 
-    // --- GESTIONE VISTE ---
+    // --- VIEW MANAGEMENT ---
 
     function renderHome() {
         searching = false;
         homeView.hidden = false;
         detailView.hidden = true;
-        sectionEyebrow.innerText = 'La tua sala';
+        sectionEyebrow.innerText = t('home.yourroom');
         sectionTitle.innerText = 'BlameFlix';
-        sectionCount.innerText = watchlist.length ? `${watchlist.length} TITOLI` : '';
+        sectionCount.innerText = watchlist.length ? `${watchlist.length} ${t('home.titles')}` : '';
         searchClear.hidden = searchInput.value.length === 0;
         currentList = watchlist;
         renderGrid(currentList);
@@ -2402,21 +2911,21 @@
         searchClear.hidden = false;
         homeView.hidden = false;
         detailView.hidden = true;
-        sectionEyebrow.innerText = 'Archivio TMDB';
-        sectionTitle.innerText = `Risultati per «${q}»`;
+        sectionEyebrow.innerText = t('home.tmdbArchive');
+        sectionTitle.innerText = t('home.searchResults', { q });
         sectionCount.innerText = '';
 
         try {
-            const res = await fetch(`${BASE_URL}/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(q)}&language=it-IT`);
+            const res = await fetch(`${BASE_URL}/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(q)}&language=${locale()}`);
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const data = await res.json();
-            // Filtra solo movie e tv
+            // Filter only movies and TV series
             const results = data.results.filter(item => item.media_type === 'movie' || item.media_type === 'tv');
             currentList = results;
             renderGrid(currentList);
         } catch (err) {
-            console.error('Errore ricerca:', err);
-            showEmpty('Errore di rete', 'Non riusciamo a contattare l\'archivio. Controlla la connessione e riprova.');
+            console.error('Search error:', err);
+            showEmpty(t('msg.networkError'), t('msg.networkErrorDesc'));
         }
     }
 
@@ -2435,11 +2944,11 @@
 
         if (!filtered.length) {
             if (items.length && typeFilter !== 'all') {
-                showEmpty('Nessun titolo', filterLabel(typeFilter) + ' non trovati con questi criteri.');
+                showEmpty(t('home.emptyFilter'), t('home.emptyFilterDesc', { label: filterLabel(typeFilter) }));
             } else if (searching) {
-                showEmpty('Nessun risultato', 'Non abbiamo trovato nulla con questa ricerca. Prova un altro titolo.');
+                showEmpty(t('home.noResults'), t('home.noResultsDesc'));
             } else {
-                showEmpty('Nessun titolo in sala', 'La tua sala è vuota. Cerca il primo film o la prima serie qui sopra per iniziare.');
+                showEmpty(t('home.noTitles'), t('home.emptyRoom'));
             }
             return;
         }
@@ -2452,11 +2961,11 @@
         filtered.forEach((item) => {
             const d = detailFor(item);
             const poster = d.poster_path ? `${IMG_BASE}${d.poster_path}` : PLACEHOLDER;
-            const title = d.title || d.name || 'Senza titolo';
+            const title = d.title || d.name || t('common.noTitle');
             const date = d.release_date || d.first_air_date || '';
             const year = date ? date.substring(0, 4) : '—';
-            const vote = d.vote_average ? Number(d.vote_average).toFixed(1).replace('.', ',') : '—';
-            const kind = d.media_type === 'tv' ? 'SERIE' : 'FILM';
+            const vote = d.vote_average ? (lang === 'it' ? Number(d.vote_average).toFixed(1).replace('.', ',') : Number(d.vote_average).toFixed(1)) : '—';
+            const kind = d.media_type === 'tv' ? t('common.tvKind') : t('common.movieKind');
             const saved = isSaved(item.id, item.media_type);
 
             const card = document.createElement('div');
@@ -2479,8 +2988,8 @@
                 <div class="card-poster">
                     <img src="${poster}" alt="${escapeHtml(title)}" loading="lazy">
                     <span class="card-kind">${kind}</span>
-                    ${saved ? '<span class="stamp">SALVATO</span>' : ''}
-                    ${unwatched > 0 ? `<span class="card-unwatched">${unwatched} da vedere</span>` : ''}
+                    ${saved ? `<span class="stamp">${t('common.saved')}</span>` : ''}
+                    ${unwatched > 0 ? `<span class="card-unwatched">${unwatched} ${t('common.toWatch')}</span>` : ''}
                 </div>
                 <div class="credit-block">
                     <h3 class="credit-title">${escapeHtml(title)}</h3>
@@ -2491,10 +3000,12 @@
         });
     }
 
-    // --- FILTRI E VISUALIZZAZIONE CATALOGO ---
+    // --- CATALOG FILTERS AND VIEW ---
 
     function filterLabel(type) {
-        return type === 'movie' ? 'film' : type === 'tv' ? 'serie' : 'titoli';
+        if (type === 'movie') return lang === 'en' ? 'movies' : 'film';
+        if (type === 'tv') return lang === 'en' ? 'series' : 'serie';
+        return lang === 'en' ? 'titles' : 'titoli';
     }
 
     function syncTools() {
@@ -2528,19 +3039,19 @@
         detailView.hidden = false;
 
         try {
-            const res = await fetch(`${BASE_URL}/${type}/${id}?api_key=${API_KEY}&language=it-IT`);
+            const res = await fetch(`${BASE_URL}/${type}/${id}?api_key=${API_KEY}&language=${locale()}`);
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const data = await res.json();
-            if (!data.id) throw new Error('Dati non validi');
-            currentMedia = { ...data, media_type: type }; // Salva i dati completi
+            if (!data.id) throw new Error('Invalid data');
+            currentMedia = { ...data, media_type: type }; // Keep the full data in memory
 
-            // Popola UI
-            document.getElementById('detail-title').innerText = data.title || data.name || 'Senza titolo';
-            document.getElementById('detail-overview').innerText = data.overview || 'Nessuna descrizione disponibile.';
+            // Populate the UI
+            document.getElementById('detail-title').innerText = data.title || data.name || t('common.noTitle');
+            document.getElementById('detail-overview').innerText = data.overview || t('detail.noOverview');
             document.getElementById('detail-date').innerText = data.release_date || data.first_air_date || '—';
             document.getElementById('detail-vote').innerText = formatVote(data.vote_average);
             document.getElementById('detail-poster').src = data.poster_path ? `${IMG_BASE}${data.poster_path}` : PLACEHOLDER;
-            document.getElementById('detail-kind').innerText = type === 'tv' ? 'SERIE TV' : 'FILM';
+            document.getElementById('detail-kind').innerText = type === 'tv' ? t('common.tvKindLong') : t('common.movieKindLong');
 
             // Hero backdrop
             const backdrop = document.getElementById('detail-backdrop');
@@ -2551,7 +3062,7 @@
                 backdrop.hidden = true;
             }
 
-            // Gestione controlli TV vs Film
+            // Manage TV vs movie controls
             const tvControls = document.getElementById('tv-controls');
             const episodeSection = document.getElementById('episode-section');
             if (type === 'tv') {
@@ -2576,12 +3087,12 @@
             }
 
         } catch (err) {
-            alert('Errore nel caricamento dei dettagli');
+            alert(t('msg.detailLoadError'));
             showHome();
         }
     }
 
-    // --- SELEZIONI STAGIONE / EPISODI ---
+    // --- SEASON / EPISODE SELECTIONS ---
 
     const inputSeason = document.getElementById('input-season');
     const customControls = document.getElementById('custom-controls');
@@ -2589,11 +3100,11 @@
     const inputEpisodeCustom = document.getElementById('input-episode-custom');
     const episodeSection = document.getElementById('episode-section');
     const episodeList = document.getElementById('episode-list');
-    const seasonEpisodesCache = new Map(); // chiave 'showId:stagione' -> array episodi TMDB
+    const seasonEpisodesCache = new Map(); // key 'showId:season' -> TMDB episodes array
 
-    // Costruisce le stagioni del titolo nel selettore:
-    // numerate da 1 in su, poi la stagione speciale (0) rinominata "Speciale".
-    // In fondo è disponibile l'opzione "Altro…" per valori non presenti su TMDB.
+    // Builds the seasons of the title into the selector:
+    // numbered from 1 up, then the special season (0) renamed "Special".
+    // At the end there is the "Other…" option for values not present on TMDB.
     function setupSeasonControls(tv, opts) {
         customMode = false;
         customControls.hidden = true;
@@ -2609,17 +3120,17 @@
         seasons.forEach(s => {
             const opt = document.createElement('option');
             opt.value = s.season_number;
-            opt.textContent = s.season_number === 0 ? 'Speciale' : String(s.season_number);
+            opt.textContent = s.season_number === 0 ? t('common.special') : String(s.season_number);
             inputSeason.appendChild(opt);
         });
         const otherSeason = document.createElement('option');
         otherSeason.value = 'custom';
-        otherSeason.textContent = 'Altro…';
+        otherSeason.textContent = t('common.other');
         inputSeason.appendChild(otherSeason);
 
-        // Ripristina la stagione richiesta (es. da una notifica), poi l'ultima
-        // riprodotta, altrimenti la prima stagione. Se la stagione non è
-        // elencata da TMDB riapre in modalità manuale.
+        // Restores the requested season (e.g. from a notification), then the
+        // last played one, otherwise the first season. If the season is not
+        // listed by TMDB it reopens in manual mode.
         const desired = (opts && opts.season)
             ? { season: Number(opts.season), episode: Number(opts.episode) || 1 }
             : getLastPlayed(tv.id);
@@ -2636,7 +3147,7 @@
         loadEpisodes(season, known ? desired.episode : null);
     }
 
-    // Carica gli episodi della stagione da TMDB (con cache in memoria) e li mostra.
+    // Loads the episodes of a season from TMDB (with an in-memory cache) and shows them.
     async function loadEpisodes(season, highlightEpisode = null) {
         currentSeason = Number(season);
         currentEpisode = highlightEpisode || 1;
@@ -2673,11 +3184,11 @@
             eps = seasonEpisodesCache.get(cacheKey);
         } else {
             try {
-                const data = await fetchJson(`${BASE_URL}/tv/${currentMedia.id}/season/${currentSeason}?api_key=${API_KEY}&language=it-IT`);
+                const data = await fetchJson(`${BASE_URL}/tv/${currentMedia.id}/season/${currentSeason}?api_key=${API_KEY}&language=${locale()}`);
                 eps = data.episodes || [];
                 seasonEpisodesCache.set(cacheKey, eps);
             } catch (err) {
-                episodeList.innerHTML = '<p class="episode-list__empty">Impossibile caricare gli episodi. Controlla la connessione e riprova.</p>';
+                episodeList.innerHTML = '<p class="episode-list__empty">' + t('msg.episodesLoadError') + '</p>';
                 return;
             }
         }
@@ -2699,19 +3210,19 @@
         if (parts.length !== 3 || !parts[0] || !parts[1] || !parts[2]) return dateStr;
         const dt = new Date(parts[0], parts[1] - 1, parts[2]);
         let out;
-        try { out = dt.toLocaleDateString('it-IT', { year: 'numeric', month: 'short', day: 'numeric' }); }
+        try { out = dt.toLocaleDateString(locale(), { year: 'numeric', month: 'short', day: 'numeric' }); }
         catch (err) { out = dateStr; }
         if (timePart) out += ` · ${timePart}`;
         return out;
     }
 
-    // Rende la lista puntate in stile streaming: miniatura, numero, titolo,
-    // meta, sinossi e pulsante play. Viste = grigiate con badge "✓ Visto";
-    // non ancora in onda = disattivate con la data di uscita.
+    // Renders the episode list in a streaming style: thumbnail, number,
+    // title, meta, synopsis and a play button. Watched = greyed out with a
+    // "✓ Watched" badge; not yet aired = disabled with the air date.
     function renderEpisodeList(eps, highlightEpisode) {
         episodeList.innerHTML = '';
         if (!eps.length) {
-            episodeList.innerHTML = '<p class="episode-list__empty">Nessun episodio elencato da TMDB per questa stagione. Usa «Altro…» per sceglierne uno a mano.</p>';
+            episodeList.innerHTML = '<p class="episode-list__empty">' + t('msg.noEpisodes') + '</p>';
             return;
         }
 
@@ -2728,34 +3239,34 @@
                 + (resume ? ' is-resume' : '');
 
             const still = ep.still_path ? `${IMG_STILL}${ep.still_path}` : EPISODE_PLACEHOLDER;
-            const title = ep.name || `Episodio ${epNum}`;
+            const title = ep.name || t('episode.label', { n: epNum });
             const meta = [];
             if (ep.runtime) meta.push(`${ep.runtime} min`);
             if (ep.air_date) meta.push(formatAirDateTime(ep.air_date));
-            if (ep.vote_average) meta.push(`★ ${Number(ep.vote_average).toFixed(1).replace('.', ',')}`);
+            if (ep.vote_average) meta.push(`★ ${lang === 'it' ? Number(ep.vote_average).toFixed(1).replace('.', ',') : Number(ep.vote_average).toFixed(1)}`);
 
             row.innerHTML = `
                 <div class="episode-row__thumb">
                     <img src="${still}" alt="${escapeHtml(title)}" loading="lazy">
-                    <span class="episode-row__num">${currentSeason === 0 ? 'Speciale' : currentSeason}-${epNum}</span>
+                    <span class="episode-row__num">${currentSeason === 0 ? t('common.special') : currentSeason}-${epNum}</span>
                 </div>
                 <div class="episode-row__body">
                     <div class="episode-row__head">
                         <h4 class="episode-row__title">${escapeHtml(title)}</h4>
-                        ${watched ? `<span class="episode-row__badge" title="Togli da viste" onclick="toggleWatchedFromList(${currentSeason}, ${epNum})">✓ Visto</span>` : ''}
+                        ${watched ? `<span class="episode-row__badge" title="${t('episode.removeFromWatched')}" onclick="toggleWatchedFromList(${currentSeason}, ${epNum})">${t('episode.watched')}</span>` : ''}
                     </div>
                     <p class="episode-row__meta">${escapeHtml(meta.join(' · '))}</p>
-                    <p class="episode-row__overview">${escapeHtml(ep.overview || 'Nessuna descrizione disponibile.')}</p>
+                    <p class="episode-row__overview">${escapeHtml(ep.overview || t('detail.noOverview'))}</p>
                 </div>
                 <div class="episode-row__actions">
                     <button type="button" class="btn episode-row__play" ${future ? 'disabled' : ''}
                         onclick="playEpisode(${currentSeason}, ${epNum})"
                         ${future ? `title="${escapeHtml(formatAirDateTime(ep.air_date))}"` : ''}>
-                        ${future ? `In uscita il ${escapeHtml(formatAirDateTime(ep.air_date))}` : (watched ? '↻ Rivisualizza' : '▶ Guarda')}
+                        ${future ? t('episode.airingOn', { date: escapeHtml(formatAirDateTime(ep.air_date)) }) : (watched ? t('episode.watchAgain') : t('episode.watch'))}
                     </button>
                     <button type="button" class="episode-row__toggle" ${future ? 'disabled' : ''}
                         onclick="toggleWatchedFromList(${currentSeason}, ${epNum})"
-                        title="${watched ? 'Togli da viste' : 'Segna come vista'}">
+                        title="${watched ? t('episode.removeFromWatched') : t('episode.markWatched')}">
                         ${watched ? '✓' : '○'}
                     </button>
                 </div>
@@ -2768,11 +3279,11 @@
             const aired = eps.filter(ep => isAired(ep.air_date));
             const allWatched = aired.length > 0 && aired.every(ep => isEpisodeWatched(currentMedia.id, currentSeason, ep.episode_number));
             markBtn.disabled = aired.length === 0;
-            markBtn.innerText = allWatched ? 'Segna tutte come non viste' : '✓ Segna tutte come viste';
+            markBtn.innerText = allWatched ? t('episode.markAllUnwatched') : t('episode.markAllWatched');
         }
     }
 
-    // Play da una riga della lista: segna come vista e apre il player.
+    // Play from a list row: marks as watched and opens the player.
     function playEpisode(season, episode) {
         currentSeason = Number(season);
         currentEpisode = Number(episode);
@@ -2782,7 +3293,7 @@
         refreshHomeUnwatchedCount();
     }
 
-    // Toggle manuale visto/non visto da una riga della lista.
+    // Manual watched/unwatched toggle from a list row.
     function toggleWatchedFromList(season, episode) {
         toggleEpisodeWatched(currentMedia.id, Number(season), Number(episode));
         const cached = seasonEpisodesCache.get(`${currentMedia.id}:${currentSeason}`);
@@ -2791,8 +3302,8 @@
         refreshHomeUnwatchedCount();
     }
 
-    // Segna come viste (o come non viste) tutte le puntate già in onda della
-    // stagione corrente con un solo tocco. Le puntate future restano bloccate.
+    // Marks as watched (or unwatched) all the already-aired episodes of the
+    // current season with a single tap. Future episodes stay locked.
     function markSeasonWatched() {
         if (!currentMedia || currentMedia.media_type !== 'tv') return;
         const eps = seasonEpisodesCache.get(`${currentMedia.id}:${currentSeason}`);
@@ -2819,8 +3330,8 @@
         refreshHomeUnwatchedCount();
     }
 
-    // Segna come viste tutte le puntate già in onda di ogni stagione (fino a
-    // oggi). Le puntate future restano bloccate.
+    // Marks as watched all the already-aired episodes of every season (up to
+    // today). Future episodes stay locked.
     async function markAllAiredWatched() {
         if (!currentMedia || currentMedia.media_type !== 'tv') return;
         const btn = document.getElementById('btn-mark-all-aired');
@@ -2832,7 +3343,7 @@
             const key = `${currentMedia.id}:${sn}`;
             let eps = seasonEpisodesCache.get(key);
             if (!eps) {
-                const data = await fetchJson(`${BASE_URL}/tv/${currentMedia.id}/season/${sn}?api_key=${API_KEY}&language=it-IT`);
+                const data = await fetchJson(`${BASE_URL}/tv/${currentMedia.id}/season/${sn}?api_key=${API_KEY}&language=${locale()}`);
                 eps = data.episodes || [];
                 seasonEpisodesCache.set(key, eps);
             }
@@ -2862,8 +3373,9 @@
 
     const unwatchedEl = document.getElementById('detail-unwatched');
 
-    // Conta le puntate già in onda non ancora viste della serie e aggiorna il
-    // contatore sull'hero. Scarica (in cache) le stagioni non ancora caricate.
+    // Counts the already-aired episodes not yet watched of the series and
+    // updates the counter on the hero. Downloads (and caches) the seasons not
+    // loaded yet.
     async function refreshUnwatchedCount() {
         if (!currentMedia || currentMedia.media_type !== 'tv' || !unwatchedEl) {
             if (unwatchedEl) unwatchedEl.hidden = true;
@@ -2875,7 +3387,7 @@
             const key = `${currentMedia.id}:${sn}`;
             let eps = seasonEpisodesCache.get(key);
             if (!eps) {
-                const data = await fetchJson(`${BASE_URL}/tv/${currentMedia.id}/season/${sn}?api_key=${API_KEY}&language=it-IT`);
+                const data = await fetchJson(`${BASE_URL}/tv/${currentMedia.id}/season/${sn}?api_key=${API_KEY}&language=${locale()}`);
                 eps = data.episodes || [];
                 seasonEpisodesCache.set(key, eps);
             }
@@ -2893,23 +3405,23 @@
 
         unwatchedEl.classList.toggle('is-all-clear', total === 0);
         unwatchedEl.innerText = total === 0
-            ? '✓ Tutto visto'
-            : `${total} puntata${total === 1 ? '' : 'e'} da vedere`;
+            ? t('msg.allWatched')
+            : tp('msg.unwatchedCount', total);
         unwatchedEl.hidden = false;
         return total;
     }
 
-    // --- CONTATORE HOME (puntate da vedere in tutta la sala) ---
+    // --- HOME COUNTER (episodes to watch across the whole room) ---
 
     const homeUnwatchedEl = document.getElementById('home-unwatched');
-    const tvSeasonsCache = new Map(); // id -> array di stagioni (per il contatore home)
-    const showUnwatchedCache = new Map(); // id -> puntate non viste (badge sui poster)
+    const tvSeasonsCache = new Map(); // id -> seasons array (for the home counter)
+    const showUnwatchedCache = new Map(); // id -> unwatched episodes (poster badges)
     let homeCountBusy = false;
 
     async function fetchSeasons(showId) {
         if (tvSeasonsCache.has(showId)) return tvSeasonsCache.get(showId);
         try {
-            const data = await fetchJson(`${BASE_URL}/tv/${showId}?api_key=${API_KEY}&language=it-IT`);
+            const data = await fetchJson(`${BASE_URL}/tv/${showId}?api_key=${API_KEY}&language=${locale()}`);
             const seasons = (data.seasons || []).filter(s => s.season_number >= 0);
             tvSeasonsCache.set(showId, seasons);
             return seasons;
@@ -2918,14 +3430,14 @@
         }
     }
 
-    // Puntate già in onda non viste di una singola serie (usa la cache stagioni).
+    // Already-aired, unwatched episodes of a single series (uses the seasons cache).
     async function countUnwatchedForShow(showId) {
         const seasons = await fetchSeasons(showId);
         const results = await Promise.allSettled(seasons.map(async s => {
             const key = `${showId}:${s.season_number}`;
             let eps = seasonEpisodesCache.get(key);
             if (!eps) {
-                const data = await fetchJson(`${BASE_URL}/tv/${showId}/season/${s.season_number}?api_key=${API_KEY}&language=it-IT`);
+                const data = await fetchJson(`${BASE_URL}/tv/${showId}/season/${s.season_number}?api_key=${API_KEY}&language=${locale()}`);
                 eps = data.episodes || [];
                 seasonEpisodesCache.set(key, eps);
             }
@@ -2944,7 +3456,7 @@
         return total;
     }
 
-    // Aggiorna in-place i badge "N da vedere" sui poster delle serie in home.
+    // Updates in place the "N to watch" badges on the series posters in home.
     function updateGridUnwatchedBadges() {
         grid.querySelectorAll('.card[data-type="tv"]').forEach(card => {
             const id = Number(card.dataset.id);
@@ -2956,7 +3468,7 @@
                     badge.className = 'card-unwatched';
                     card.querySelector('.card-poster').appendChild(badge);
                 }
-                badge.textContent = `${count} da vedere`;
+                badge.textContent = `${count} ${t('common.toWatch')}`;
             } else if (badge) {
                 badge.remove();
             }
@@ -2972,7 +3484,7 @@
         }
 
         homeCountBusy = true;
-        homeUnwatchedEl.innerText = 'Conto puntate…';
+        homeUnwatchedEl.innerText = t('msg.countingEpisodes');
         homeUnwatchedEl.hidden = false;
         try {
             let total = 0;
@@ -2980,15 +3492,15 @@
             results.forEach(r => { if (r.status === 'fulfilled') total += r.value; });
             homeUnwatchedEl.classList.toggle('is-all-clear', total === 0);
             homeUnwatchedEl.innerText = total === 0
-                ? '✓ Tutto visto'
-                : `${total} puntata${total === 1 ? '' : 'e'} da vedere`;
+                ? t('msg.allWatched')
+                : tp('msg.unwatchedCount', total);
             updateGridUnwatchedBadges();
         } finally {
             homeCountBusy = false;
         }
     }
 
-    // Entra in modalità manuale: mostra gli input Stagione/Episodio liberi.
+    // Enters manual mode: shows the free Season/Episode inputs.
     function enterCustomMode() {
         customMode = true;
         customControls.hidden = false;
@@ -2999,7 +3511,7 @@
         inputEpisodeCustom.value = c?.episode ?? 1;
     }
 
-    // Esce dalla modalità manuale tornando al selettore stagione e alla lista puntate.
+    // Exits manual mode, going back to the season selector and the episode list.
     function exitCustomMode() {
         customMode = false;
         customControls.hidden = true;
@@ -3015,9 +3527,9 @@
         }
     }
 
-    // --- LOGICA PLAYER ---
+    // --- PLAYER LOGIC ---
 
-    // Rileva se si sta usando l'app da telefono o da PC
+    // Detects whether the app is being used from a phone or a PC
     function isMobile() {
         if (window.Capacitor?.isNativePlatform?.()) return true;
         const ua = navigator.userAgent || '';
@@ -3026,12 +3538,12 @@
         return mobileUA || (('ontouchstart' in window || navigator.maxTouchPoints > 0) && coarse);
     }
 
-    // Apre il player in una finestra/scheda nuova (browser desktop)
+    // Opens the player in a new window/tab (desktop browser)
     function openWindow(url) {
         window.open(url, '_blank', 'noopener');
     }
 
-    // Apre il player nel browser esterno (telefono, tramite plugin Capacitor)
+    // Opens the player in the external browser (phone, via the Capacitor plugin)
     async function openBrowser(url) {
         if (window.Capacitor?.Plugins?.Browser) {
             await window.Capacitor.Plugins.Browser.open({ url });
@@ -3040,7 +3552,7 @@
         }
     }
 
-    // --- RIPRESA SERIE (ultime stagioni/episodi riprodotti) ---
+    // --- SERIES RESUME (last played seasons/episodes) ---
 
     function saveLastPlayed(media, season, episode) {
         const index = lastPlayed.findIndex(l => l.id === media.id);
@@ -3057,10 +3569,10 @@
         return lastPlayed.find(l => l.id === id);
     }
 
-    // Sostituisce i segnaposto ({id}, {type}, {season}, {episode}) nel template
-    // scelto dall'utente. Non accoda alcun segmento: l'URL viene aperto
-    // esattamente come configurato, con i soli segnaposto sostituiti.
-    // Restituisce null se il template non è valido o lascia segnaposto non risolti.
+    // Replaces the placeholders ({id}, {type}, {season}, {episode}) in the
+    // template chosen by the user. It does not append any segment: the URL is
+    // opened exactly as configured, with only the placeholders replaced.
+    // Returns null if the template is invalid or leaves unresolved placeholders.
     function resolveTemplate(template, vars) {
         let url = String(template).trim();
         if (!url) return null;
@@ -3077,13 +3589,13 @@
         return url;
     }
 
-    // Protocolli di file-sharing peer-to-peer: BlameFlix apre solo http/https,
-    // quindi questi schemi non possono essere usati come sorgente.
+    // Peer-to-peer file-sharing protocols: BlameFlix only opens http/https,
+    // so these schemes cannot be used as a source.
     const BANNED_SOURCE_SCHEMES = ['magnet', 'torrent', 'ed2k', 'kademlia', 'dht'];
 
-    // Verifica che il template della sorgente sia un URL http/https. Ritorna
-    // un messaggio d'errore se il template non è utilizzabile, altrimenti null
-    // (un template vuoto è valido: significa "Guarda ora" non attivo).
+    // Checks that the source template is an http/https URL. Returns an error
+    // message if the template is unusable, otherwise null (an empty template
+    // is valid: it means "Watch now" is off).
     function sourceTemplateError(template) {
         const t = String(template || '').trim();
         if (!t) return null;
@@ -3092,12 +3604,12 @@
             const s = scheme[1].toLowerCase();
             if (s !== 'http' && s !== 'https') {
                 return BANNED_SOURCE_SCHEMES.includes(s)
-                    ? 'Protocolli di file-sharing (magnet, torrent, ed2k) non supportati: usa un collegamento http/https.'
-                    : 'Solo collegamenti http/https supportati.';
+                    ? t('msg.errFileSharing')
+                    : t('msg.errOnlyHttp');
             }
         }
         if (!/^https?:\/\//i.test(t)) {
-            return 'Inserisci un collegamento http/https valido.';
+            return t('msg.errInvalidLink');
         }
         return null;
     }
@@ -3112,7 +3624,7 @@
         } else if (currentMedia.media_type === 'tv') {
             let season, episode;
             if (customMode) {
-                // Valori manuali (stagioni/episodi non presenti su TMDB)
+                // Manual values (seasons/episodes not present on TMDB)
                 season = Math.max(1, Number(inputSeasonCustom.value) || 1);
                 episode = Math.max(1, Number(inputEpisodeCustom.value) || 1);
                 customSelections[currentMedia.id] = { season, episode };
@@ -3130,11 +3642,11 @@
         if (!streamUrl) {
             syncResolverNotice();
             const err = sourceTemplateError(effectiveResolverTemplate(currentMedia.media_type));
-            if (err) showToast('Sorgente non disponibile', err);
+            if (err) showToast(t('toast.noSource'), err);
             return;
         }
 
-        // Da telefono usa il browser esterno, da PC apre una finestra nuova
+        // From a phone use the external browser, from a PC open a new window
         if (isMobile()) {
             await openBrowser(streamUrl);
         } else {
@@ -3142,13 +3654,13 @@
         }
     }
 
-    // --- SORGENTE PER TITOLO (override su quella globale) ---
+    // --- TITLE-SPECIFIC SOURCE (override of the global one) ---
 
     function resolverOverrideKey() {
         return currentMedia ? `${currentMedia.media_type}:${currentMedia.id}` : '';
     }
 
-    // Ritorna il template per questo titolo se configurato, altrimenti quello globale.
+    // Returns the template for this title if configured, otherwise the global one.
     function effectiveResolverTemplate(type) {
         const key = resolverOverrideKey();
         const override = key && typeof resolverOverrides[key] === 'string' ? resolverOverrides[key].trim() : '';
@@ -3175,7 +3687,7 @@
         const value = input.value.trim();
         const err = sourceTemplateError(value);
         if (err) {
-            showToast('Sorgente non valida', err);
+            showToast(t('toast.noSource'), err);
             return;
         }
         if (value) resolverOverrides[key] = value;
@@ -3204,7 +3716,7 @@
         const btn = document.getElementById('btn-resolver-override');
         if (!btn) return;
         const has = Boolean(getResolverOverride());
-        btn.innerText = has ? 'Sorgente: personale' : 'Sorgente: globale';
+        btn.innerText = has ? t('detail.sourceCustom') : t('detail.sourceGlobal');
         btn.classList.toggle('btn--saved', has);
     }
 
@@ -3215,7 +3727,7 @@
 
         const index = watchlist.findIndex(item => item.id === currentMedia.id && item.media_type === currentMedia.media_type);
         if (index === -1) {
-            // Salviamo solo gli identificativi; i dettagli stanno in memoria
+            // Only the identifiers are saved; the details live in memory
             watchlist.push({ id: currentMedia.id, media_type: currentMedia.media_type });
             watchlistDetails.set(watchlistKey(currentMedia.id, currentMedia.media_type), currentMedia);
         } else {
@@ -3236,16 +3748,17 @@
     function updateWatchlistBtn() {
         const btn = document.getElementById('btn-watchlist');
         const saved = isSaved(currentMedia.id, currentMedia.media_type);
-        btn.innerText = saved ? '✓ Salvato · rimuovi' : '+ Aggiungi ai salvati';
+        btn.innerText = saved ? t('detail.savedRemove') : t('detail.addSaved');
         btn.classList.toggle('btn--saved', saved);
     }
 
-    // --- IMPOSTAZIONI ---
+    // --- SETTINGS ---
 
     const settingsOverlay = document.getElementById('settings-overlay');
     const settingsKeyInput = document.getElementById('settings-api-key');
     const settingsResolverMovieInput = document.getElementById('settings-resolver-movie');
     const settingsResolverTvInput = document.getElementById('settings-resolver-tv');
+    const settingsLangInput = document.getElementById('settings-lang');
     const settingsStatus = document.getElementById('settings-status');
     const keyNotice = document.getElementById('key-notice');
     const resolverNotice = document.getElementById('resolver-notice');
@@ -3259,12 +3772,12 @@
         settingsNotifyInterval.value = sanitizeAutoSyncHours(notifySettings.autoSyncHours);
     }
 
-    // Mostra la notifica in-app quando manca la chiave TMDB.
+    // Shows the in-app notice when the TMDB key is missing.
     function syncApiKeyNotice() {
         keyNotice.hidden = Boolean(API_KEY);
     }
 
-    // Mostra la notifica in-app quando manca la sorgente per il player.
+    // Shows the in-app notice when the player source is missing.
     function syncResolverNotice() {
         resolverNotice.hidden = Boolean(resolver.movie && resolver.tv);
     }
@@ -3273,11 +3786,12 @@
         settingsKeyInput.value = API_KEY;
         settingsResolverMovieInput.value = resolver.movie || '';
         settingsResolverTvInput.value = resolver.tv || '';
+        settingsLangInput.value = lang;
         settingsStatus.hidden = true;
         settingsStatus.classList.remove('is-error');
         syncNotifySettingsInputs();
         const versionEl = document.getElementById('settings-version');
-        if (versionEl) versionEl.innerText = `Versione installata: ${APP_VERSION}`;
+        if (versionEl) versionEl.innerText = `${t('settings.version')} ${APP_VERSION}`;
         settingsOverlay.hidden = false;
         settingsKeyInput.focus();
     }
@@ -3286,7 +3800,7 @@
         settingsOverlay.hidden = true;
     }
 
-    // --- DOCUMENTAZIONE ---
+    // --- DOCUMENTATION ---
 
     const docsOverlay = document.getElementById('docs-overlay');
 
@@ -3337,39 +3851,40 @@
 
         syncApiKeyNotice();
         syncResolverNotice();
+        setLanguage(settingsLangInput.value, true);
         settingsStatus.classList.remove('is-error');
-        settingsStatus.innerText = key ? 'Salvato ✓' : 'Chiave rimossa · imposta una chiave per cercare';
+        settingsStatus.innerText = key ? t('msg.saved') : t('msg.keyRemoved');
         settingsStatus.hidden = false;
         setTimeout(() => { settingsStatus.hidden = true; }, 2500);
     }
 
-    // Invia una notifica di prova per verificare che il canale funzioni.
+    // Sends a test notification to verify that the channel works.
     async function sendTestNotification() {
         const status = document.getElementById('notify-status');
         status.classList.remove('is-error');
-        status.innerText = 'Richiesta permessi…';
+        status.innerText = t('msg.requestingPerms');
         status.hidden = false;
         const granted = await ensureNotifyPermission();
         if (!granted) {
             status.classList.add('is-error');
-            status.innerText = 'Permesso di notifica non concesso';
+            status.innerText = t('msg.permsDenied');
             return;
         }
-        const ok = await notify('BlameFlix', 'Notifica di prova: così ti avviseremo delle nuove uscite.');
+        const ok = await notify('BlameFlix', t('msg.testNotifyBody'));
         status.classList.toggle('is-error', !ok);
-        status.innerText = ok ? 'Notifica di prova inviata ✓' : 'Notifiche di sistema non disponibili qui';
+        status.innerText = ok ? t('msg.testNotifySent') : t('msg.testNotifyUnavailable');
         clearTimeout(sendTestNotification._t);
         sendTestNotification._t = setTimeout(() => { status.hidden = true; }, 3500);
     }
 
-    // --- AGGIORNAMENTI (GitHub releases) ---
+    // --- UPDATES (GitHub releases) ---
 
     const updateNotice = document.getElementById('update-notice');
     const updateNoticeText = document.getElementById('update-notice-text');
     const updateNoticeApk = document.getElementById('update-notice-apk');
     const updateStatus = document.getElementById('update-status');
 
-    // Confronto semver numerico (gestisce anche prefissi "v" e suffissi).
+    // Numeric semver comparison (handles "v" prefixes and suffixes).
     function compareVersions(a, b) {
         const pa = String(a).replace(/^v/i, '').split(/[.\-+]/).map(n => parseInt(n, 10) || 0);
         const pb = String(b).replace(/^v/i, '').split(/[.\-+]/).map(n => parseInt(n, 10) || 0);
@@ -3387,16 +3902,16 @@
         catch (err) { return {}; }
     }
 
-    // Verifica l'ultima release su GitHub. Se manual è true mostra l'esito
-    // nelle Impostazioni; altrimenti si limita a mostrare il banner se c'è
-    // una versione più recente di quella installata e non ancora ignorata.
+    // Checks the latest release on GitHub. If manual is true, it shows the
+    // outcome in the Settings; otherwise it only shows the banner when a
+    // newer version than the installed one exists and has not been dismissed.
     async function checkForUpdates(manual = false) {
         if (manual && updateStatus) {
             updateStatus.classList.remove('is-error');
-            updateStatus.innerText = 'Verifica in corso…';
+            updateStatus.innerText = t('msg.checkingUpdates');
             updateStatus.hidden = false;
         }
-        // L'auto-controllo evita di interrogare GitHub più di una volta all'ora.
+        // The auto-check avoids querying GitHub more than once an hour.
         const state = getUpdateState();
         if (!manual && state.lastCheck && (Date.now() - state.lastCheck) < 60 * 60 * 1000) {
             if (state.lastTag && compareVersions(String(state.lastTag).replace(/^v/i, ''), APP_VERSION) > 0 && state.dismissedTag !== state.lastTag) {
@@ -3419,7 +3934,7 @@
                 if (settingsOpen) settingsOpen.hidden = false;
                 if (manual && updateStatus) {
                     updateStatus.classList.remove('is-error');
-                    updateStatus.innerText = `Nuova versione ${tag} disponibile`;
+                    updateStatus.innerText = t('msg.newVersionAvailable', { tag });
                 }
             } else {
                 hideUpdateNotice();
@@ -3427,14 +3942,14 @@
                 if (settingsOpen) settingsOpen.hidden = true;
                 if (manual && updateStatus) {
                     updateStatus.classList.remove('is-error');
-                    updateStatus.innerText = 'Sei aggiornato ✓';
+                    updateStatus.innerText = t('msg.upToDate');
                 }
             }
         } catch (err) {
             hideUpdateNotice();
             if (manual && updateStatus) {
                 updateStatus.classList.add('is-error');
-                updateStatus.innerText = 'Impossibile verificare gli aggiornamenti';
+                updateStatus.innerText = t('msg.updateCheckFailed');
             }
         }
         if (manual && updateStatus) {
@@ -3453,7 +3968,7 @@
     }
 
     function showUpdateNotice(release) {
-        updateNoticeText.innerText = `⚠ Nuova versione ${release.tag} disponibile su GitHub`;
+        updateNoticeText.innerText = t('notice.updateAvailable', { tag: release.tag });
         const apkAsset = release.assets.find(a => /\.apk$/i.test(a.name || ''));
         if (apkAsset && apkAsset.browser_download_url) {
             latestRelease.apkUrl = apkAsset.browser_download_url;
@@ -3479,7 +3994,7 @@
         hideUpdateNotice();
     }
 
-    // Apre la pagina della release su GitHub (browser esterno su mobile).
+    // Opens the release page on GitHub (external browser on mobile).
     function openLatestRelease() {
         const url = latestRelease && latestRelease.html_url
             ? latestRelease.html_url
@@ -3487,13 +4002,13 @@
         openExternalUrl(url);
     }
 
-    // Scarica direttamente l'APK della release (link all'asset su GitHub).
+    // Directly downloads the release APK (link to the asset on GitHub).
     function downloadLatestApk() {
         const url = latestRelease && latestRelease.apkUrl;
         if (url) openExternalUrl(url);
     }
 
-    // Apre un URL esterno: browser di sistema su mobile, nuova finestra su desktop.
+    // Opens an external URL: system browser on mobile, new window on desktop.
     function openExternalUrl(url) {
         if (isMobile() && window.Capacitor?.Plugins?.Browser) {
             openBrowser(url);
@@ -3502,7 +4017,7 @@
         }
     }
 
-    // --- BACKUP / RIPRISTINO ---
+    // --- BACKUP / RESTORE ---
 
     const backupFile = document.getElementById('backup-file');
     const backupStatus = document.getElementById('backup-status');
@@ -3524,7 +4039,8 @@
                 myViewMode: viewMode,
                 myTypeFilter: typeFilter,
                 myNotifySettings: notifySettings,
-                myReleaseState: releaseState
+                myReleaseState: releaseState,
+                myLang: lang
             }
         };
     }
@@ -3541,11 +4057,11 @@
         return `blameflix-backup-${new Date().toISOString().slice(0, 10)}.json`;
     }
 
-    // Salva il backup chiedendo all'utente dove metterlo.
-    // Android: scrive in un file nella cartella Documenti dell'app.
-    // Electron: apre il dialogo nativo "Salva con nome".
-    // Browser desktop: apre il dialogo di salvataggio del sistema (se supportato).
-    // Fallback: scarica il file nella cartella Download.
+    // Saves the backup by asking the user where to put it.
+    // Android: writes a file in the app's Documents folder.
+    // Electron: opens the native "Save as" dialog.
+    // Desktop browser: opens the system save dialog (if supported).
+    // Fallback: downloads the file to the Downloads folder.
     async function createBackup() {
         const json = JSON.stringify(backupData(), null, 2);
 
@@ -3555,7 +4071,7 @@
             try {
                 const perms = await Filesystem.requestPermissions();
                 if (perms.publicStorage !== 'granted') {
-                    showBackupStatus('Permesso di scrittura negato', true);
+                    showBackupStatus(t('msg.writePermDenied'), true);
                     return;
                 }
                 const path = `BlameFlix/${backupFileName()}`;
@@ -3571,36 +4087,36 @@
                     try {
                         await window.Capacitor.Plugins.Share.share({
                             title: 'Backup BlameFlix',
-                            dialogTitle: 'Salva il backup',
+                            dialogTitle: t('msg.saveBackupDialog'),
                             files: [uri]
                         });
-                        showBackupStatus('Backup creato: scegli dove salvarlo ✓');
+                        showBackupStatus(t('msg.backupCreatedChoose'));
                     } catch (shareErr) {
                         showBackupStatus(/cancel|annul/i.test(String(shareErr?.message || shareErr))
-                            ? 'Backup creato ✓ · condivisione annullata'
-                            : 'Backup creato, ma non condiviso');
+                            ? t('msg.backupCreatedShareCancelled')
+                            : t('msg.backupNotShared'));
                     }
                 } else {
-                    showBackupStatus('Backup salvato ✓');
+                    showBackupStatus(t('msg.backupSaved'));
                 }
             } catch (err) {
-                showBackupStatus('Impossibile salvare il file', true);
+                showBackupStatus(t('msg.backupSaveError'), true);
             }
             return;
         }
 
-        // Electron: dialogo nativo "Salva con nome"
+        // Electron: native "Save as" dialog
         if (window.blameflixSave) {
             try {
-                const saved = await window.blameflixSave.save(backupFileName(), json);
-                showBackupStatus(saved ? 'Backup salvato ✓' : 'Salvataggio annullato');
+                const saved = await window.blameflixSave.save(backupFileName(), json, lang);
+                showBackupStatus(saved ? t('msg.backupSaved') : t('msg.saveCancelled'));
             } catch (err) {
-                showBackupStatus('Impossibile salvare il file', true);
+                showBackupStatus(t('msg.backupSaveError'), true);
             }
             return;
         }
 
-        // Browser desktop: dialogo di salvataggio del sistema
+        // Desktop browser: system save dialog
         if (window.showSaveFilePicker) {
             try {
                 const handle = await window.showSaveFilePicker({
@@ -3610,10 +4126,10 @@
                 const writable = await handle.createWritable();
                 await writable.write(json);
                 await writable.close();
-                showBackupStatus('Backup salvato ✓');
+                showBackupStatus(t('msg.backupSaved'));
             } catch (err) {
                 if (err && err.name === 'AbortError') {
-                    showBackupStatus('Salvataggio annullato');
+                    showBackupStatus(t('msg.saveCancelled'));
                 } else {
                     downloadBackupFile(json);
                 }
@@ -3634,7 +4150,7 @@
         a.click();
         a.remove();
         setTimeout(() => URL.revokeObjectURL(url), 1000);
-        showBackupStatus('Backup salvato ✓');
+        showBackupStatus(t('msg.backupSaved'));
     }
 
     function restoreBackup() {
@@ -3642,9 +4158,9 @@
         backupFile.click();
     }
 
-    // Ricostruisce la libreria dai soli identificativi (id + media_type) presenti
-    // nel backup, richiedendo i dettagli a TMDB. Se una voce ha già i campi
-    // completi (backup vecchio) viene usata senza chiamate di rete.
+    // Rebuilds the library from the identifiers only (id + media_type) found in
+    // the backup, requesting the details from TMDB. If an entry already has the
+    // full fields (old backup) it is used without network calls.
     function hasWatchlistDetails(item) {
         return item && (item.poster_path !== undefined || item.name !== undefined ||
             item.title !== undefined || item.vote_average !== undefined);
@@ -3660,7 +4176,7 @@
             }
             if (!item.id || !item.media_type) continue;
             try {
-                const res = await fetch(`${BASE_URL}/${item.media_type}/${item.id}?api_key=${API_KEY}&language=it-IT`);
+                const res = await fetch(`${BASE_URL}/${item.media_type}/${item.id}?api_key=${API_KEY}&language=${locale()}`);
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
                 const d = await res.json();
                 if (!d.id) throw new Error('Dati non validi');
@@ -3675,17 +4191,17 @@
                     vote_average: d.vote_average
                 });
             } catch (err) {
-                // Dettagli non scaricabili (offline o titolo rimosso): resta la
-                // card segnaposto, i dettagli si riscaricano all'apertura.
+                // Details not downloadable (offline or removed title): the
+                // placeholder card stays, details are re-fetched on opening.
                 out.push({ id: item.id, media_type: item.media_type });
             }
         }
         return out;
     }
 
-    // All'avvio scarica i dettagli mancanti dei titoli salvati nella cache
-    // in-memory, così la griglia mostra poster e info. Offline restano card
-    // segnaposto e i dettagli si caricano all'apertura del titolo.
+    // On startup it fetches the missing details of the saved titles into the
+    // in-memory cache, so the grid shows posters and info. Offline, the
+    // placeholder cards stay and details load when opening a title.
     async function hydrateWatchlistGrid() {
         const missing = watchlist.filter(item => !watchlistDetails.has(watchlistKey(item.id, item.media_type)));
         if (!missing.length) return;
@@ -3774,17 +4290,20 @@
                     typeFilter = data.myTypeFilter;
                     localStorage.setItem('myTypeFilter', typeFilter);
                 }
+                if (data.myLang === 'it' || data.myLang === 'en') {
+                    setLanguage(data.myLang, true);
+                }
 
                 settingsKeyInput.value = API_KEY;
                 updateCount();
                 syncTools();
                 showHome();
-                showBackupStatus('Backup ripristinato ✓');
+                showBackupStatus(t('msg.backupRestored'));
             } catch (err) {
-                showBackupStatus('File di backup non valido', true);
+                showBackupStatus(t('msg.backupInvalid'), true);
             }
         };
-        reader.onerror = () => showBackupStatus('Impossibile leggere il file', true);
+        reader.onerror = () => showBackupStatus(t('msg.backupReadError'), true);
         reader.readAsText(file);
     });
 
@@ -3792,8 +4311,8 @@
         if (e.target === settingsOverlay) closeSettings();
     });
 
-    // Avvio dell'app vero e proprio: eseguito solo dopo l'accettazione del
-    // disclaimer al primissimo utilizzo.
+    // Real app startup: executed only after the disclaimer is accepted on the
+    // very first use.
     function startApp() {
         syncApiKeyNotice();
         syncResolverNotice();
@@ -3802,23 +4321,23 @@
         showHome();
         hydrateWatchlistGrid().then(() => checkReleases(false));
         startAutoSyncTimer();
-        // Controllo aggiornamenti: dopo qualche secondo, senza interferire con l'avvio.
+        // Update check: after a few seconds, without interfering with startup.
         setTimeout(() => checkForUpdates(false), 5000);
     }
 
-    // --- DISCLAIMER DI AVVIO (primo utilizzo) ---
-    // Il programma parte solo dopo l'accettazione; il pulsante si abilita dopo
-    // 10 secondi. L'accettazione è memorizzata in locale e non viene richiesta
-    // di nuovo alle aperture successive.
-    // Best-effort: chiede al browser/WebView di non epurare automaticamente lo
-    // storage dell'origine, così il flag può sopravvivere ai riavvii. Se il
-    // sistema lo rifiuta, localStorage può ancora andare perso (vedi PRIVACY).
+    // --- STARTUP DISCLAIMER (first use) ---
+    // The program only starts after acceptance; the button enables after
+    // 10 seconds. Acceptance is stored locally and is not requested again on
+    // subsequent openings.
+    // Best-effort: asks the browser/WebView not to purge the origin storage
+    // automatically, so the flag can survive restarts. If the system rejects
+    // it, localStorage can still be lost (see PRIVACY).
     function tryPersistStorage() {
         try {
             if (navigator.storage && typeof navigator.storage.persist === 'function') {
                 navigator.storage.persist().catch(() => {});
             }
-        } catch (err) { /* storage non disponibile: ignora */ }
+        } catch (err) { /* storage unavailable: ignore */ }
     }
 
     function initDisclaimer() {
@@ -3833,7 +4352,7 @@
         overlay.hidden = false;
 
         let remaining = 10;
-        statusEl.innerText = `Accettabile tra ${remaining}s`;
+        statusEl.innerText = t('msg.acceptableIn', { n: remaining });
         acceptBtn.disabled = true;
 
         const timer = setInterval(() => {
@@ -3841,9 +4360,9 @@
             if (remaining <= 0) {
                 clearInterval(timer);
                 acceptBtn.disabled = false;
-                statusEl.innerText = 'Accetta per avviare BlameFlix';
+                statusEl.innerText = t('msg.acceptToStart');
             } else {
-                statusEl.innerText = `Accettabile tra ${remaining}s`;
+                statusEl.innerText = t('msg.acceptableIn', { n: remaining });
             }
         }, 1000);
     }
@@ -3855,10 +4374,13 @@
         startApp();
     }
 
+    // Apply the detected/preferred language to the static UI before startup.
+    applyLanguage();
+
     initDisclaimer();
 
-    // Al tocco di una notifica di sistema apre la scheda del titolo
-    // (con stagione/episodio per le serie) tramite il payload della notifica.
+    // On a system notification tap, opens the title page
+    // (with season/episode for series) via the notification payload.
     if (window.Capacitor?.Plugins?.LocalNotifications) {
         window.Capacitor.Plugins.LocalNotifications.addListener('localNotificationReceived', (notif) => {
             const d = notif && notif.extra;
@@ -3866,8 +4388,8 @@
         });
     }
 
-    // Al ritorno in primo piano verifica se l'intervallo di auto-sync è scaduto
-    // (gli OS possono sospendere i timer quando l'app è in background).
+    // On returning to the foreground, checks whether the auto-sync interval
+    // has expired (OSes may suspend timers while the app is in background).
     document.addEventListener('visibilitychange', () => {
         if (document.visibilityState === 'visible' && API_KEY && shouldAutoSync()) {
             checkReleases(false);

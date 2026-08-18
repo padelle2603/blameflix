@@ -8,9 +8,9 @@ if (keystorePropertiesFile.exists()) {
 
 def appVersion = project.findProperty('appVersion') ?: '1.0.0'
 
-// Deriva il versionCode dalla versione (es. "1.2.3" -> 10203) così ogni
-// release ha un versionCode crescente: l'APK nuovo si installa sopra quello
-// già presente senza dover disinstallare. Sovrascrivibile con -PappVersionCode.
+// Derives the versionCode from the version (e.g. "1.2.3" -> 10203) so every
+// release has an increasing versionCode: the new APK installs over the
+// existing one without uninstalling. Overridable with -PappVersionCode.
 def versionCodeFromString(String v) {
     def parts = (v =~ /\d+/).collect { it.toInteger() }
     if (!parts) return 1
@@ -81,8 +81,8 @@ dependencies {
     implementation project(':capacitor-cordova-android-plugins')
 }
 
-// Copia l'APK release nell'output centrale coerente con il resto della build:
-// <radice>/dist/android/BlameFlix-<version>.apk
+// Copies the release APK into the central output consistent with the rest of
+// the build: <root>/dist/android/BlameFlix-<version>.apk
 afterEvaluate {
     tasks.register('copyReleaseApk', Copy) {
         from "build/outputs/apk/release/app-release.apk"

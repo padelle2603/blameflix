@@ -1,4 +1,4 @@
-name: Build APK e AppImage
+name: Build APK and AppImage
 
 on:
   push:
@@ -114,7 +114,7 @@ jobs:
             if npm run dist; then
               exit 0
             fi
-            echo "Tentativo $i fallito (download transitorio), riprovo tra 15s..."
+            echo "Attempt $i failed (transient download), retrying in 15s..."
             sleep 15
           done
           exit 1
@@ -158,4 +158,4 @@ jobs:
           gh release delete "v$APP_VERSION" --yes 2>/dev/null || true
           gh release create "v$APP_VERSION" release/* \
             --title "BlameFlix v$APP_VERSION" \
-            --notes "Release automatica di BlameFlix $APP_VERSION. APK Android (com.padelle.blameflix) e AppImage Linux."
+            --notes "Automatic release of BlameFlix $APP_VERSION. Android APK (com.padelle.blameflix) and Linux AppImage."

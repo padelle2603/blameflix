@@ -1,8 +1,10 @@
 # Manifesto — BlameFlix
 
+> **Lingua / Language**: **Italiano** (questo documento) | [English](MANIFEST_EN.md)
+
 Questo documento spiega perché BlameFlix esiste, qual è la sua missione e verso
 dove si muove. Non descrive funzioni né normative: per quelle consulta
-[README.md](../README.md), [LEGAL.md](LEGAL.md) e [PRIVACY.md](PRIVACY.md).
+[README.md](../README.it.md), [LEGAL.md](LEGAL.md) e [PRIVACY.md](PRIVACY.md).
 
 ## 1. Perché BlameFlix esiste
 
@@ -103,6 +105,6 @@ definiscono: privacy, neutralità, legalità e libertà dell'utente.
 Per i dettagli tecnici, la gestione dei dati e l'analisi normativa, consulta
 i documenti dedicati:
 
-- [README.md](../README.md) — funzioni e piattaforme
+- [README.md](../README.it.md) — funzioni e piattaforme
 - [PRIVACY.md](PRIVACY.md) — dove stanno i tuoi dati e come sono trattati
 - [LEGAL.md](LEGAL.md) — quadro normativo e responsabilità dell'utente

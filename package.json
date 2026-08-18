@@ -1,7 +1,7 @@
 {
   "name": "blameflix",
-  "version": "1.1.1",
-  "description": "BlameFlix - la tua sala",
+  "version": "1.2.0",
+  "description": "BlameFlix - your screening room",
   "private": true,
   "scripts": {
     "sync": "cap sync"
