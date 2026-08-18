@@ -34,16 +34,23 @@ BlameFlix è uno **strumento neutro**: come un browser o un lettore generico,
 si limita a mostrare metadati e a interagire con ciò che l'utente configura
 autonomamente.
 
-## 3. La funzione "resolver"
+## 3. La funzione "sorgente"
 
-Nelle Impostazioni puoi configurare un **template URL** (il "resolver") per la
+Nelle Impostazioni puoi configurare un **template URL** (la "sorgente") per la
 funzione «Guarda ora». BlameFlix apre semplicemente l'URL che hai inserito,
 accodando l'identificativo del titolo (e, per le serie, stagione ed episodio).
 
-Il resolver è **vuoto per impostazione predefinita**: se non configuri alcun
+La sorgente è **vuota per impostazione predefinita**: se non configuri alcun
 template, il pulsante «Guarda ora» non è attivo e l'app non apre nulla.
 BlameFlix non include, né di default né in nessun altro modo, elenchi di siti,
 indirizzi o servizi suggeriti: l'unico URL mai aperto è quello che digiti tu.
+
+L'app accetta **esclusivamente collegamenti `http` e `https`**. I protocolli di
+file-sharing peer-to-peer (ad esempio `magnet`, `torrent`, `ed2k` e simili) sono
+rifiutati al momento della configurazione e non vengono mai aperti: BlameFlix
+non può essere usata come strumento di file-sharing. Questo controllo blocca una
+**categoria di protocollo**, non singoli siti: l'app continua a non conoscere né
+giudicare alcuna sorgente specifica.
 
 L'app **non conosce né valuta il contenuto** di quell'URL: non sa se il servizio
 a cui rimandi è legale o meno, non interroga la pagina, non ne estrae video o
@@ -143,8 +150,8 @@ pirateria online, è rivolto ai soggetti che diffondono contenuti e agli
 intermediari di rete, e non ai fruitori di strumenti neutrali come i lettori o
 i browser.**
 
-**La responsabilità della legalità dei contenuti a cui accedi tramite il tuo
-resolver è tua, secondo le leggi del tuo Paese. BlameFlix non fornisce né
+**La responsabilità della legalità dei contenuti a cui accedi tramite la tua
+sorgente è tua, secondo le leggi del tuo Paese. BlameFlix non fornisce né
 segnala alcuna fonte di contenuti.**
 
 ## 7. Responsabilità dell'utente
@@ -160,3 +167,21 @@ discussione misure più severe. La normativa varia da Paese a Paese.
 
 Raccomandazione: usa BlameFlix esclusivamente con servizi di streaming
 autorizzati, abbonamenti e piattaforme legali.
+
+## 8. Disclaimer di avvio
+
+Al **primo utilizzo** BlameFlix mostra un avviso in cui dichiara la proprietà
+dell'applicazione, la tutela ai sensi della legge sul diritto d'autore e le
+norme europee e italiane applicabili alla visione di contenuti soggetti a
+proprietà intellettuale. L'avviso chiarisce che il proprietario non assume
+alcuna responsabilità per l'uso illegale dell'applicazione e si riserva ogni
+diritto, ragione ed azione a propria tutela, compreso il ricorso alle autorità
+competenti qualora dall'uso illecito che ne fa l'utente gli derivi un danno di
+qualsiasi natura.
+
+Il programma si avvia **solo dopo l'accettazione** di queste condizioni (il
+pulsante si abilita dopo 10 secondi dalla comparsa dell'avviso). L'accettazione
+viene ricordata sul dispositivo e non viene richiesta di nuovo alle aperture
+successive. Questo avviso non modifica la sostanza di quanto descritto in questo
+documento: conferma che la responsabilità dell'uso resta dell'utente e che lo
+sviluppatore declina ogni responsabilità per usi non conformi alla legge.
