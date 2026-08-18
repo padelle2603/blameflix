@@ -38,7 +38,10 @@ autonomamente.
 
 Nelle Impostazioni puoi configurare un **template URL** (la "sorgente") per la
 funzione «Guarda ora». BlameFlix apre semplicemente l'URL che hai inserito,
-accodando l'identificativo del titolo (e, per le serie, stagione ed episodio).
+sostituendo i segnaposto `{id}`, `{type}`, `{season}` e `{episode}` che tu stesso
+metti nel template con i valori del titolo. L'app **non costruisce né appende
+alcun segmento** all'URL: senza segnaposto, l'URL viene aperto esattamente come
+l'hai scritto.
 
 La sorgente è **vuota per impostazione predefinita**: se non configuri alcun
 template, il pulsante «Guarda ora» non è attivo e l'app non apre nulla.
