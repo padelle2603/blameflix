@@ -1,6 +1,5 @@
 # Documentazione tecnica — BlameFlix
 
-## 1. Identità fisica e privacy
 ## 1. Architettura generale
 
 BlameFlix è un'app **Single-Page Application** in **vanilla JavaScript** (nessun framework), interamente contenuta in `www/index.html`: HTML + CSS + JavaScript nello stesso file (3429 righe). Tre front-end condividono la stessa web app:
