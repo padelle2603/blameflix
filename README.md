@@ -43,8 +43,10 @@ L'app è un'unica pagina web in JavaScript puro (nessun framework), racchiusa in
   quando esce una puntata nuova. Tutto locale, nessun server.
 - **«Guarda ora»**: da ogni scheda puoi aprire il servizio che scegli tu tramite
   una **sorgente** configurata nelle Impostazioni (un template URL, anche diverso
-  per ogni titolo). L'app costruisce l'URL con l'identificativo del titolo e, per
-  le serie, stagione ed episodio, e lo apre nel browser o nel lettore del sistema.
+  per ogni titolo). L'app apre l'URL che configuri, sostituendo i segnaposto
+  `{id}`, `{type}`, `{season}`, `{episode}` con i valori del titolo (senza
+  segnaposto, l'URL viene aperto così com'è) e lo apre nel browser o nel lettore
+  del sistema.
   Sono accettati **solo collegamenti http/https**: magnet, torrent e altri
   protocolli di file-sharing vengono rifiutati al salvataggio. Se la sorgente è
   vuota, il pulsante resta inattivo.

@@ -1637,7 +1637,7 @@
                         <label for="resolver-override-input">Sorgente per questo titolo</label>
                         <input type="url" id="resolver-override-input" autocomplete="off"
                                placeholder="https://esempio.com/title/{id}/">
-                        <p class="settings-hint">Se vuoto, «Guarda ora» usa la sorgente globale delle Impostazioni. Puoi inserire solo l'URL base (l'app accoda id e, per le serie, stagione/episodio) oppure usare i segnaposto {id}, {type}, {season}, {episode}. Solo collegamenti http/https.</p>
+                        <p class="settings-hint">Se vuoto, «Guarda ora» usa la sorgente globale delle Impostazioni. Usa i segnaposto {id}, {type}, {season}, {episode} per inserire id, stagione ed episodio nell'URL: senza segnaposto l'URL viene aperto così com'è. Solo collegamenti http/https.</p>
                         <div class="settings-actions">
                             <button type="button" class="btn btn--rosso" onclick="saveResolverOverride()">Usa per questo titolo</button>
                             <button type="button" class="btn" onclick="clearResolverOverride()">Usa quello globale</button>
@@ -1694,7 +1694,7 @@
             <label for="settings-resolver-tv">Sorgente serie</label>
             <input type="url" id="settings-resolver-tv" autocomplete="off"
                    placeholder="https://esempio.com/tv/{id}/{season}/{episode}/">
-            <p class="settings-hint">L'app apre l'URL della sorgente che tu configuri. Puoi inserire solo l'URL base: l'app accoda automaticamente l'id (e stagione/episodio per le serie). Oppure usa i segnaposto {id}, {type}, {season}, {episode} per le sorgenti con parametri. Solo collegamenti http/https: magnet, torrent e altri protocolli non sono supportati. Se lasci vuoto, «Guarda ora» non è attivo.</p>
+            <p class="settings-hint">L'app apre l'URL della sorgente che tu configuri, sostituendo i segnaposto {id}, {type}, {season}, {episode} con i valori del titolo. Senza segnaposto l'URL viene aperto esattamente com'è. Solo collegamenti http/https: magnet, torrent e altri protocolli non sono supportati. Se lasci vuoto, «Guarda ora» non è attivo.</p>
         </div>
 
         <div class="settings-field settings-field--divider">
@@ -1785,7 +1785,7 @@
             <p>BlameFlix segna automaticamente come vista la puntata che guardi, ma puoi cambiarlo cliccando sul badge «✓ VISTO» di una puntata. Con il tasto <strong>«Segna tutte come viste»</strong> in cima alla lista puoi marcare in un tocco tutte le puntate già in onda della stagione (premilo di nuovo per toglierle). Quando riapri una serie riparti dalla stagione dell'ultima puntata vista. Se una stagione o un episodio non compare nell'elenco (perché non è elencato da TMDB), scegli <strong>«Altro…»</strong> e digita il numero a mano: la tua scelta viene ricordata.</p>
 
             <h3>La sorgente</h3>
-            <p>BlameFlix non contiene sorgenti di streaming: apre semplicemente l'URL del servizio che scegli tu. Nelle <strong>Impostazioni</strong> inserisci il template per i film e quello per le serie. Puoi mettere solo l'URL base (es. <code>https://esempio.com/movie/</code>): l'app accoda automaticamente l'id e, per le serie, la stagione e l'episodio. Se il servizio usa parametri, usa i segnaposto <code>{id}</code>, <code>{type}</code>, <code>{season}</code> e <code>{episode}</code> (es. <code>https://esempio.com/watch?id={id}&s={season}&e={episode}</code>). Sono accettati solo collegamenti <strong>http/https</strong>: magnet, torrent e altri protocolli non sono supportati. Se un template è vuoto, il pulsante «Guarda ora» non è attivo.</p>
+            <p>BlameFlix non contiene sorgenti di streaming: apre semplicemente l'URL del servizio che scegli tu. Nelle <strong>Impostazioni</strong> inserisci il template per i film e quello per le serie. L'app sostituisce i segnaposto <code>{id}</code>, <code>{type}</code>, <code>{season}</code> e <code>{episode}</code> con i valori del titolo (es. <code>https://esempio.com/watch?id={id}&s={season}&e={episode}</code>). Se il template non contiene segnaposto, l'URL viene aperto esattamente com'è. Sono accettati solo collegamenti <strong>http/https</strong>: magnet, torrent e altri protocolli non sono supportati. Se un template è vuoto, il pulsante «Guarda ora» non è attivo.</p>
             <p>Nella scheda di un titolo puoi impostare una <strong>sorgente specifica</strong> che ha la precedenza su quella globale: premi <strong>«Sorgente: globale»</strong> sotto i pulsanti, inserisci il template e salvalo con «Usa per questo titolo». Con «Usa quella globale» torni al comportamento predefinito. Le sorgenti per titolo sono salvate nel dispositivo e incluse nel backup.</p>
 
             <h3>Aggiornamenti</h3>
@@ -3058,16 +3058,12 @@
     }
 
     // Sostituisce i segnaposto ({id}, {type}, {season}, {episode}) nel template
-    // scelto dall'utente e accoda i segmenti canonici mancanti (id → season →
-    // episode) così l'URL è sempre completo. Restituisce null se il template
-    // non è valido o lascia segnaposto non risolti.
+    // scelto dall'utente. Non accoda alcun segmento: l'URL viene aperto
+    // esattamente come configurato, con i soli segnaposto sostituiti.
+    // Restituisce null se il template non è valido o lascia segnaposto non risolti.
     function resolveTemplate(template, vars) {
         let url = String(template).trim();
         if (!url) return null;
-
-        const hasId = /\{id\}/.test(url);
-        const hasSeason = /\{season\}/.test(url);
-        const hasEpisode = /\{episode\}/.test(url);
 
         url = url
             .replaceAll('{id}', vars.id)
@@ -3077,20 +3073,6 @@
                      .replaceAll('{episode}', vars.episode);
         }
 
-        // Separa path e query per non corrompere i parametri dei template di sorgente
-        const qi = url.indexOf('?');
-        const query = qi === -1 ? '' : url.slice(qi);
-        let path = (qi === -1 ? url : url.slice(0, qi)).replace(/\/+$/, '');
-
-        const missing = [];
-        if (!hasId) missing.push(vars.id);
-        if (vars.season !== undefined) {
-            if (!hasSeason) missing.push(vars.season);
-            if (!hasEpisode) missing.push(vars.episode);
-        }
-        for (const seg of missing) path += '/' + seg;
-
-        url = path + query;
         if (/[{][a-z]+[}]/.test(url) || !/^https?:\/\//i.test(url)) return null;
         return url;
     }
