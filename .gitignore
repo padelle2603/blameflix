@@ -30,3 +30,6 @@ www/lib/
 # OS / editor
 .DS_Store
 *.swp
+
+# Note legali
+Note Legali/DOCUMENTAZIONE_TECNICA.md

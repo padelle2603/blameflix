@@ -2,7 +2,7 @@
 
 Questo documento spiega perché BlameFlix esiste, qual è la sua missione e verso
 dove si muove. Non descrive funzioni né normative: per quelle consulta
-[README.md](README.md), [LEGAL.md](LEGAL.md) e [PRIVACY.md](PRIVACY.md).
+[README.md](../README.md), [LEGAL.md](LEGAL.md) e [PRIVACY.md](PRIVACY.md).
 
 ## 1. Perché BlameFlix esiste
 
@@ -31,7 +31,7 @@ ritrovare ciò che guardi, ovunque lo guardi.
 BlameFlix è anche uno **strumento di automazione della visione**: ricorda
 puntate e stagioni, tiene il conto di ciò che resta da vedere, segue le date di
 uscita, genera notifiche quando un nuovo titolo o una nuova puntata arriva e,
-se configuri un resolver, ti porta direttamente al servizio legale che hai
+se configuri una sorgente, ti porta direttamente al servizio legale che hai
 scelto con un solo tocco.
 
 L'idea è semplice: **l'utente sceglie, BlameFlix ricorda.** La gestione — ciò
@@ -103,6 +103,6 @@ definiscono: privacy, neutralità, legalità e libertà dell'utente.
 Per i dettagli tecnici, la gestione dei dati e l'analisi normativa, consulta
 i documenti dedicati:
 
-- [README.md](README.md) — funzioni e piattaforme
+- [README.md](../README.md) — funzioni e piattaforme
 - [PRIVACY.md](PRIVACY.md) — dove stanno i tuoi dati e come sono trattati
 - [LEGAL.md](LEGAL.md) — quadro normativo e responsabilità dell'utente

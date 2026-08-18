@@ -11,7 +11,7 @@ Questa informativa descrive come BlameFlix tratta i dati quando la usi.
 
 Tutti i dati della tua libreria personale — titoli salvati, ultime riproduzioni,
 stagioni/episodi scelti a mano, chiave API TMDB, preferenze di visualizzazione,
-template del resolver e impostazioni di notifica — vengono **memorizzati
+template della sorgente e impostazioni di notifica — vengono **memorizzati
 esclusivamente sul tuo dispositivo** (memoria locale dell'app e file di backup).
 
 BlameFlix **non gestisce, non possiede e non mette in ascolto alcun server**:
@@ -34,9 +34,13 @@ sempre connesse alle funzioni che usi:
   da `image.tmdb.org` per i titoli che visualizzi.
 - **Google Fonts** — all'avvio l'app carica i caratteri usati nell'interfaccia
   da `fonts.googleapis.com` / `fonts.gstatic.com`.
-- **Il tuo resolver** — quando tocchi «Guarda ora», l'app apre l'URL che hai
+- **La tua sorgente** — quando tocchi «Guarda ora», l'app apre l'URL che hai
   configurato tu **nel browser del sistema**: l'app non scarica né legge il
   contenuto di quella pagina, si limita ad aprirla, come farebbe un browser.
+- **GitHub** — all'avvio e con il pulsante «Verifica aggiornamenti» delle
+  Impostazioni, l'app interroga `api.github.com` per conoscere l'ultima release
+  pubblicata del progetto e, se c'è una versione più recente, mostrarti il link
+  alla pagina di download. La richiesta è anonima e non contiene dati personali.
 - **Collegamento a TMDB** — se tocchi il logo/footer che punta a
   `themoviedb.org`, si apre la pagina in una scheda separata.
 
@@ -50,8 +54,17 @@ ha alcun modo di vedere, intercettare o registrare le richieste che inoltri.
   richieste a TMDB. Rimane sul dispositivo.
 - **Libreria (salvati, ultime riproduzioni, stagioni personalizzate)**: solo
   identificativi e scelte personali, salvati sul dispositivo.
-- **Template del resolver**: gli URL che configuri per il player. Rimangono sul
-  dispositivo.
+- **Template della sorgente**: gli URL che configuri per il player. Rimangono sul
+  dispositivo. Oltre a quelli globali, puoi impostare una **sorgente specifica per
+  ogni titolo** dalla scheda: anche queste restano sul dispositivo.
+- **Preferenze di avvio e aggiornamenti**: l'avvenuta accettazione del
+  disclaimer di avvio e l'ultimo controllo aggiornamenti (data e tag dell'ultima
+  release vista) restano sul dispositivo, servono solo per non riproporre la
+  richiesta e per evitare interrogazioni ripetute a GitHub. Non contengono dati
+  personali. Il disclaimer di avvio viene mostrato solo al primo utilizzo;
+  l'app tenta in modo best-effort di rendere persistente lo storage della
+  WebView (`navigator.storage.persist()`) ma, se il sistema cancella i dati
+  dell'app, l'accettazione può andare persa e il disclaimer può ricomparire.
 - **Notifiche di rilascio**: quando le attivi, l'app controlla periodicamente le
   date di uscita dei tuoi titoli salvati e genera avvisi locali. Nessun dato
   relativo alle notifiche esce dal dispositivo.
@@ -100,7 +113,7 @@ funzionare.
   leggere, modificare o condividere altri file sul dispositivo.
 - **Permesso INTERNET** (dichiarato nel manifest, **senza dialogo**): è il
   permesso di sistema che consente all'app di fare le richieste di rete descritte
-  nel paragrafo 1 (TMDB, immagini, font, apertura del resolver). Non viene chiesto
+  nel paragrafo 1 (TMDB, immagini, font, apertura della sorgente). Non viene chiesto
   all'utente: su Android è concesso automaticamente con l'installazione. L'app lo
   usa solo per gli accessi elencati, e nulla di ciò che invia identifica i tuoi
   dati personali.
@@ -132,8 +145,8 @@ cioè:
 - **cronologia avvisi**: l'elenco delle notifiche di rilascio già generate
   (titolo, stagione/episodio);
 - **chiave API TMDB**: la chiave che hai inserito tu nelle Impostazioni;
-- **template del resolver**: gli URL che hai configurato per «Guarda ora»
-  (film e serie);
+- **template della sorgente**: gli URL che hai configurato per «Guarda ora»
+  (film e serie), comprese le eventuali sorgenti specifiche per singolo titolo;
 - **preferenze e impostazioni**: modalità di visualizzazione, filtro
   film/serie, impostazioni delle notifiche e stato dell'ultima sincronizzazione
   delle uscite (per evitare di notificare due volte lo stesso rilascio).
@@ -152,12 +165,12 @@ tua chiave API TMDB.
 BlameFlix è uno **strumento neutro**: non contiene sorgenti di streaming, non
 fornisce né segnala contenuti, non ospita opere e non conosce le sorgenti a cui
 accedi. Le sorgenti di streaming sono una tua **scelta personale ed esclusiva**:
-sei tu a decidere dove guardare un titolo, configurando il template del resolver
+sei tu a decidere dove guardare un titolo, configurando il template della sorgente
 nelle Impostazioni (che resta vuoto finché non lo compili tu).
 
 Questa libertà di scelta comporta anche la tua responsabilità: sei tu, e non
-BlameFlix, a rispondere della legalità dei contenuti a cui accedi tramite il tuo
-resolver, secondo le leggi del tuo Paese. BlameFlix non agevola alcun servizio
+BlameFlix, a rispondere della legalità dei contenuti a cui accedi tramite la tua
+sorgente, secondo le leggi del tuo Paese. BlameFlix non agevola alcun servizio
 specifico e non compie alcuna delle condotte sanzionate dalla normativa sul
 diritto d'autore.
 

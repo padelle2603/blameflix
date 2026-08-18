@@ -1346,6 +1346,91 @@
             background: rgba(51, 163, 155, 0.08);
         }
 
+        /* ===== AVVISO AGGIORNAMENTI ===== */
+        .update-notice__actions {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+        }
+
+        /* ===== DISCLAIMER DI AVVIO ===== */
+        .disclaimer-overlay { z-index: 100; }
+
+        .disclaimer-panel {
+            max-width: 620px;
+            border: 1px solid var(--rosso);
+        }
+
+        .disclaimer-body {
+            max-height: 52vh;
+            overflow-y: auto;
+            padding-right: 0.6rem;
+            line-height: 1.6;
+        }
+
+        .disclaimer-body p { margin: 0; font-size: 0.95rem; }
+
+        .disclaimer-status {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            color: var(--meta);
+            text-transform: uppercase;
+        }
+
+        /* ===== SORGENTE PER TITOLO ===== */
+        .resolver-override {
+            margin-top: 1rem;
+            border-top: 1px dashed var(--ink);
+            padding-top: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.7rem;
+            align-items: flex-start;
+        }
+
+        .resolver-override__panel {
+            width: 100%;
+            max-width: 480px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            border: 1px solid var(--ink);
+            border-radius: var(--radius-sm);
+            background: var(--paper-hi);
+            padding: 0.9rem;
+        }
+
+        .resolver-override__panel label {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.68rem;
+            font-weight: 600;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--rosso);
+        }
+
+        .resolver-override__panel input {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.88rem;
+            color: var(--ink);
+            background: var(--paper);
+            border: 1px solid var(--ink);
+            border-radius: var(--radius-sm);
+            padding: 0.55rem 0.7rem;
+            outline: none;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+
+        .resolver-override__panel input:focus-visible {
+            border-color: var(--lago);
+            box-shadow: 0 0 0 2px rgba(51, 163, 155, 0.25);
+        }
+
+        .resolver-override__panel .settings-hint { margin: 0; }
+
         /* ===== COLOPHON ===== */
         .colophon {
             max-width: 1240px;
@@ -1440,8 +1525,19 @@
 
 <div class="key-notice" id="resolver-notice" hidden>
     <div class="key-notice__inner">
-        <p>⚠ Nessun resolver configurato · «Guarda ora» non attivo</p>
-        <button type="button" class="btn" onclick="openSettings()">Configura il resolver</button>
+        <p>⚠ Nessuna sorgente configurata · «Guarda ora» non attivo</p>
+        <button type="button" class="btn" onclick="openSettings()">Configura la sorgente</button>
+    </div>
+</div>
+
+<div class="key-notice" id="update-notice" hidden>
+    <div class="key-notice__inner">
+        <p id="update-notice-text">⚠ Nuova versione disponibile</p>
+        <div class="update-notice__actions">
+            <button type="button" class="btn" onclick="openLatestRelease()">Scarica dal GitHub</button>
+            <button type="button" class="btn" id="update-notice-apk" onclick="downloadLatestApk()" hidden>Scarica APK</button>
+            <button type="button" class="btn btn--ghost" onclick="dismissUpdate()" aria-label="Ignora questo aggiornamento" title="Ignora">✕</button>
+        </div>
     </div>
 </div>
 
@@ -1535,6 +1631,20 @@
                     <button type="button" class="btn btn--stamp" id="btn-watchlist" onclick="toggleWatchlist()">+ Aggiungi ai salvati</button>
                 </div>
 
+                <div class="resolver-override">
+<button type="button" class="btn btn--ghost" id="btn-resolver-override" onclick="toggleResolverOverride()">Sorgente: globale</button>
+                    <div class="resolver-override__panel" id="resolver-override-panel" hidden>
+                        <label for="resolver-override-input">Sorgente per questo titolo</label>
+                        <input type="url" id="resolver-override-input" autocomplete="off"
+                               placeholder="https://esempio.com/title/{id}/">
+                        <p class="settings-hint">Se vuoto, «Guarda ora» usa la sorgente globale delle Impostazioni. Puoi inserire solo l'URL base (l'app accoda id e, per le serie, stagione/episodio) oppure usare i segnaposto {id}, {type}, {season}, {episode}. Solo collegamenti http/https.</p>
+                        <div class="settings-actions">
+                            <button type="button" class="btn btn--rosso" onclick="saveResolverOverride()">Usa per questo titolo</button>
+                            <button type="button" class="btn" onclick="clearResolverOverride()">Usa quello globale</button>
+                        </div>
+                    </div>
+                </div>
+
                 <div id="tv-controls" class="season-controls" hidden>
                     <label for="input-season">Stagione</label>
                     <select id="input-season" onchange="onSeasonChange(value)"></select>
@@ -1578,13 +1688,13 @@
         </div>
 
         <div class="settings-field settings-field--divider">
-            <label for="settings-resolver-movie">Resolver film</label>
+            <label for="settings-resolver-movie">Sorgente film</label>
             <input type="url" id="settings-resolver-movie" autocomplete="off"
                    placeholder="https://esempio.com/movie/{id}/">
-            <label for="settings-resolver-tv">Resolver serie</label>
+            <label for="settings-resolver-tv">Sorgente serie</label>
             <input type="url" id="settings-resolver-tv" autocomplete="off"
                    placeholder="https://esempio.com/tv/{id}/{season}/{episode}/">
-            <p class="settings-hint">L'app apre l'URL del resolver che tu configuri. Puoi inserire solo l'URL base: l'app accoda automaticamente l'id (e stagione/episodio per le serie). Oppure usa i segnaposto {id}, {type}, {season}, {episode} per i resolver con parametri. Se lasci vuoto, «Guarda ora» non è attivo.</p>
+            <p class="settings-hint">L'app apre l'URL della sorgente che tu configuri. Puoi inserire solo l'URL base: l'app accoda automaticamente l'id (e stagione/episodio per le serie). Oppure usa i segnaposto {id}, {type}, {season}, {episode} per le sorgenti con parametri. Solo collegamenti http/https: magnet, torrent e altri protocolli non sono supportati. Se lasci vuoto, «Guarda ora» non è attivo.</p>
         </div>
 
         <div class="settings-field settings-field--divider">
@@ -1628,6 +1738,17 @@
         </div>
 
         <div class="settings-field settings-field--divider">
+            <label for="update-status">Aggiornamenti</label>
+            <p class="settings-hint" id="settings-version">Versione installata: 1.0.0</p>
+            <p class="settings-hint">BlameFlix controlla su GitHub se è disponibile una nuova versione e te la segnala all'avvio. Puoi verificare manualmente quando vuoi.</p>
+            <div class="settings-actions">
+                <button type="button" class="btn" onclick="checkForUpdates(true)">⟳ Verifica aggiornamenti</button>
+                <button type="button" class="btn" id="settings-update-open" onclick="openLatestRelease()" hidden>Vai alla release</button>
+            </div>
+            <span class="settings-status" id="update-status" hidden></span>
+        </div>
+
+        <div class="settings-field settings-field--divider">
             <label for="docs-status">Aiuto</label>
             <p class="settings-hint">Hai domande su come usare BlameFlix? Trovi tutto spiegato nella guida.</p>
             <div class="settings-actions">
@@ -1657,14 +1778,21 @@
             <p>Usa la barra di ricerca in alto per trovare un film o una serie. Apri la scheda del titolo che ti interessa e premi <strong>«+ Aggiungi ai salvati»</strong>: il titolo entra nella tua sala, dove resta fino a quando non lo togli. Puoi filtrare la sala per <strong>Tutti</strong>, <strong>Film</strong> o <strong>Serie</strong> e scegliere tra la vista a griglia e quella a lista.</p>
 
             <h3>Guardare un film</h3>
-            <p>Apri la scheda del film e premi <strong>«▶ Guarda ora»</strong>. BlameFlix apre l'URL del <strong>resolver</strong> che hai configurato nelle Impostazioni. Su telefono si apre l'app esterna, su computer una nuova finestra.</p>
+            <p>Apri la scheda del film e premi <strong>«▶ Guarda ora»</strong>. BlameFlix apre l'URL della <strong>sorgente</strong> che hai configurato nelle Impostazioni. Su telefono si apre l'app esterna, su computer una nuova finestra.</p>
 
             <h3>Guardare una serie TV</h3>
             <p>Nella scheda di una serie scegli la <strong>stagione</strong> dal selettore: sotto compaiono le <strong>puntate</strong> di quella stagione, con miniatura, titolo e descrizione. Premi «▶ Guarda» sulla puntata che vuoi vedere. Le puntate già viste appaiono <strong>grigiate</strong> con il badge «✓ VISTO»; quelle non ancora in onda restano bloccate fino alla data di messa in onda.</p>
             <p>BlameFlix segna automaticamente come vista la puntata che guardi, ma puoi cambiarlo cliccando sul badge «✓ VISTO» di una puntata. Con il tasto <strong>«Segna tutte come viste»</strong> in cima alla lista puoi marcare in un tocco tutte le puntate già in onda della stagione (premilo di nuovo per toglierle). Quando riapri una serie riparti dalla stagione dell'ultima puntata vista. Se una stagione o un episodio non compare nell'elenco (perché non è elencato da TMDB), scegli <strong>«Altro…»</strong> e digita il numero a mano: la tua scelta viene ricordata.</p>
 
-            <h3>Il resolver</h3>
-            <p>BlameFlix non contiene sorgenti di streaming: apre semplicemente l'URL del servizio che scegli tu. Nelle <strong>Impostazioni</strong> inserisci il template per i film e quello per le serie. Puoi mettere solo l'URL base (es. <code>https://esempio.com/movie/</code>): l'app accoda automaticamente l'id e, per le serie, la stagione e l'episodio. Se il servizio usa parametri, usa i segnaposto <code>{id}</code>, <code>{type}</code>, <code>{season}</code> e <code>{episode}</code> (es. <code>https://esempio.com/watch?id={id}&s={season}&e={episode}</code>). Se un template è vuoto, il pulsante «Guarda ora» non è attivo.</p>
+            <h3>La sorgente</h3>
+            <p>BlameFlix non contiene sorgenti di streaming: apre semplicemente l'URL del servizio che scegli tu. Nelle <strong>Impostazioni</strong> inserisci il template per i film e quello per le serie. Puoi mettere solo l'URL base (es. <code>https://esempio.com/movie/</code>): l'app accoda automaticamente l'id e, per le serie, la stagione e l'episodio. Se il servizio usa parametri, usa i segnaposto <code>{id}</code>, <code>{type}</code>, <code>{season}</code> e <code>{episode}</code> (es. <code>https://esempio.com/watch?id={id}&s={season}&e={episode}</code>). Sono accettati solo collegamenti <strong>http/https</strong>: magnet, torrent e altri protocolli non sono supportati. Se un template è vuoto, il pulsante «Guarda ora» non è attivo.</p>
+            <p>Nella scheda di un titolo puoi impostare una <strong>sorgente specifica</strong> che ha la precedenza su quella globale: premi <strong>«Sorgente: globale»</strong> sotto i pulsanti, inserisci il template e salvalo con «Usa per questo titolo». Con «Usa quella globale» torni al comportamento predefinito. Le sorgenti per titolo sono salvate nel dispositivo e incluse nel backup.</p>
+
+            <h3>Aggiornamenti</h3>
+            <p>BlameFlix controlla su GitHub se è disponibile una nuova versione e, se c'è, mostra un avviso con il link alla pagina di download. Puoi anche verificare a mano nelle <strong>Impostazioni</strong> («Verifica aggiornamenti»), dove vedi la versione installata. Su Android l'APK nuovo si installa <strong>sopra</strong> quello già presente, senza disinstallare nulla.</p>
+
+            <h3>Disclaimer di avvio</h3>
+            <p>Al primo utilizzo BlameFlix mostra un avviso legale sull'uso dell'app: l'avvio è sbloccato solo dopo l'accettazione (attivabile dopo 10 secondi). L'accettazione è ricordata e non viene più richiesta alle aperture successive.</p>
 
             <h3>Notifiche di rilascio</h3>
             <p>BlameFlix può avvisarti quando esce una <strong>nuova puntata</strong> di una serie della tua sala (alla data di messa in onda). Il controllo avviene automaticamente all'apertura dell'app, a intervalli regolari configurabili nelle Impostazioni (ogni 8, 12, 24 o 48 ore) e manualmente con il tasto <strong>«⟳ Sync»</strong> nella sala.</p>
@@ -1672,7 +1800,7 @@
             <p>Nelle <strong>Impostazioni</strong> la sezione notifiche è semplice: <strong>«Abilita notifiche»</strong> e <strong>«Notifiche per le nuove puntate»</strong>. Puoi regolare la frequenza della <strong>sincronizzazione automatica</strong> e inviare una <strong>notifica di prova</strong>. Su Android la prima notifica chiede il permesso di sistema e toccando una notifica si apre la scheda della serie. Le date arrivano da TMDB: se mancano o cambiano, gli avvisi arrivano al primo controllo utile.</p>
 
             <h3>Legalità dei contenuti</h3>
-            <p>BlameFlix è un lettore generico: le sorgenti di streaming le configuri tu nelle Impostazioni. Sei <strong>responsabile della legalità dei contenuti</strong> a cui accedi tramite il tuo resolver, secondo le leggi del tuo Paese. In Italia l'accesso a streaming non autorizzato può comportare sanzioni amministrative (legge 93/2023) e sono in discussione multe più severe. BlameFlix non fornisce né segnala alcuna fonte di contenuti.</p>
+            <p>BlameFlix è un lettore generico: le sorgenti di streaming le configuri tu nelle Impostazioni. Sei <strong>responsabile della legalità dei contenuti</strong> a cui accedi tramite la tua sorgente, secondo le leggi del tuo Paese. In Italia l'accesso a streaming non autorizzato può comportare sanzioni amministrative (legge 93/2023) e sono in discussione multe più severe. BlameFlix non fornisce né segnala alcuna fonte di contenuti.</p>
 
             <h3>Backup dei dati</h3>
             <p>Con <strong>«Crea backup»</strong> salvi un file con i tuoi dati: i titoli salvati, le puntate viste (stagione ed episodio per ogni serie), gli ultimi film e serie visti, la cronologia «Novità», la tua chiave personale e le preferenze di visualizzazione. Il programma ti chiede dove salvare il file.</p>
@@ -1703,6 +1831,24 @@
     <span class="colophon__tag">Schermo: la tua sala</span>
 </footer>
 
+<div id="disclaimer-overlay" class="overlay disclaimer-overlay" hidden role="alertdialog" aria-modal="true" aria-labelledby="disclaimer-title">
+    <div class="settings-panel disclaimer-panel">
+        <div class="settings-head">
+            <div>
+                <span class="eyebrow">Avviso legale</span>
+                <h2 id="disclaimer-title">ATTENZIONE</h2>
+            </div>
+        </div>
+        <div class="disclaimer-body">
+            <p>Questa applicazione è di proprietà di <strong>padelle2603</strong> e tutelata dalla legge sul diritto d'autore, va usata nel rispetto delle norme europee ed italiane sulla visione di contenuti soggetti a proprietà intellettuale, il proprietario non assume alcuna responsabilità sull'uso illegale della stessa, e si riserva ogni diritto ragione ed azione a propria tutela compreso il ricorso alle autorità competenti qualora dall'uso illecito che ne fa l'utente, gliene derivi un danno di qualsiasi natura, solo cliccando su accetta queste condizioni, il programma si avvierà.</p>
+        </div>
+        <div class="settings-actions">
+            <button type="button" class="btn btn--rosso" id="disclaimer-accept" onclick="acceptDisclaimer()" disabled>Accetta</button>
+            <span class="disclaimer-status" id="disclaimer-status">Accettabile tra 10s</span>
+        </div>
+    </div>
+</div>
+
 <div id="toast" class="toast" role="status" aria-live="polite">
     <strong class="toast__title" id="toast-title"></strong>
     <span class="toast__body" id="toast-body"></span>
@@ -1710,6 +1856,10 @@
 
 <script>
     // CONFIGURAZIONE
+    const APP_VERSION = '1.0.0'; // versione installata (iniettata dalla CI a ogni build)
+    const GITHUB_REPO = 'padelle2603/blameflix';
+    const GITHUB_LATEST_URL = `https://api.github.com/repos/${GITHUB_REPO}/releases/latest`;
+    const UPDATE_CHECK_STORAGE = 'myUpdateCheck'; // { lastCheck, lastTag, dismissedTag }
     let API_KEY = localStorage.getItem('myTMDbApiKey') || '';
     const BASE_URL = 'https://api.themoviedb.org/3';
     const IMG_BASE = 'https://image.tmdb.org/t/p/w500';
@@ -1736,7 +1886,9 @@
     let currentList = []; // Ultimi titoli renderizzati (watchlist o risultati ricerca)
     let viewMode = ['grid', 'list'].includes(localStorage.getItem('myViewMode')) ? localStorage.getItem('myViewMode') : 'grid';
     let typeFilter = localStorage.getItem('myTypeFilter') || 'all'; // 'all' | 'movie' | 'tv'
-    let resolver = JSON.parse(localStorage.getItem('myResolver')) || {}; // template URL scelti dall'utente { movie, tv }
+    let resolver = JSON.parse(localStorage.getItem('myResolver')) || {}; // template URL scelti dall'utente { movie, tv } (chiave storica, mantenuta per retrocompatibilità)
+    let resolverOverrides = JSON.parse(localStorage.getItem('myResolverOverrides')) || {}; // sorgente per titolo: chiave 'media_type:id' -> template (chiave storica, mantenuta per retrocompatibilità)
+    let latestRelease = null; // { tag, html_url, assets } dell'ultima release GitHub
 
     // Notifiche di rilascio
     const DEFAULT_NOTIFY_SETTINGS = { enabled: true, tv: true, autoSyncHours: 24 };
@@ -2416,6 +2568,12 @@
             }
 
             updateWatchlistBtn();
+            syncResolverOverrideBtn();
+            const overridePanel = document.getElementById('resolver-override-panel');
+            if (overridePanel) {
+                overridePanel.hidden = true;
+                document.getElementById('resolver-override-input').value = getResolverOverride();
+            }
 
         } catch (err) {
             alert('Errore nel caricamento dei dettagli');
@@ -2919,7 +3077,7 @@
                      .replaceAll('{episode}', vars.episode);
         }
 
-        // Separa path e query per non corrompere i parametri dei resolver
+        // Separa path e query per non corrompere i parametri dei template di sorgente
         const qi = url.indexOf('?');
         const query = qi === -1 ? '' : url.slice(qi);
         let path = (qi === -1 ? url : url.slice(0, qi)).replace(/\/+$/, '');
@@ -2937,13 +3095,38 @@
         return url;
     }
 
+    // Protocolli di file-sharing peer-to-peer: BlameFlix apre solo http/https,
+    // quindi questi schemi non possono essere usati come sorgente.
+    const BANNED_SOURCE_SCHEMES = ['magnet', 'torrent', 'ed2k', 'kademlia', 'dht'];
+
+    // Verifica che il template della sorgente sia un URL http/https. Ritorna
+    // un messaggio d'errore se il template non è utilizzabile, altrimenti null
+    // (un template vuoto è valido: significa "Guarda ora" non attivo).
+    function sourceTemplateError(template) {
+        const t = String(template || '').trim();
+        if (!t) return null;
+        const scheme = t.match(/^([a-zA-Z][a-zA-Z0-9+.-]*):/);
+        if (scheme) {
+            const s = scheme[1].toLowerCase();
+            if (s !== 'http' && s !== 'https') {
+                return BANNED_SOURCE_SCHEMES.includes(s)
+                    ? 'Protocolli di file-sharing (magnet, torrent, ed2k) non supportati: usa un collegamento http/https.'
+                    : 'Solo collegamenti http/https supportati.';
+            }
+        }
+        if (!/^https?:\/\//i.test(t)) {
+            return 'Inserisci un collegamento http/https valido.';
+        }
+        return null;
+    }
+
     async function openPlayer() {
         if (!currentMedia) return;
 
         let streamUrl = '';
 
         if (currentMedia.media_type === 'movie') {
-            streamUrl = resolveTemplate(resolver.movie, { id: currentMedia.id, media_type: currentMedia.media_type });
+            streamUrl = resolveTemplate(effectiveResolverTemplate('movie'), { id: currentMedia.id, media_type: currentMedia.media_type });
         } else if (currentMedia.media_type === 'tv') {
             let season, episode;
             if (customMode) {
@@ -2956,7 +3139,7 @@
                 season = currentSeason || 1;
                 episode = currentEpisode || 1;
             }
-            streamUrl = resolveTemplate(resolver.tv, { id: currentMedia.id, media_type: currentMedia.media_type, season, episode });
+            streamUrl = resolveTemplate(effectiveResolverTemplate('tv'), { id: currentMedia.id, media_type: currentMedia.media_type, season, episode });
             if (streamUrl) saveLastPlayed(currentMedia, season, episode);
         } else {
             return;
@@ -2964,6 +3147,8 @@
 
         if (!streamUrl) {
             syncResolverNotice();
+            const err = sourceTemplateError(effectiveResolverTemplate(currentMedia.media_type));
+            if (err) showToast('Sorgente non disponibile', err);
             return;
         }
 
@@ -2973,6 +3158,72 @@
         } else {
             openWindow(streamUrl);
         }
+    }
+
+    // --- SORGENTE PER TITOLO (override su quella globale) ---
+
+    function resolverOverrideKey() {
+        return currentMedia ? `${currentMedia.media_type}:${currentMedia.id}` : '';
+    }
+
+    // Ritorna il template per questo titolo se configurato, altrimenti quello globale.
+    function effectiveResolverTemplate(type) {
+        const key = resolverOverrideKey();
+        const override = key && typeof resolverOverrides[key] === 'string' ? resolverOverrides[key].trim() : '';
+        if (override) return override;
+        return type === 'movie' ? resolver.movie : resolver.tv;
+    }
+
+    function toggleResolverOverride() {
+        const panel = document.getElementById('resolver-override-panel');
+        const input = document.getElementById('resolver-override-input');
+        if (panel.hidden) {
+            input.value = getResolverOverride();
+            panel.hidden = false;
+            input.focus();
+        } else {
+            panel.hidden = true;
+        }
+    }
+
+    function saveResolverOverride() {
+        const key = resolverOverrideKey();
+        if (!key) return;
+        const input = document.getElementById('resolver-override-input');
+        const value = input.value.trim();
+        const err = sourceTemplateError(value);
+        if (err) {
+            showToast('Sorgente non valida', err);
+            return;
+        }
+        if (value) resolverOverrides[key] = value;
+        else delete resolverOverrides[key];
+        localStorage.setItem('myResolverOverrides', JSON.stringify(resolverOverrides));
+        document.getElementById('resolver-override-panel').hidden = true;
+        syncResolverOverrideBtn();
+    }
+
+    function clearResolverOverride() {
+        const key = resolverOverrideKey();
+        if (!key) return;
+        delete resolverOverrides[key];
+        localStorage.setItem('myResolverOverrides', JSON.stringify(resolverOverrides));
+        document.getElementById('resolver-override-input').value = '';
+        document.getElementById('resolver-override-panel').hidden = true;
+        syncResolverOverrideBtn();
+    }
+
+    function getResolverOverride() {
+        const key = resolverOverrideKey();
+        return key && typeof resolverOverrides[key] === 'string' ? resolverOverrides[key].trim() : '';
+    }
+
+    function syncResolverOverrideBtn() {
+        const btn = document.getElementById('btn-resolver-override');
+        if (!btn) return;
+        const has = Boolean(getResolverOverride());
+        btn.innerText = has ? 'Sorgente: personale' : 'Sorgente: globale';
+        btn.classList.toggle('btn--saved', has);
     }
 
     // --- WATCHLIST LOGIC ---
@@ -3031,7 +3282,7 @@
         keyNotice.hidden = Boolean(API_KEY);
     }
 
-    // Mostra la notifica in-app quando manca il resolver per il player.
+    // Mostra la notifica in-app quando manca la sorgente per il player.
     function syncResolverNotice() {
         resolverNotice.hidden = Boolean(resolver.movie && resolver.tv);
     }
@@ -3043,6 +3294,8 @@
         settingsStatus.hidden = true;
         settingsStatus.classList.remove('is-error');
         syncNotifySettingsInputs();
+        const versionEl = document.getElementById('settings-version');
+        if (versionEl) versionEl.innerText = `Versione installata: ${APP_VERSION}`;
         settingsOverlay.hidden = false;
         settingsKeyInput.focus();
     }
@@ -3070,12 +3323,25 @@
 
     function saveSettings() {
         const key = settingsKeyInput.value.trim();
+
+        const movieTemplate = settingsResolverMovieInput.value.trim();
+        const tvTemplate = settingsResolverTvInput.value.trim();
+        const movieErr = sourceTemplateError(movieTemplate);
+        const tvErr = sourceTemplateError(tvTemplate);
+        if (movieErr || tvErr) {
+            settingsStatus.classList.add('is-error');
+            settingsStatus.innerText = movieErr || tvErr;
+            settingsStatus.hidden = false;
+            setTimeout(() => { settingsStatus.hidden = true; }, 4000);
+            return;
+        }
+
         API_KEY = key;
         localStorage.setItem('myTMDbApiKey', key);
 
         resolver = {
-            movie: settingsResolverMovieInput.value.trim(),
-            tv: settingsResolverTvInput.value.trim()
+            movie: movieTemplate,
+            tv: tvTemplate
         };
         localStorage.setItem('myResolver', JSON.stringify(resolver));
 
@@ -3114,6 +3380,146 @@
         sendTestNotification._t = setTimeout(() => { status.hidden = true; }, 3500);
     }
 
+    // --- AGGIORNAMENTI (GitHub releases) ---
+
+    const updateNotice = document.getElementById('update-notice');
+    const updateNoticeText = document.getElementById('update-notice-text');
+    const updateNoticeApk = document.getElementById('update-notice-apk');
+    const updateStatus = document.getElementById('update-status');
+
+    // Confronto semver numerico (gestisce anche prefissi "v" e suffissi).
+    function compareVersions(a, b) {
+        const pa = String(a).replace(/^v/i, '').split(/[.\-+]/).map(n => parseInt(n, 10) || 0);
+        const pb = String(b).replace(/^v/i, '').split(/[.\-+]/).map(n => parseInt(n, 10) || 0);
+        const len = Math.max(pa.length, pb.length);
+        for (let i = 0; i < len; i++) {
+            const x = pa[i] || 0, y = pb[i] || 0;
+            if (x > y) return 1;
+            if (x < y) return -1;
+        }
+        return 0;
+    }
+
+    function getUpdateState() {
+        try { return JSON.parse(localStorage.getItem(UPDATE_CHECK_STORAGE)) || {}; }
+        catch (err) { return {}; }
+    }
+
+    // Verifica l'ultima release su GitHub. Se manual è true mostra l'esito
+    // nelle Impostazioni; altrimenti si limita a mostrare il banner se c'è
+    // una versione più recente di quella installata e non ancora ignorata.
+    async function checkForUpdates(manual = false) {
+        if (manual && updateStatus) {
+            updateStatus.classList.remove('is-error');
+            updateStatus.innerText = 'Verifica in corso…';
+            updateStatus.hidden = false;
+        }
+        // L'auto-controllo evita di interrogare GitHub più di una volta all'ora.
+        const state = getUpdateState();
+        if (!manual && state.lastCheck && (Date.now() - state.lastCheck) < 60 * 60 * 1000) {
+            if (state.lastTag && compareVersions(String(state.lastTag).replace(/^v/i, ''), APP_VERSION) > 0 && state.dismissedTag !== state.lastTag) {
+                useReleaseFromState(state);
+            }
+            return;
+        }
+        try {
+            const data = await fetchJson(GITHUB_LATEST_URL);
+            const tag = data.tag_name || '';
+            const version = String(tag).replace(/^v/i, '');
+            latestRelease = { tag, html_url: data.html_url || '', assets: Array.isArray(data.assets) ? data.assets : [] };
+            state.lastCheck = Date.now();
+            state.lastTag = tag;
+            localStorage.setItem(UPDATE_CHECK_STORAGE, JSON.stringify(state));
+
+            if (version && compareVersions(version, APP_VERSION) > 0) {
+                showUpdateNotice(latestRelease);
+                const settingsOpen = document.getElementById('settings-update-open');
+                if (settingsOpen) settingsOpen.hidden = false;
+                if (manual && updateStatus) {
+                    updateStatus.classList.remove('is-error');
+                    updateStatus.innerText = `Nuova versione ${tag} disponibile`;
+                }
+            } else {
+                hideUpdateNotice();
+                const settingsOpen = document.getElementById('settings-update-open');
+                if (settingsOpen) settingsOpen.hidden = true;
+                if (manual && updateStatus) {
+                    updateStatus.classList.remove('is-error');
+                    updateStatus.innerText = 'Sei aggiornato ✓';
+                }
+            }
+        } catch (err) {
+            hideUpdateNotice();
+            if (manual && updateStatus) {
+                updateStatus.classList.add('is-error');
+                updateStatus.innerText = 'Impossibile verificare gli aggiornamenti';
+            }
+        }
+        if (manual && updateStatus) {
+            clearTimeout(checkForUpdates._t);
+            checkForUpdates._t = setTimeout(() => { updateStatus.hidden = true; }, 4500);
+        }
+    }
+
+    function useReleaseFromState(state) {
+        latestRelease = {
+            tag: state.lastTag,
+            html_url: `https://github.com/${GITHUB_REPO}/releases/tag/${encodeURIComponent(state.lastTag)}`,
+            assets: []
+        };
+        showUpdateNotice(latestRelease);
+    }
+
+    function showUpdateNotice(release) {
+        updateNoticeText.innerText = `⚠ Nuova versione ${release.tag} disponibile su GitHub`;
+        const apkAsset = release.assets.find(a => /\.apk$/i.test(a.name || ''));
+        if (apkAsset && apkAsset.browser_download_url) {
+            latestRelease.apkUrl = apkAsset.browser_download_url;
+            updateNoticeApk.hidden = false;
+        } else {
+            latestRelease.apkUrl = '';
+            updateNoticeApk.hidden = true;
+        }
+        updateNotice.hidden = false;
+    }
+
+    function hideUpdateNotice() {
+        updateNotice.hidden = true;
+    }
+
+    function dismissUpdate() {
+        const tag = latestRelease && latestRelease.tag;
+        if (tag) {
+            const state = getUpdateState();
+            state.dismissedTag = tag;
+            localStorage.setItem(UPDATE_CHECK_STORAGE, JSON.stringify(state));
+        }
+        hideUpdateNotice();
+    }
+
+    // Apre la pagina della release su GitHub (browser esterno su mobile).
+    function openLatestRelease() {
+        const url = latestRelease && latestRelease.html_url
+            ? latestRelease.html_url
+            : `https://github.com/${GITHUB_REPO}/releases/latest`;
+        openExternalUrl(url);
+    }
+
+    // Scarica direttamente l'APK della release (link all'asset su GitHub).
+    function downloadLatestApk() {
+        const url = latestRelease && latestRelease.apkUrl;
+        if (url) openExternalUrl(url);
+    }
+
+    // Apre un URL esterno: browser di sistema su mobile, nuova finestra su desktop.
+    function openExternalUrl(url) {
+        if (isMobile() && window.Capacitor?.Plugins?.Browser) {
+            openBrowser(url);
+        } else {
+            openWindow(url);
+        }
+    }
+
     // --- BACKUP / RIPRISTINO ---
 
     const backupFile = document.getElementById('backup-file');
@@ -3132,6 +3538,7 @@
                 myNewsHistory: newsHistory,
                 myTMDbApiKey: API_KEY,
                 myResolver: resolver,
+                myResolverOverrides: resolverOverrides,
                 myViewMode: viewMode,
                 myTypeFilter: typeFilter,
                 myNotifySettings: notifySettings,
@@ -3325,6 +3732,9 @@
                 const rs = data.myResolver && typeof data.myResolver === 'object'
                     ? { movie: String(data.myResolver.movie || ''), tv: String(data.myResolver.tv || '') }
                     : { movie: '', tv: '' };
+                const ro = data.myResolverOverrides && typeof data.myResolverOverrides === 'object'
+                    ? data.myResolverOverrides
+                    : {};
                 const ns = data.myNotifySettings && typeof data.myNotifySettings === 'object'
                     ? Object.assign({}, DEFAULT_NOTIFY_SETTINGS, data.myNotifySettings)
                     : Object.assign({}, DEFAULT_NOTIFY_SETTINGS);
@@ -3357,6 +3767,7 @@
                 watchedEpisodes = normalizeWatched(we);
                 newsHistory = nh.slice(0, NEWS_HISTORY_MAX);
                 resolver = rs;
+                resolverOverrides = ro;
                 notifySettings = ns;
                 releaseState = rl;
                 persistWatchlist();
@@ -3366,6 +3777,7 @@
                 persistNewsHistory();
                 localStorage.setItem('myTMDbApiKey', key);
                 localStorage.setItem('myResolver', JSON.stringify(resolver));
+                localStorage.setItem('myResolverOverrides', JSON.stringify(resolverOverrides));
                 persistNotifySettings();
                 persistReleaseState();
                 syncNotifySettingsInputs();
@@ -3398,14 +3810,70 @@
         if (e.target === settingsOverlay) closeSettings();
     });
 
-    // Avvio iniziale
-    syncApiKeyNotice();
-    syncResolverNotice();
-    updateCount();
-    syncTools();
-    showHome();
-    hydrateWatchlistGrid().then(() => checkReleases(false));
-    startAutoSyncTimer();
+    // Avvio dell'app vero e proprio: eseguito solo dopo l'accettazione del
+    // disclaimer al primissimo utilizzo.
+    function startApp() {
+        syncApiKeyNotice();
+        syncResolverNotice();
+        updateCount();
+        syncTools();
+        showHome();
+        hydrateWatchlistGrid().then(() => checkReleases(false));
+        startAutoSyncTimer();
+        // Controllo aggiornamenti: dopo qualche secondo, senza interferire con l'avvio.
+        setTimeout(() => checkForUpdates(false), 5000);
+    }
+
+    // --- DISCLAIMER DI AVVIO (primo utilizzo) ---
+    // Il programma parte solo dopo l'accettazione; il pulsante si abilita dopo
+    // 10 secondi. L'accettazione è memorizzata in locale e non viene richiesta
+    // di nuovo alle aperture successive.
+    // Best-effort: chiede al browser/WebView di non epurare automaticamente lo
+    // storage dell'origine, così il flag può sopravvivere ai riavvii. Se il
+    // sistema lo rifiuta, localStorage può ancora andare perso (vedi PRIVACY).
+    function tryPersistStorage() {
+        try {
+            if (navigator.storage && typeof navigator.storage.persist === 'function') {
+                navigator.storage.persist().catch(() => {});
+            }
+        } catch (err) { /* storage non disponibile: ignora */ }
+    }
+
+    function initDisclaimer() {
+        tryPersistStorage();
+        if (localStorage.getItem('myDisclaimerAccepted') === '1') {
+            startApp();
+            return;
+        }
+        const overlay = document.getElementById('disclaimer-overlay');
+        const acceptBtn = document.getElementById('disclaimer-accept');
+        const statusEl = document.getElementById('disclaimer-status');
+        overlay.hidden = false;
+
+        let remaining = 10;
+        statusEl.innerText = `Accettabile tra ${remaining}s`;
+        acceptBtn.disabled = true;
+
+        const timer = setInterval(() => {
+            remaining--;
+            if (remaining <= 0) {
+                clearInterval(timer);
+                acceptBtn.disabled = false;
+                statusEl.innerText = 'Accetta per avviare BlameFlix';
+            } else {
+                statusEl.innerText = `Accettabile tra ${remaining}s`;
+            }
+        }, 1000);
+    }
+
+    function acceptDisclaimer() {
+        localStorage.setItem('myDisclaimerAccepted', '1');
+        tryPersistStorage();
+        document.getElementById('disclaimer-overlay').hidden = true;
+        startApp();
+    }
+
+    initDisclaimer();
 
     // Al tocco di una notifica di sistema apre la scheda del titolo
     // (con stagione/episodio per le serie) tramite il payload della notifica.
