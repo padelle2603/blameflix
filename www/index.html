@@ -1357,6 +1357,14 @@
         /* ===== STARTUP DISCLAIMER ===== */
         .disclaimer-overlay { z-index: 100; }
 
+        /* ===== UPDATE POPUP ===== */
+        .update-popup { z-index: 100; }
+
+        .update-popup__panel {
+            max-width: 520px;
+            border: 1px solid var(--rosso);
+        }
+
         .disclaimer-panel {
             max-width: 620px;
             border: 1px solid var(--rosso);
@@ -1541,6 +1549,22 @@
     </div>
 </div>
 
+<div id="update-popup" class="overlay update-popup" hidden role="alertdialog" aria-modal="true" aria-labelledby="update-popup-title">
+    <div class="settings-panel update-popup__panel">
+        <div class="settings-head">
+            <div>
+                <span class="eyebrow" data-i18n="settings.updates">Aggiornamenti</span>
+                <h2 id="update-popup-title" data-i18n="update.popupTitle">Nuova versione disponibile</h2>
+            </div>
+        </div>
+        <p class="settings-hint" id="update-popup-text"></p>
+        <div class="settings-actions">
+            <button type="button" class="btn btn--rosso" id="update-popup-download" onclick="updatePopupDownload()"></button>
+            <button type="button" class="btn" onclick="dismissUpdatePopup()" data-i18n="update.later">Più tardi</button>
+        </div>
+    </div>
+</div>
+
 <div class="container">
 
     <div class="searchbar">
@@ -1721,11 +1745,6 @@
             <span class="settings-status" id="notify-status" hidden></span>
         </div>
 
-        <div class="settings-actions">
-            <button type="button" class="btn btn--rosso" onclick="saveSettings()" data-i18n="settings.save">Salva</button>
-            <span class="settings-status" id="settings-status" hidden></span>
-        </div>
-
         <div class="settings-field settings-field--divider">
             <label for="settings-lang" data-i18n="settings.language">Lingua</label>
             <select id="settings-lang">
@@ -1733,6 +1752,11 @@
                 <option value="en">English</option>
             </select>
             <p class="settings-hint" data-i18n="settings.langHint">Lingua dell'interfaccia. Al primo avvio viene rilevata automaticamente.</p>
+        </div>
+
+        <div class="settings-actions">
+            <button type="button" class="btn btn--rosso" onclick="saveSettings()" data-i18n="settings.save">Salva</button>
+            <span class="settings-status" id="settings-status" hidden></span>
         </div>
 
         <div class="settings-field settings-field--divider">
@@ -1903,6 +1927,9 @@
             'notice.downloadApk': 'Scarica APK',
             'notice.dismiss': 'Ignora questo aggiornamento',
             'notice.updateAvailable': '⚠ Nuova versione {tag} disponibile su GitHub',
+            'update.popupTitle': 'Nuova versione disponibile',
+            'update.popupBody': 'BlameFlix {latest} è disponibile. La tua versione installata è la {current}.',
+            'update.later': 'Più tardi',
             'search.label': 'Cerca un titolo',
             'search.placeholder': 'Cerca film o serie TV…',
             'search.clearAria': 'Torna alla tua homepage',
@@ -2117,6 +2144,9 @@
             'notice.downloadApk': 'Download APK',
             'notice.dismiss': 'Dismiss this update',
             'notice.updateAvailable': '⚠ New version {tag} available on GitHub',
+            'update.popupTitle': 'New version available',
+            'update.popupBody': 'BlameFlix {latest} is available. Your installed version is {current}.',
+            'update.later': 'Later',
             'search.label': 'Search a title',
             'search.placeholder': 'Search movies or TV series…',
             'search.clearAria': 'Back to your homepage',
@@ -2368,6 +2398,7 @@
         syncResolverOverrideBtn();
         if (currentMedia) updateWatchlistBtn();
         if (latestRelease) showUpdateNotice(latestRelease);
+        if (typeof syncUpdatePopup === 'function' && updatePopup && !updatePopup.hidden) syncUpdatePopup();
     }
 
     // Switches the language (and optionally persists the choice).
@@ -3883,6 +3914,9 @@
     const updateNoticeText = document.getElementById('update-notice-text');
     const updateNoticeApk = document.getElementById('update-notice-apk');
     const updateStatus = document.getElementById('update-status');
+    const updatePopup = document.getElementById('update-popup');
+    const updatePopupText = document.getElementById('update-popup-text');
+    const updatePopupDownloadBtn = document.getElementById('update-popup-download');
 
     // Numeric semver comparison (handles "v" prefixes and suffixes).
     function compareVersions(a, b) {
@@ -3903,8 +3937,9 @@
     }
 
     // Checks the latest release on GitHub. If manual is true, it shows the
-    // outcome in the Settings; otherwise it only shows the banner when a
-    // newer version than the installed one exists and has not been dismissed.
+    // outcome in the Settings; otherwise, when a newer version than the
+    // installed one exists and has not been dismissed, it shows the update
+    // banner together with a startup popup that leads to the download.
     async function checkForUpdates(manual = false) {
         if (manual && updateStatus) {
             updateStatus.classList.remove('is-error');
@@ -3930,6 +3965,7 @@
 
             if (version && compareVersions(version, APP_VERSION) > 0) {
                 showUpdateNotice(latestRelease);
+                if (!manual) showUpdatePopup(latestRelease);
                 const settingsOpen = document.getElementById('settings-update-open');
                 if (settingsOpen) settingsOpen.hidden = false;
                 if (manual && updateStatus) {
@@ -3965,6 +4001,7 @@
             assets: []
         };
         showUpdateNotice(latestRelease);
+        showUpdatePopup(latestRelease);
     }
 
     function showUpdateNotice(release) {
@@ -3993,6 +4030,36 @@
         }
         hideUpdateNotice();
     }
+
+    // Shows the startup popup that warns about a newer version. It keeps the
+    // banner visible independently: "Later" only closes this popup.
+    function showUpdatePopup() {
+        updatePopup.hidden = false;
+        syncUpdatePopup();
+    }
+
+    // Refreshes the dynamic parts of the popup (also called on language change).
+    function syncUpdatePopup() {
+        if (!latestRelease) return;
+        updatePopupText.innerText = t('update.popupBody', { latest: latestRelease.tag, current: APP_VERSION });
+        updatePopupDownloadBtn.innerText = latestRelease.apkUrl ? t('notice.downloadApk') : t('notice.downloadGitHub');
+    }
+
+    // Closes only the popup: the banner and the dismissed state stay untouched.
+    function dismissUpdatePopup() {
+        updatePopup.hidden = true;
+    }
+
+    // Primary popup action: direct APK download when available, otherwise the
+    // GitHub release page.
+    function updatePopupDownload() {
+        if (latestRelease && latestRelease.apkUrl) downloadLatestApk();
+        else openLatestRelease();
+    }
+
+    updatePopup.addEventListener('click', e => {
+        if (e.target === updatePopup) dismissUpdatePopup();
+    });
 
     // Opens the release page on GitHub (external browser on mobile).
     function openLatestRelease() {
