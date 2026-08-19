@@ -156,6 +156,18 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release delete "v$APP_VERSION" --yes 2>/dev/null || true
-          gh release create "v$APP_VERSION" release/* \
-            --title "BlameFlix v$APP_VERSION" \
-            --notes "Automatic release of BlameFlix $APP_VERSION. Android APK (com.padelle.blameflix) and Linux AppImage."
+          if [ -f CHANGELOG.md ] && awk -v v="## v$APP_VERSION" '$0 == v { f = 1 } f' CHANGELOG.md | grep -q .; then
+            awk -v v="## v$APP_VERSION" '
+              $0 == v { flag = 1; next }
+              flag && /^## / { exit }
+              flag { print }
+            ' CHANGELOG.md > release-notes.md
+            printf '\nAPK Android (com.padelle.blameflix) e AppImage Linux.\n' >> release-notes.md
+            gh release create "v$APP_VERSION" release/* \
+              --title "BlameFlix v$APP_VERSION" \
+              --notes-file release-notes.md
+          else
+            gh release create "v$APP_VERSION" release/* \
+              --title "BlameFlix v$APP_VERSION" \
+              --notes "Automatic release of BlameFlix $APP_VERSION. Android APK (com.padelle.blameflix) and Linux AppImage."
+          fi

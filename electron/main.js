@@ -37,6 +37,8 @@ function createWindow() {
     });
 }
 
+ipcMain.handle('get-app-version', () => app.getVersion());
+
 ipcMain.handle('save-backup', async (event, { defaultName, content, lang }) => {
     const win = BrowserWindow.fromWebContents(event.sender);
     const isEn = lang === 'en';

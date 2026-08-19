@@ -2,6 +2,10 @@
 
 > **Lingua / Language**: **Italiano** (questo documento) | [English](README.md)
 
+[![Scarica BlameFlix su GitHub](https://img.shields.io/badge/Scarica%20BlameFlix%20su%20GitHub-e04334?style=for-the-badge&logo=github&logoColor=white)](https://github.com/padelle2603/blameflix/releases/latest)
+
+> ⬇ Scarica l'**APK (Android)** o l'**AppImage (Linux)** dall'[ultima release](https://github.com/padelle2603/blameflix/releases/latest). Vedi il [changelog](CHANGELOG.md) per le novità.
+
 BlameFlix è il tuo **catalogo personale** per film e serie TV: un unico posto dove
 cercare un titolo, salvarlo nella tua libreria, ricordare quali puntate hai visto
 e quale stagione ti aspetta, e ricevere un avviso quando esce la prossima.
@@ -96,7 +100,8 @@ prima di poterla usare.
 Le release vengono create automaticamente dalla pipeline a ogni `push` sul ramo
 `main`, con tag `v<versione>`. Su Android l'aggiornamento è **in-place**: ogni
 release ha un `versionCode` crescente e firma con la stessa chiave, quindi il
-nuovo APK si installa sopra il precedente e i tuoi dati restano intatti.
+nuovo APK si installa sopra il precedente e i tuoi dati restano intatti. Il
+[changelog](CHANGELOG.md) elenca le modifiche di ogni release.
 
 ## Ringraziamenti
 

@@ -1224,6 +1224,45 @@
             padding-top: 1.2rem;
         }
 
+        .settings-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.2rem;
+            border-bottom: 1px solid var(--ink);
+            margin: 0 0 1.2rem;
+        }
+
+        .settings-tab {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--meta);
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            border-radius: 0;
+            padding: 0.5rem 0.7rem;
+            margin: 0 0 -1px;
+            cursor: pointer;
+        }
+
+        .settings-tab:hover { color: var(--ink-hi); }
+
+        .settings-tab.is-active {
+            color: var(--rosso);
+            border-bottom-color: var(--rosso);
+        }
+
+        .settings-tabpage:first-of-type { padding-top: 0.1rem; }
+
+        .settings-savebar {
+            border-top: 1px solid var(--ink);
+            padding-top: 1.2rem;
+            margin-top: 1.2rem;
+        }
+
         /* ===== TOAST (in-app notices) ===== */
         .toast {
             position: fixed;
@@ -1358,7 +1397,7 @@
         .disclaimer-overlay { z-index: 100; }
 
         /* ===== UPDATE POPUP ===== */
-        .update-popup { z-index: 100; }
+        .update-popup { z-index: 110; }
 
         .update-popup__panel {
             max-width: 520px;
@@ -1704,89 +1743,111 @@
             <button type="button" class="btn btn--ghost" onclick="closeSettings()" data-i18n="settings.close">&times; Chiudi</button>
         </div>
 
-        <div class="settings-field">
-            <label for="settings-api-key" data-i18n="settings.apiKey">Chiave API TMDB</label>
-            <input type="text" id="settings-api-key" inputmode="text" autocomplete="off"
-                   placeholder="Inserisci la tua chiave personale" data-i18n-placeholder="settings.apiKeyPlaceholder">
-            <p class="settings-hint" data-i18n="settings.apiKeyHint">La chiave personale si ottiene gratuitamente su themoviedb.org → Settings → API. Senza chiave non puoi cercare titoli.</p>
-        </div>
+        <nav class="settings-tabs" role="tablist" aria-label="Impostazioni">
+            <button type="button" class="settings-tab is-active" data-tab="settings-tab-api" role="tab" aria-selected="true" data-i18n="settings.tab.api">API e Sorgenti</button>
+            <button type="button" class="settings-tab" data-tab="settings-tab-notify" role="tab" aria-selected="false" data-i18n="settings.tab.notify">Notifiche</button>
+            <button type="button" class="settings-tab" data-tab="settings-tab-prefs" role="tab" aria-selected="false" data-i18n="settings.tab.preferences">Preferenze</button>
+            <button type="button" class="settings-tab" data-tab="settings-tab-data" role="tab" aria-selected="false" data-i18n="settings.tab.data">Dati</button>
+            <button type="button" class="settings-tab" data-tab="settings-tab-updates" role="tab" aria-selected="false" data-i18n="settings.tab.updates">Aggiornamenti</button>
+            <button type="button" class="settings-tab" data-tab="settings-tab-help" role="tab" aria-selected="false" data-i18n="settings.tab.help">Aiuto</button>
+        </nav>
 
-        <div class="settings-field settings-field--divider">
-            <label for="settings-resolver-movie" data-i18n="settings.sourceMovie">Sorgente film</label>
-            <input type="url" id="settings-resolver-movie" autocomplete="off"
-                   placeholder="https://esempio.com/movie/{id}/" data-i18n-placeholder="settings.sourceMoviePlaceholder">
-            <label for="settings-resolver-tv" data-i18n="settings.sourceTv">Sorgente serie</label>
-            <input type="url" id="settings-resolver-tv" autocomplete="off"
-                   placeholder="https://esempio.com/tv/{id}/{season}/{episode}/" data-i18n-placeholder="settings.sourceTvPlaceholder">
-            <p class="settings-hint" data-i18n="settings.sourceHint">L'app apre l'URL della sorgente che tu configuri, sostituendo i segnaposto {id}, {type}, {season}, {episode} con i valori del titolo. Senza segnaposto l'URL viene aperto esattamente com'è. Solo collegamenti http/https: magnet, torrent e altri protocolli non sono supportati. Se lasci vuoto, «Guarda ora» non è attivo.</p>
-        </div>
-
-        <div class="settings-field settings-field--divider">
-            <label data-i18n="settings.notify">Notifiche di rilascio</label>
-            <p class="settings-hint" data-i18n="settings.notifyHint">Ti avvisiamo quando esce una nuova puntata di una serie della tua sala. Le novità restano anche nella cronologia «Novità» in home. Il controllo avviene all'apertura dell'app, automaticamente a intervalli regolari e con il tasto «⟳ Sync» nella sala. Su Android serve il permesso di notifica di sistema.</p>
-            <label class="settings-check">
-                <input type="checkbox" id="settings-notify-enabled">
-                <span data-i18n="settings.notifyEnable">Abilita notifiche</span>
-            </label>
-            <label class="settings-check">
-                <input type="checkbox" id="settings-notify-tv">
-                <span data-i18n="settings.notifyTv">Notifiche per le nuove puntate</span>
-            </label>
-            <label for="settings-notify-interval" data-i18n="settings.notifyInterval">Sincronizzazione automatica</label>
-            <select id="settings-notify-interval">
-                <option value="8" data-i18n="settings.every8">Ogni 8 ore</option>
-                <option value="12" data-i18n="settings.every12">Ogni 12 ore</option>
-                <option value="24" data-i18n="settings.every24">Ogni 24 ore</option>
-                <option value="48" data-i18n="settings.every48">Ogni 48 ore</option>
-            </select>
-            <div class="settings-actions">
-                <button type="button" class="btn" onclick="sendTestNotification()" data-i18n="settings.testNotify">🔔 Prova notifica</button>
+        <section class="settings-tabpage" id="settings-tab-api" role="tabpanel">
+            <div class="settings-field">
+                <label for="settings-api-key" data-i18n="settings.apiKey">Chiave API TMDB</label>
+                <input type="text" id="settings-api-key" inputmode="text" autocomplete="off"
+                       placeholder="Inserisci la tua chiave personale" data-i18n-placeholder="settings.apiKeyPlaceholder">
+                <p class="settings-hint" data-i18n="settings.apiKeyHint">La chiave personale si ottiene gratuitamente su themoviedb.org → Settings → API. Senza chiave non puoi cercare titoli.</p>
             </div>
-            <span class="settings-status" id="notify-status" hidden></span>
-        </div>
 
-        <div class="settings-field settings-field--divider">
-            <label for="settings-lang" data-i18n="settings.language">Lingua</label>
-            <select id="settings-lang">
-                <option value="it">Italiano</option>
-                <option value="en">English</option>
-            </select>
-            <p class="settings-hint" data-i18n="settings.langHint">Lingua dell'interfaccia. Al primo avvio viene rilevata automaticamente.</p>
-        </div>
+            <div class="settings-field settings-field--divider">
+                <label for="settings-resolver-movie" data-i18n="settings.sourceMovie">Sorgente film</label>
+                <input type="url" id="settings-resolver-movie" autocomplete="off"
+                       placeholder="https://esempio.com/movie/{id}/" data-i18n-placeholder="settings.sourceMoviePlaceholder">
+                <label for="settings-resolver-tv" data-i18n="settings.sourceTv">Sorgente serie</label>
+                <input type="url" id="settings-resolver-tv" autocomplete="off"
+                       placeholder="https://esempio.com/tv/{id}/{season}/{episode}/" data-i18n-placeholder="settings.sourceTvPlaceholder">
+                <p class="settings-hint" data-i18n="settings.sourceHint">L'app apre l'URL della sorgente che tu configuri, sostituendo i segnaposto {id}, {type}, {season}, {episode} con i valori del titolo. Senza segnaposto l'URL viene aperto esattamente com'è. Solo collegamenti http/https: magnet, torrent e altri protocolli non sono supportati. Se lasci vuoto, «Guarda ora» non è attivo.</p>
+            </div>
+        </section>
 
-        <div class="settings-actions">
+        <section class="settings-tabpage" id="settings-tab-notify" role="tabpanel" hidden>
+            <div class="settings-field">
+                <label data-i18n="settings.notify">Notifiche di rilascio</label>
+                <p class="settings-hint" data-i18n="settings.notifyHint">Ti avvisiamo quando esce una nuova puntata di una serie della tua sala. Le novità restano anche nella cronologia «Novità» in home. Il controllo avviene all'apertura dell'app, automaticamente a intervalli regolari e con il tasto «⟳ Sync» nella sala. Su Android serve il permesso di notifica di sistema.</p>
+                <label class="settings-check">
+                    <input type="checkbox" id="settings-notify-enabled">
+                    <span data-i18n="settings.notifyEnable">Abilita notifiche</span>
+                </label>
+                <label class="settings-check">
+                    <input type="checkbox" id="settings-notify-tv">
+                    <span data-i18n="settings.notifyTv">Notifiche per le nuove puntate</span>
+                </label>
+                <label for="settings-notify-interval" data-i18n="settings.notifyInterval">Sincronizzazione automatica</label>
+                <select id="settings-notify-interval">
+                    <option value="8" data-i18n="settings.every8">Ogni 8 ore</option>
+                    <option value="12" data-i18n="settings.every12">Ogni 12 ore</option>
+                    <option value="24" data-i18n="settings.every24">Ogni 24 ore</option>
+                    <option value="48" data-i18n="settings.every48">Ogni 48 ore</option>
+                </select>
+                <div class="settings-actions">
+                    <button type="button" class="btn" onclick="sendTestNotification()" data-i18n="settings.testNotify">🔔 Prova notifica</button>
+                </div>
+                <span class="settings-status" id="notify-status" hidden></span>
+            </div>
+        </section>
+
+        <section class="settings-tabpage" id="settings-tab-prefs" role="tabpanel" hidden>
+            <div class="settings-field">
+                <label for="settings-lang" data-i18n="settings.language">Lingua</label>
+                <select id="settings-lang">
+                    <option value="it">Italiano</option>
+                    <option value="en">English</option>
+                </select>
+                <p class="settings-hint" data-i18n="settings.langHint">Lingua dell'interfaccia. Al primo avvio viene rilevata automaticamente.</p>
+            </div>
+        </section>
+
+        <section class="settings-tabpage" id="settings-tab-data" role="tabpanel" hidden>
+            <div class="settings-field">
+                <label for="backup-status" data-i18n="settings.backup">Backup dati</label>
+                <p class="settings-hint" data-i18n="settings.backupHint">Salva i tuoi dati (salvati, puntate viste, ultime riproduzioni, stagioni personalizzate, novità e preferenze) e ripristinali in un secondo momento. Il backup contiene solo gli identificativi dei titoli: al ripristino i dettagli vengono riscaricati da TMDB (serve la connessione).</p>
+                <div class="settings-actions">
+                    <button type="button" class="btn" onclick="createBackup()" data-i18n="settings.backupCreate">⬇ Crea backup</button>
+                    <button type="button" class="btn" onclick="restoreBackup()" data-i18n="settings.backupRestore">⬆ Ripristina</button>
+                    <input type="file" id="backup-file" accept="application/json,.json" hidden>
+                </div>
+                <span class="settings-status" id="backup-status" hidden></span>
+            </div>
+        </section>
+
+        <section class="settings-tabpage" id="settings-tab-updates" role="tabpanel" hidden>
+            <div class="settings-field">
+                <label for="update-status" data-i18n="settings.updates">Aggiornamenti</label>
+                <p class="settings-hint" id="settings-version">Versione installata: 1.0.0</p>
+                <p class="settings-hint" id="settings-updates-web-hint" hidden data-i18n="settings.updatesWebOnly"></p>
+                <p class="settings-hint" data-i18n="settings.updatesHint">BlameFlix controlla su GitHub se è disponibile una nuova versione e te la segnala all'avvio. Puoi verificare manualmente quando vuoi.</p>
+                <div class="settings-actions">
+                    <button type="button" class="btn" id="settings-update-check" onclick="checkForUpdates(true)" data-i18n="settings.checkUpdates">⟳ Verifica aggiornamenti</button>
+                    <button type="button" class="btn" id="settings-update-open" onclick="openLatestRelease()" hidden data-i18n="settings.goRelease">Vai alla release</button>
+                </div>
+                <span class="settings-status" id="update-status" hidden></span>
+            </div>
+        </section>
+
+        <section class="settings-tabpage" id="settings-tab-help" role="tabpanel" hidden>
+            <div class="settings-field">
+                <label for="docs-status" data-i18n="settings.help">Aiuto</label>
+                <p class="settings-hint" data-i18n="settings.helpHint">Hai domande su come usare BlameFlix? Trovi tutto spiegato nella guida.</p>
+                <div class="settings-actions">
+                    <button type="button" class="btn" onclick="openDocs()" data-i18n="settings.docs">❓ Documentazione</button>
+                </div>
+            </div>
+        </section>
+
+        <div class="settings-actions settings-savebar">
             <button type="button" class="btn btn--rosso" onclick="saveSettings()" data-i18n="settings.save">Salva</button>
             <span class="settings-status" id="settings-status" hidden></span>
-        </div>
-
-        <div class="settings-field settings-field--divider">
-            <label for="backup-status" data-i18n="settings.backup">Backup dati</label>
-            <p class="settings-hint" data-i18n="settings.backupHint">Salva i tuoi dati (salvati, puntate viste, ultime riproduzioni, stagioni personalizzate, novità e preferenze) e ripristinali in un secondo momento. Il backup contiene solo gli identificativi dei titoli: al ripristino i dettagli vengono riscaricati da TMDB (serve la connessione).</p>
-            <div class="settings-actions">
-                <button type="button" class="btn" onclick="createBackup()" data-i18n="settings.backupCreate">⬇ Crea backup</button>
-                <button type="button" class="btn" onclick="restoreBackup()" data-i18n="settings.backupRestore">⬆ Ripristina</button>
-                <input type="file" id="backup-file" accept="application/json,.json" hidden>
-            </div>
-            <span class="settings-status" id="backup-status" hidden></span>
-        </div>
-
-        <div class="settings-field settings-field--divider">
-            <label for="update-status" data-i18n="settings.updates">Aggiornamenti</label>
-            <p class="settings-hint" id="settings-version">Versione installata: 1.0.0</p>
-            <p class="settings-hint" data-i18n="settings.updatesHint">BlameFlix controlla su GitHub se è disponibile una nuova versione e te la segnala all'avvio. Puoi verificare manualmente quando vuoi.</p>
-            <div class="settings-actions">
-                <button type="button" class="btn" onclick="checkForUpdates(true)" data-i18n="settings.checkUpdates">⟳ Verifica aggiornamenti</button>
-                <button type="button" class="btn" id="settings-update-open" onclick="openLatestRelease()" hidden data-i18n="settings.goRelease">Vai alla release</button>
-            </div>
-            <span class="settings-status" id="update-status" hidden></span>
-        </div>
-
-        <div class="settings-field settings-field--divider">
-            <label for="docs-status" data-i18n="settings.help">Aiuto</label>
-            <p class="settings-hint" data-i18n="settings.helpHint">Hai domande su come usare BlameFlix? Trovi tutto spiegato nella guida.</p>
-            <div class="settings-actions">
-                <button type="button" class="btn" onclick="openDocs()" data-i18n="settings.docs">❓ Documentazione</button>
-            </div>
         </div>
     </div>
 </div>
@@ -1889,10 +1950,40 @@
 
 <script>
     // CONFIGURATION
-    const APP_VERSION = '1.0.0'; // installed version (injected by the CI on every build)
+    // Fallback placeholder injected by the CI on every build; the real
+    // installed version is resolved at startup from the native wrapper
+    // (Electron app.getVersion / Capacitor App.getInfo) when available.
+    let APP_VERSION = '1.0.0';
     const GITHUB_REPO = 'padelle2603/blameflix';
     const GITHUB_LATEST_URL = `https://api.github.com/repos/${GITHUB_REPO}/releases/latest`;
     const UPDATE_CHECK_STORAGE = 'myUpdateCheck'; // { lastCheck, lastTag, dismissedTag }
+
+    // Resolves the real installed version from the native wrapper when
+    // available: Electron exposes it via the preload bridge, Android via the
+    // Capacitor App plugin (versionName). Falls back to the value injected by
+    // the CI (or the placeholder) for the plain web build.
+    async function resolveAppVersion() {
+        try {
+            if (window.blameflixAppInfo && typeof window.blameflixAppInfo.getVersion === 'function') {
+                const v = await window.blameflixAppInfo.getVersion();
+                if (v) APP_VERSION = String(v);
+            } else if (window.Capacitor?.Plugins?.App && typeof window.Capacitor.Plugins.App.getInfo === 'function') {
+                const info = await window.Capacitor.Plugins.App.getInfo();
+                if (info && info.version) APP_VERSION = String(info.version);
+            }
+        } catch (err) { /* native lookup unavailable: keep the injected/placeholder version */ }
+        return APP_VERSION;
+    }
+
+    // True when running inside a packaged app (Android WebView via Capacitor
+    // or desktop Electron). The plain web build is just the source preview
+    // and has no real installed version to compare against GitHub releases.
+    function isNativeRuntime() {
+        return Boolean(
+            (window.Capacitor && typeof window.Capacitor.isNativePlatform === 'function' && window.Capacitor.isNativePlatform()) ||
+            window.blameflixAppInfo
+        );
+    }
     let API_KEY = localStorage.getItem('myTMDbApiKey') || '';
     const BASE_URL = 'https://api.themoviedb.org/3';
     const IMG_BASE = 'https://image.tmdb.org/t/p/w500';
@@ -1975,6 +2066,12 @@
             'detail.addSaved': '+ Aggiungi ai salvati',
             'detail.noOverview': 'Nessuna descrizione disponibile.',
             'settings.preferences': 'Preferenze',
+            'settings.tab.api': 'API e Sorgenti',
+            'settings.tab.notify': 'Notifiche',
+            'settings.tab.preferences': 'Preferenze',
+            'settings.tab.data': 'Dati',
+            'settings.tab.updates': 'Aggiornamenti',
+            'settings.tab.help': 'Aiuto',
             'settings.title': 'Impostazioni',
             'settings.close': '× Chiudi',
             'settings.apiKey': 'Chiave API TMDB',
@@ -2005,6 +2102,7 @@
             'settings.updates': 'Aggiornamenti',
             'settings.version': 'Versione installata:',
             'settings.updatesHint': 'BlameFlix controlla su GitHub se è disponibile una nuova versione e te la segnala all\'avvio. Puoi verificare manualmente quando vuoi.',
+            'settings.updatesWebOnly': 'La verifica degli aggiornamenti è disponibile solo nelle app installate (Android e desktop).',
             'settings.checkUpdates': '⟳ Verifica aggiornamenti',
             'settings.goRelease': 'Vai alla release',
             'settings.help': 'Aiuto',
@@ -2192,6 +2290,12 @@
             'detail.addSaved': '+ Add to saved',
             'detail.noOverview': 'No description available.',
             'settings.preferences': 'Preferences',
+            'settings.tab.api': 'API & Sources',
+            'settings.tab.notify': 'Notifications',
+            'settings.tab.preferences': 'Preferences',
+            'settings.tab.data': 'Data',
+            'settings.tab.updates': 'Updates',
+            'settings.tab.help': 'Help',
             'settings.title': 'Settings',
             'settings.close': '× Close',
             'settings.apiKey': 'TMDB API key',
@@ -2222,6 +2326,7 @@
             'settings.updates': 'Updates',
             'settings.version': 'Installed version:',
             'settings.updatesHint': 'BlameFlix checks GitHub for a new version and notifies you at startup. You can check manually whenever you want.',
+            'settings.updatesWebOnly': 'Update checks are only available in the installed apps (Android and desktop).',
             'settings.checkUpdates': '⟳ Check for updates',
             'settings.goRelease': 'Go to the release',
             'settings.help': 'Help',
@@ -3813,6 +3918,27 @@
         resolverNotice.hidden = Boolean(resolver.movie && resolver.tv);
     }
 
+    // --- SETTINGS TABS ---
+
+    const settingsTabPages = ['settings-tab-api', 'settings-tab-notify', 'settings-tab-prefs', 'settings-tab-data', 'settings-tab-updates', 'settings-tab-help'];
+
+    function switchSettingsTab(tabId) {
+        const buttons = document.querySelectorAll('.settings-tab');
+        buttons.forEach(btn => {
+            const active = btn.dataset.tab === tabId;
+            btn.classList.toggle('is-active', active);
+            btn.setAttribute('aria-selected', String(active));
+        });
+        settingsTabPages.forEach(id => {
+            const page = document.getElementById(id);
+            if (page) page.hidden = id !== tabId;
+        });
+    }
+
+    document.querySelectorAll('.settings-tab').forEach(btn => {
+        btn.addEventListener('click', () => switchSettingsTab(btn.dataset.tab));
+    });
+
     function openSettings() {
         settingsKeyInput.value = API_KEY;
         settingsResolverMovieInput.value = resolver.movie || '';
@@ -3823,7 +3949,12 @@
         syncNotifySettingsInputs();
         const versionEl = document.getElementById('settings-version');
         if (versionEl) versionEl.innerText = `${t('settings.version')} ${APP_VERSION}`;
+        const webHint = document.getElementById('settings-updates-web-hint');
+        const checkBtn = document.getElementById('settings-update-check');
+        if (webHint) webHint.hidden = isNativeRuntime();
+        if (checkBtn) checkBtn.hidden = !isNativeRuntime();
         settingsOverlay.hidden = false;
+        switchSettingsTab('settings-tab-api');
         settingsKeyInput.focus();
     }
 
@@ -3937,28 +4068,34 @@
     }
 
     // Checks the latest release on GitHub. If manual is true, it shows the
-    // outcome in the Settings; otherwise, when a newer version than the
-    // installed one exists and has not been dismissed, it shows the update
-    // banner together with a startup popup that leads to the download.
+    // outcome in the Settings; otherwise, at every startup, when a newer
+    // version than the installed one exists, it shows the update banner
+    // together with a popup that leads to the download.
     async function checkForUpdates(manual = false) {
+        await resolveAppVersion();
+        if (!isNativeRuntime()) {
+            hideUpdateNotice();
+            if (updatePopup) updatePopup.hidden = true;
+            if (manual && updateStatus) {
+                updateStatus.classList.remove('is-error');
+                updateStatus.innerText = t('settings.updatesWebOnly');
+                updateStatus.hidden = false;
+                clearTimeout(checkForUpdates._t);
+                checkForUpdates._t = setTimeout(() => { updateStatus.hidden = true; }, 4500);
+            }
+            return;
+        }
         if (manual && updateStatus) {
             updateStatus.classList.remove('is-error');
             updateStatus.innerText = t('msg.checkingUpdates');
             updateStatus.hidden = false;
-        }
-        // The auto-check avoids querying GitHub more than once an hour.
-        const state = getUpdateState();
-        if (!manual && state.lastCheck && (Date.now() - state.lastCheck) < 60 * 60 * 1000) {
-            if (state.lastTag && compareVersions(String(state.lastTag).replace(/^v/i, ''), APP_VERSION) > 0 && state.dismissedTag !== state.lastTag) {
-                useReleaseFromState(state);
-            }
-            return;
         }
         try {
             const data = await fetchJson(GITHUB_LATEST_URL);
             const tag = data.tag_name || '';
             const version = String(tag).replace(/^v/i, '');
             latestRelease = { tag, html_url: data.html_url || '', assets: Array.isArray(data.assets) ? data.assets : [] };
+            const state = getUpdateState();
             state.lastCheck = Date.now();
             state.lastTag = tag;
             localStorage.setItem(UPDATE_CHECK_STORAGE, JSON.stringify(state));
@@ -3974,6 +4111,7 @@
                 }
             } else {
                 hideUpdateNotice();
+                if (updatePopup) updatePopup.hidden = true;
                 const settingsOpen = document.getElementById('settings-update-open');
                 if (settingsOpen) settingsOpen.hidden = true;
                 if (manual && updateStatus) {
@@ -3982,7 +4120,13 @@
                 }
             }
         } catch (err) {
-            hideUpdateNotice();
+            // Offline or API failure: fall back to the last cached release.
+            const state = getUpdateState();
+            if (!manual && state.lastTag && compareVersions(String(state.lastTag).replace(/^v/i, ''), APP_VERSION) > 0) {
+                useReleaseFromState(state);
+            } else {
+                hideUpdateNotice();
+            }
             if (manual && updateStatus) {
                 updateStatus.classList.add('is-error');
                 updateStatus.innerText = t('msg.updateCheckFailed');
@@ -4388,8 +4532,20 @@
         showHome();
         hydrateWatchlistGrid().then(() => checkReleases(false));
         startAutoSyncTimer();
-        // Update check: after a few seconds, without interfering with startup.
-        setTimeout(() => checkForUpdates(false), 5000);
+    }
+
+    // Runs the version check once per session, a moment after launch, so it
+    // does not interfere with startup: on the first launch it happens while
+    // the disclaimer is still on screen. It first resolves the real installed
+    // version, so the comparison against GitHub is always accurate. Skipped
+    // in the plain web build, which has no real installed version.
+    let startupUpdateChecked = false;
+    async function scheduleStartupUpdateCheck() {
+        if (startupUpdateChecked) return;
+        startupUpdateChecked = true;
+        await resolveAppVersion();
+        if (!isNativeRuntime()) return;
+        setTimeout(() => checkForUpdates(false), 800);
     }
 
     // --- STARTUP DISCLAIMER (first use) ---
@@ -4409,6 +4565,9 @@
 
     function initDisclaimer() {
         tryPersistStorage();
+        // Version check: starts right away, at every launch. On the very first
+        // launch it runs together with the disclaimer popup.
+        scheduleStartupUpdateCheck();
         if (localStorage.getItem('myDisclaimerAccepted') === '1') {
             startApp();
             return;
