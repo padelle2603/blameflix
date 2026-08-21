@@ -2,6 +2,14 @@
 
 Le release sono create automaticamente a ogni push sul ramo `main` e riportano qui il relativo changelog.
 
+## v1.2.3
+
+- **Verifica aggiornamenti più affidabile**: se la prima richiesta fallisce (rete non pronta all'avvio, DNS o VPN instabili) viene **riprovata automaticamente** dopo 2 secondi.
+- **Timeout di 10 secondi** sulla richiesta a GitHub: niente più «Verifica in corso…» bloccato all'infinito.
+- **Riprova automatica quando torna la connessione**: se il controllo all'avvio fallisce perché il telefono era offline, l'app riprova da sola all'evento `online`, senza aspettare il prossimo avvio.
+- **Messaggi d'errore specifici** al posto del generico «Impossibile verificare gli aggiornamenti»: limite di richieste GitHub (con indicazione dei minuti di attenza, letto dagli header `Retry-After`/`X-RateLimit-Reset`), timeout, connessione non disponibile.
+- La tab Aggiornamenti mostra ora la **data dell'ultima verifica riuscita**: subito chiaro se il canale non ha mai funzionato o solo a volte.
+
 ## v1.2.2
 
 - **«Guarda ora» con ripresa automatica**: per le serie il pulsante apre direttamente la **prima puntata non ancora vista** (scandendo le stagioni in ordine, solo puntate già trasmesse, speciali esclusi). Se tutto è stato visto riparte dall'ultima puntata riprodotta.
