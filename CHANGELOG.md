@@ -2,6 +2,19 @@
 
 Le release sono create automaticamente a ogni push sul ramo `main` e riportano qui il relativo changelog.
 
+## v1.2.2
+
+- **«Guarda ora» con ripresa automatica**: per le serie il pulsante apre direttamente la **prima puntata non ancora vista** (scandendo le stagioni in ordine, solo puntate già trasmesse, speciali esclusi). Se tutto è stato visto riparte dall'ultima puntata riprodotta.
+- La **lista episodi si posiziona** sulla puntata di ripresa: selettore di stagione ed evidenziazione allineati a ciò che «Guarda ora» sta per aprire.
+- Il play su una **riga specifica** della lista continua ad aprire esattamente quella puntata.
+- **Ricerca più reattiva**: attivazione con ritardo (debounce) e annullamento delle richieste obsolete.
+- **Cache unificata dei dettagli TMDB**: meno chiamate ripetute tra scheda, contatori e stagioni.
+- **Watchlist idratata in parallelo**: griglia più veloce con molte serie salvate.
+- **Aggiornamenti a schermo senza re-render**: il toggle «visto» modifica solo la riga toccata; badge dei salvati e contatori aggiornati in modo incrementale.
+- **Event delegation** su griglia titoli e lista episodi: un solo listener anche per liste lunghe.
+- **Letture localStorage blindate**: un valore corrotto non blocca più l'avvio dell'app.
+- Pulizia del codice: funzioni deduplicate (episodi di stagione, conteggio non visti, voti localizzati, fetch, storage), font monospace come variabile CSS, rimozione di attributi e escape inutili.
+
 ## v1.2.1
 
 - Aggiornamenti: il controllo della versione avviene **live su GitHub a ogni avvio** (rimossa la verifica a cache oraria), con banner e popup solo quando esiste davvero una versione più nuova.
