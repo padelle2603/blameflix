@@ -147,10 +147,98 @@ body:has(#search-clear[hidden]) #section-count {
 
 .ctl--icon { letter-spacing: 0.02em; text-transform: none; }
 
-/* ===== VIEW MODES ===== */
-.grid--list {
-    grid-template-columns: 1fr;
-    gap: 6px;
+/* ===== KIND ROWS (Netflix-style rails) ===== */
+/* Cards live in horizontally scrolling rails: titles beyond the screen
+   edge slide out instead of wrapping, navigated by hover arrows on desktop
+   and by arrow keys once a card is focused. */
+.kind-row { margin: 0 0 1.7rem; }
+
+.kind-row:last-child { margin-bottom: 0; }
+
+.kind-row__head {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--meta);
+    margin: 0 0 0.6rem;
+}
+
+.rail-wrap { position: relative; }
+
+.rail {
+    display: flex;
+    gap: 18px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+    /* Breathing room for the card hover lift and shadow */
+    padding: 6px 2px 10px;
+}
+
+.rail::-webkit-scrollbar { display: none; }
+
+.rail > .card {
+    flex: 0 0 180px;
+    scroll-snap-align: start;
+}
+
+/* List view: wide textual rows sliding sideways instead of stacking */
+.rail--list { gap: 6px; }
+
+.rail--list > .card { flex-basis: min(400px, 86vw); }
+
+/* Edge arrows: revealed on wrapper hover / keyboard focus, only when the
+   row actually overflows, and never on touch-first devices. */
+.rail-arrow {
+    position: absolute;
+    top: calc(50% - 3px);
+    transform: translateY(-50%);
+    z-index: 3;
+    width: 42px;
+    height: 42px;
+    border-radius: var(--radius-pill);
+    background: var(--paper-hi);
+    border: 1px solid var(--line-strong);
+    color: var(--ink);
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    box-shadow: var(--shadow);
+    transition: opacity 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.rail-arrow--prev { left: -8px; }
+.rail-arrow--next { right: -8px; }
+
+.rail-wrap.is-scrollable:hover .rail-arrow,
+.rail-wrap.is-scrollable:focus-within .rail-arrow:not([disabled]) {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.rail-arrow:hover {
+    background: var(--ink);
+    color: var(--paper);
+}
+
+.rail-arrow:focus-visible {
+    opacity: 1;
+    outline: 2px solid var(--lago);
+    outline-offset: 2px;
+}
+
+.rail-arrow[disabled] { opacity: 0 !important; pointer-events: none !important; }
+
+@media (hover: none), (pointer: coarse) {
+    .rail-arrow { display: none; }
 }
 
 .card--list {
@@ -182,74 +270,7 @@ body:has(#search-clear[hidden]) #section-count {
     white-space: nowrap;
 }
 
-/* ===== 35mm STRIP ===== */
-.strip { padding: 0; }
-
-.rail { display: none; }
-
-/* ===== GRID & CARDS ===== */
-.grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-    gap: 22px 18px;
-}
-
-/* ===== KIND ROWS ("all" view) ===== */
-/* Movies are grouped ahead of TV series. When both kinds coexist, two
-   generated full-width rows label the blocks; labels follow the document
-   language (:lang) and swap with the "⇅ Inverti" toggle. */
-.grid > .card[data-type="movie"] { order: -1; }
-
-.grid:has(> .card[data-type="movie"]):has(> .card[data-type="tv"]) {
-    --kind-top: 'Film';
-    --kind-bottom: 'Serie TV';
-}
-
-html:lang(en) .grid:has(> .card[data-type="movie"]):has(> .card[data-type="tv"]) {
-    --kind-top: 'Movies';
-    --kind-bottom: 'TV Series';
-}
-
-.grid--tv-first:has(> .card[data-type="movie"]):has(> .card[data-type="tv"]) {
-    --kind-top: 'Serie TV';
-    --kind-bottom: 'Film';
-}
-
-html:lang(en) .grid--tv-first:has(> .card[data-type="movie"]):has(> .card[data-type="tv"]) {
-    --kind-top: 'TV Series';
-    --kind-bottom: 'Movies';
-}
-
-.grid:has(> .card[data-type="movie"]):has(> .card[data-type="tv"])::before {
-    content: var(--kind-top);
-    order: -2;
-    grid-column: 1 / -1;
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--meta);
-    padding: 0.3rem 0;
-}
-
-.grid:has(> .card[data-type="movie"]):has(> .card[data-type="tv"])::after {
-    content: var(--kind-bottom);
-    order: -1;
-    grid-column: 1 / -1;
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--meta);
-    padding: 0.3rem 0;
-}
-
-/* Inverted order ("⇅ Inverti" button): TV series row on top */
-.grid.grid--tv-first > .card[data-type="movie"] { order: 0; }
-.grid.grid--tv-first > .card[data-type="tv"] { order: -1; }
-
+/* ===== CARDS ===== */
 .card {
     background: var(--paper-hi);
     border: 1px solid var(--line);

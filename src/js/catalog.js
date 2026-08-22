@@ -74,43 +74,171 @@ function renderGrid(items) {
     grid.style.display = '';
     emptyState.hidden = true;
 
-    grid.classList.toggle('grid--list', state.viewMode === 'list');
+    const movies = filtered.filter(item => item.media_type === 'movie');
+    const series = filtered.filter(item => item.media_type === 'tv');
+
+    // When both kinds coexist the rows get their labels and follow the
+    // persisted ⇅ order; a single kind renders as one unlabeled row.
+    const both = movies.length > 0 && series.length > 0;
+    const ordered = state.kindOrder === 'tv'
+        ? [['tv', series], ['movie', movies]]
+        : [['movie', movies], ['tv', series]];
 
     const frag = document.createDocumentFragment();
-    filtered.forEach((item) => {
-        const d = detailFor(item);
-        const poster = tmdbImagePath(d.poster_path) ? `${IMG_GRID}${d.poster_path}` : PLACEHOLDER;
-        const title = d.title || d.name || t('common.noTitle');
-        const date = d.release_date || d.first_air_date || '';
-        const year = date ? date.substring(0, 4) : '—';
-        const vote = formatVote(d.vote_average);
-        const kind = d.media_type === 'tv' ? t('common.tvKind') : t('common.movieKind');
-        const saved = isSaved(item.id, item.media_type);
-
-        const card = document.createElement('div');
-        card.className = 'card';
-        if (state.viewMode === 'list') card.classList.add('card--list');
-        card.dataset.id = item.id;
-        card.dataset.type = item.media_type;
-        card.tabIndex = 0;
-
-        const unwatched = item.media_type === 'tv' ? showUnwatchedCache.get(item.id) : 0;
-
-        card.innerHTML = `
-            <div class="card-poster">
-                <img src="${poster}" alt="${escapeHtml(title)}" loading="lazy">
-                <span class="card-kind">${kind}</span>
-                ${saved ? `<span class="stamp">${t('common.saved')}</span>` : ''}
-                ${unwatched > 0 ? `<span class="card-unwatched">${unwatched} ${t('common.toWatch')}</span>` : ''}
-            </div>
-            <div class="credit-block">
-                <h3 class="credit-title">${escapeHtml(title)}</h3>
-                <p class="credit-meta">${year} · <span class="star">★</span> ${vote}</p>
-            </div>
-        `;
-        frag.appendChild(card);
+    ordered.forEach(([kind, list]) => {
+        if (list.length) frag.appendChild(buildKindRow(kind, list, both));
     });
     grid.appendChild(frag);
+    requestAnimationFrame(refreshRailArrows);
+}
+
+// Builds one card exactly as the old flat grid did (shared by every view).
+function makeCard(item) {
+    const d = detailFor(item);
+    const poster = tmdbImagePath(d.poster_path) ? `${IMG_GRID}${d.poster_path}` : PLACEHOLDER;
+    const title = d.title || d.name || t('common.noTitle');
+    const date = d.release_date || d.first_air_date || '';
+    const year = date ? date.substring(0, 4) : '—';
+    const vote = formatVote(d.vote_average);
+    const kind = item.media_type === 'tv' ? t('common.tvKind') : t('common.movieKind');
+    const saved = isSaved(item.id, item.media_type);
+    const unwatched = item.media_type === 'tv' ? showUnwatchedCache.get(item.id) : 0;
+
+    const card = document.createElement('div');
+    card.className = 'card';
+    if (state.viewMode === 'list') card.classList.add('card--list');
+    card.dataset.id = item.id;
+    card.dataset.type = item.media_type;
+    card.tabIndex = 0;
+
+    card.innerHTML = `
+        <div class="card-poster">
+            <img src="${poster}" alt="${escapeHtml(title)}" loading="lazy">
+            <span class="card-kind">${kind}</span>
+            ${saved ? `<span class="stamp">${t('common.saved')}</span>` : ''}
+            ${unwatched > 0 ? `<span class="card-unwatched">${unwatched} ${t('common.toWatch')}</span>` : ''}
+        </div>
+        <div class="credit-block">
+            <h3 class="credit-title">${escapeHtml(title)}</h3>
+            <p class="credit-meta">${year} · <span class="star">★</span> ${vote}</p>
+        </div>
+    `;
+    return card;
+}
+
+const prefersReducedMotion = typeof window.matchMedia === 'function'
+    ? window.matchMedia('(prefers-reduced-motion: reduce)')
+    : { matches: false };
+
+// Slides a rail by roughly one viewport of cards.
+function scrollRail(rail, direction) {
+    rail.scrollBy({
+        left: direction * rail.clientWidth * 0.9,
+        behavior: prefersReducedMotion.matches ? 'auto' : 'smooth'
+    });
+}
+
+// Recomputes the edge arrows of ONE rail: each arrow is inert on its own
+// side, and both hide completely when nothing overflows.
+function syncRailArrows(rail) {
+    const wrap = rail.closest('.rail-wrap');
+    if (!wrap) return;
+    const prev = wrap.querySelector('.rail-arrow--prev');
+    const next = wrap.querySelector('.rail-arrow--next');
+    const max = rail.scrollWidth - rail.clientWidth;
+    if (prev) prev.disabled = rail.scrollLeft <= 1;
+    if (next) next.disabled = rail.scrollLeft >= max - 1;
+    wrap.classList.toggle('is-scrollable', max > 1);
+}
+
+// Full pass over every rendered rail: used after renders, resizes and
+// order swaps. Per-scroll updates go through syncRailArrows() instead, so
+// sliding one row never touches the others.
+function refreshRailArrows() {
+    grid.querySelectorAll('.rail').forEach(syncRailArrows);
+}
+
+window.addEventListener('resize', () => {
+    if (!homeView.hidden) refreshRailArrows();
+});
+
+// Netflix-style keyboard navigation inside the rails: ←/→ move focus
+// between neighbouring cards, ↑/↓ jump to the same slot of the row
+// above/below. The browser scrolls the focused card into view for free.
+grid.addEventListener('keydown', e => {
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight' && e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return;
+    const card = e.target.closest('.card');
+    if (!card || !grid.contains(card)) return;
+    const rail = card.closest('.rail');
+    if (!rail) return;
+
+    const cards = Array.from(rail.querySelectorAll(':scope > .card'));
+    const idx = cards.indexOf(card);
+    let target = null;
+
+    if (e.key === 'ArrowLeft') target = cards[idx - 1];
+    else if (e.key === 'ArrowRight') target = cards[idx + 1];
+    else {
+        const rails = Array.from(grid.querySelectorAll('.rail'));
+        const sibling = rails[rails.indexOf(rail) + (e.key === 'ArrowUp' ? -1 : 1)];
+        if (sibling) {
+            const siblings = sibling.querySelectorAll(':scope > .card');
+            target = siblings[Math.min(idx, siblings.length - 1)];
+        }
+    }
+
+    if (target) {
+        e.preventDefault();
+        target.focus();
+    }
+});
+
+// One horizontal row: optional kind label, edge arrows and the scrolling
+// track of cards. Overflowing titles slide out of the screen instead of
+// wrapping to a second line.
+function buildKindRow(kind, items, labeled) {
+    const section = document.createElement('section');
+    section.className = 'kind-row';
+    section.dataset.kind = kind;
+
+    if (labeled) {
+        const head = document.createElement('h3');
+        head.className = 'kind-row__head';
+        head.innerText = kind === 'movie' ? t('home.kindMovies') : t('home.kindSeries');
+        section.appendChild(head);
+    }
+
+    const wrap = document.createElement('div');
+    wrap.className = 'rail-wrap';
+
+    const rail = document.createElement('div');
+    rail.className = state.viewMode === 'list' ? 'rail rail--list' : 'rail';
+    rail.setAttribute('role', 'group');
+    rail.setAttribute('aria-label', kind === 'movie' ? t('home.kindMovies') : t('home.kindSeries'));
+
+    const frag = document.createDocumentFragment();
+    items.forEach(item => frag.appendChild(makeCard(item)));
+    rail.appendChild(frag);
+    rail.addEventListener('scroll', () => syncRailArrows(rail), { passive: true });
+
+    const prev = document.createElement('button');
+    prev.type = 'button';
+    prev.className = 'rail-arrow rail-arrow--prev';
+    prev.setAttribute('aria-label', t('home.scrollPrev'));
+    prev.textContent = '‹';
+
+    const next = document.createElement('button');
+    next.type = 'button';
+    next.className = 'rail-arrow rail-arrow--next';
+    next.setAttribute('aria-label', t('home.scrollNext'));
+    next.textContent = '›';
+
+    prev.addEventListener('click', () => scrollRail(rail, -1));
+    next.addEventListener('click', () => scrollRail(rail, 1));
+
+    wrap.append(prev, rail, next);
+    section.appendChild(wrap);
+    return section;
 }
 
 // Updates in place the SAVED stamp of a single card, without rebuilding
@@ -167,12 +295,11 @@ function setView(mode) {
 
 // --- MOVIE/SERIES ROW ORDER ---
 
-// Reflects the persisted kind order on the grid and on the toggle button.
+// Reflects the persisted kind order on the ⇅ toggle button; the row order
+// itself is decided at render time by renderGrid.
 function applyKindOrder() {
-    const tvFirst = state.kindOrder === 'tv';
-    grid.classList.toggle('grid--tv-first', tvFirst);
     const btn = document.getElementById('btn-swap');
-    if (btn) btn.setAttribute('aria-pressed', String(tvFirst));
+    if (btn) btn.setAttribute('aria-pressed', String(state.kindOrder === 'tv'));
 }
 
 // Swaps which block (movies vs TV series) sits on the top row of the "all"
@@ -181,6 +308,7 @@ function toggleKindOrder() {
     state.kindOrder = state.kindOrder === 'tv' ? 'movie' : 'tv';
     localStorage.setItem('myKindOrder', state.kindOrder);
     applyKindOrder();
+    if (!homeView.hidden) renderGrid(state.currentList);
 }
 
 applyKindOrder();

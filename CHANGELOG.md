@@ -12,6 +12,8 @@ Le release sono create automaticamente a ogni push sul ramo `main` e riportano q
 - **Pull-to-refresh solo sull'app Android**: il gesto non scatta più nei browser desktop o mobile (notebook touchscreen ed emulazione dispositivi incluse) né in Electron; resta esclusivo del runtime nativo Capacitor.
 - **Responsive**: header compatto sotto 640px; sotto 480px il counter salvati mostra solo il numero per tenere tutto su una riga anche a 360px.
 - **Refactor**: `isMobile()` spostata in `env.js` e condivisa da player, controllo aggiornamenti e pull-to-refresh.
+- **Righe film/serie stile Netflix**: le card non vanno più a capo: ogni riga scorre in orizzontale oltre il bordo dello schermo con scrollbar nascosta e scroll-snap; frecce ‹ › al passaggio del mouse (solo desktop) e navigazione da tastiera (←/→ tra le card, ↑/↓ cambia riga). Vale per la vista Griglia e per la vista Lista; «⇅ Inverti» scambia l'ordine delle righe.
+- **Ottimizzazione rail**: lo scorrimento di una riga aggiorna ora solo le proprie frecce invece di ricalcolare lo stato di tutte le righe.
 
 ### English
 
@@ -21,6 +23,8 @@ Le release sono create automaticamente a ogni push sul ramo `main` e riportano q
 - **Pull-to-refresh in the Android app only**: the gesture no longer engages in desktop or mobile browsers (touchscreen laptops and device emulation included) nor in Electron; it stays exclusive to the native Capacitor runtime.
 - **Responsive**: compact header below 640px; below 480px the saved counter shows just the number so everything fits on one row even at 360px.
 - **Refactor**: `isMobile()` moved to `env.js`, shared by player, update check and pull-to-refresh.
+- **Netflix-style movie/series rows**: cards no longer wrap: each row scrolls horizontally past the screen edge with a hidden scrollbar and scroll snapping; ‹ › arrows appear on mouse hover (desktop only) plus keyboard navigation (←/→ between cards, ↑/↓ switches row). Applies to both Grid and List views; «⇅ Swap» exchanges the row order.
+- **Rail optimization**: scrolling one row now updates its own arrows only instead of recomputing the state of every row.
 
 ## v2.0.1
 
