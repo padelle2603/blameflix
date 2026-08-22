@@ -1,6 +1,7 @@
 import { state, LANG_STORAGE } from './state.js';
 import { detailsCache, seasonEpisodesCache, tvSeasonsCache } from './tmdb.js';
 import { syncTools, renderHome } from './catalog.js';
+import { searchCache } from './search.js';
 import { syncNotifySettingsInputs } from './settings.js';
 import { renderNewsSection } from './news.js';
 import { showDetails } from './details.js';
@@ -555,6 +556,7 @@ function setLanguage(newLang, persist) {
     detailsCache.clear();
     seasonEpisodesCache.clear();
     tvSeasonsCache.clear();
+    searchCache.clear();
     applyLanguage();
 }
 

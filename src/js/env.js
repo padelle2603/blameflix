@@ -5,6 +5,7 @@ export const GITHUB_LATEST_URL = `https://api.github.com/repos/${GITHUB_REPO}/re
 export const UPDATE_CHECK_STORAGE = 'myUpdateCheck'; // { lastCheck, lastTag, dismissedTag }
 export const BASE_URL = 'https://api.themoviedb.org/3';
 export const IMG_BASE = 'https://image.tmdb.org/t/p/w500';
+export const IMG_GRID = 'https://image.tmdb.org/t/p/w342';
 export const IMG_STILL = 'https://image.tmdb.org/t/p/w300';
 export const IMG_BACKDROP = 'https://image.tmdb.org/t/p/w1280';
 export const PLACEHOLDER = 'data:image/svg+xml;utf8,' + encodeURIComponent(

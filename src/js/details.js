@@ -361,14 +361,14 @@ async function markAllAiredWatched() {
     if (btn) btn.disabled = true;
 
     const seasons = (state.currentMedia.seasons || []).filter(s => s.season_number >= 0);
-    const results = await Promise.allSettled(seasons.map(async s => ({
+    const results = await mapPool(seasons, 5, async s => ({
         sn: s.season_number,
         eps: await getSeasonEpisodes(state.currentMedia.id, s.season_number)
-    })));
+    }));
 
     const seasonsStore = state.watchedEpisodes[state.currentMedia.id] || (state.watchedEpisodes[state.currentMedia.id] = {});
     results.forEach(r => {
-        if (r.status !== 'fulfilled') return;
+        if (r.status === 'rejected') return;
         const sn = r.value.sn;
         const nums = r.value.eps
             .filter(ep => !(ep.air_date && !isAired(ep.air_date)))

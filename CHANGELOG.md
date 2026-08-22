@@ -8,12 +8,24 @@ Le release sono create automaticamente a ogni push sul ramo `main` e riportano q
 
 - **Fix controllo aggiornamenti (AppImage/APK)**: risolto il bug che mostrava "Connessione non disponibile" spurio quando si verificava manualmente la presenza di aggiornamenti. L'errore era causato da una variabile `state` shadowizzata in `checkForUpdates()` che faceva crashare `showUpdateNotice()` con un TypeError mascherato come errore di rete.
 - **Versione corretta nel confronto aggiornamenti**: `state.appVersion` ora viene letta correttamente dallo stato del modulo (sincronizzata da `resolveAppVersion()`) invece che dall'oggetto locale `getUpdateState()` che non la conteneva.
+- **Minificazione bundle**: aggiunto `minify: true` a esbuild per JS e CSS; bundle JS 135 KB → 89 KB, CSS 33 KB → 27 KB.
+- **Poster griglia ottimizzati**: le card ora usano `/w342` invece di `/w500` (~40-50% byte in meno per poster); la scheda dettaglio mantiene `/w500`.
+- **Parallelismo limitato in `markAllAiredWatched`**: sostituito `Promise.allSettled` illimitato con `mapPool(5)` per evitare raffiche di richieste su serie lunghe.
+- **Cache risultati ricerca (LRU)**: cache in-memory keyed by `query:lang` con TTL 5 minuti; ricerche ripetute istantanee.
+- **Font self-hosted WOFF2**: 9 font WOFF2 (Archivo Black, Archivo 400/500/600/700, IBM Plex Mono 400/500/600) serviti localmente con `font-display: swap`; rimossa dipendenza da Google Fonts (niente blocco rendering, UI coerente offline).
+- **Code splitting + lazy loading**: esbuild `format: 'esm'` + `splitting: true`; moduli pesanti (details, settings, player, updates, backup, resolver) caricati via `import()` dinamico; entry point 5 KB, chunk condiviso ~79 KB.
 - **Pulizia codice**: rimosso commento artefatto `// ... rest of function` in `updates.js`.
 
 ### English
 
 - **Fix update check (AppImage/APK)**: fixed the bug showing spurious "Connection unavailable" when manually checking for updates. The error was caused by a shadowed `state` variable in `checkForUpdates()` that crashed `showUpdateNotice()` with a TypeError disguised as a network error.
 - **Correct version in update comparison**: `state.appVersion` is now properly read from the module state (synced by `resolveAppVersion()`) instead of the local `getUpdateState()` object which didn't contain it.
+- **Bundle minification**: added `minify: true` to esbuild for JS and CSS; JS bundle 135 KB → 89 KB, CSS 33 KB → 27 KB.
+- **Optimized grid posters**: cards now use `/w342` instead of `/w500` (~40-50% fewer bytes per poster); detail view retains `/w500`.
+- **Bounded parallelism in `markAllAiredWatched`**: replaced unbounded `Promise.allSettled` with `mapPool(5)` to avoid request bursts on long-running series.
+- **Search results LRU cache**: in-memory cache keyed by `query:lang` with 5-min TTL; repeat searches are instant.
+- **Self-hosted WOFF2 fonts**: 9 WOFF2 fonts (Archivo Black, Archivo 400/500/600/700, IBM Plex Mono 400/500/600) served locally with `font-display: swap`; removed Google Fonts dependency (no render-blocking, consistent offline UI).
+- **Code splitting + lazy loading**: esbuild `format: 'esm'` + `splitting: true`; heavy modules (details, settings, player, updates, backup, resolver) loaded via dynamic `import()`; entry point 5 KB, shared chunk ~79 KB.
 - **Code cleanup**: removed artifact comment `// ... rest of function` in `updates.js`.
 
 ## v2.0.0

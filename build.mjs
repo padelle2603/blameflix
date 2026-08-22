@@ -14,11 +14,13 @@ mkdirSync('www/css', { recursive: true });
 const jsOptions = {
     entryPoints: ['src/js/app.js'],
     bundle: true,
-    format: 'iife',
+    format: 'esm',
+    splitting: true,
     target: ['es2020'],
-    outfile: 'www/js/app.js',
+    outdir: 'www/js',
     define: { __BLAMEFLIX_VERSION__: JSON.stringify(version) },
     legalComments: 'inline',
+    minify: true,
     logLevel: 'info'
 };
 
@@ -26,6 +28,8 @@ const cssOptions = {
     entryPoints: ['src/css/main.css'],
     bundle: true,
     outfile: 'www/css/styles.css',
+    minify: true,
+    loader: { '.woff2': 'file' },
     logLevel: 'info'
 };
 
@@ -34,6 +38,7 @@ function copyStatic() {
     for (const asset of ['favicon.png', 'tmdb.svg']) {
         cpSync(`src/assets/${asset}`, `www/${asset}`);
     }
+    cpSync('src/assets/fonts', 'www/fonts', { recursive: true });
 }
 
 if (watch) {

@@ -1,7 +1,7 @@
 import { state } from './state.js';
 import { homeView, detailView, searchInput, searchClear, grid, emptyState, sectionEyebrow, sectionTitle, sectionCount, catalogMenuBtn, catalogMenuPanel } from './dom.js';
 import { escapeHtml, tmdbImagePath, formatVote } from './utils.js';
-import { IMG_BASE, PLACEHOLDER } from './env.js';
+import { IMG_GRID, PLACEHOLDER } from './env.js';
 import { showUnwatchedCache } from './tmdb.js';
 import { isSaved, detailFor } from './watchlist.js';
 import { refreshHomeUnwatchedCount } from './counter.js';
@@ -79,7 +79,7 @@ function renderGrid(items) {
     const frag = document.createDocumentFragment();
     filtered.forEach((item) => {
         const d = detailFor(item);
-        const poster = tmdbImagePath(d.poster_path) ? `${IMG_BASE}${d.poster_path}` : PLACEHOLDER;
+        const poster = tmdbImagePath(d.poster_path) ? `${IMG_GRID}${d.poster_path}` : PLACEHOLDER;
         const title = d.title || d.name || t('common.noTitle');
         const date = d.release_date || d.first_air_date || '';
         const year = date ? date.substring(0, 4) : '—';
