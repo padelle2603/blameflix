@@ -115,7 +115,6 @@ async function checkForUpdates(manual = false) {
         }
         return;
     }
-    // ... rest of function
     if (manual && updateStatus) {
         updateStatus.classList.remove('is-error');
         updateStatus.innerText = t('msg.checkingUpdates');
@@ -132,15 +131,15 @@ async function checkForUpdates(manual = false) {
         }
         const tag = data.tag_name || '';
         const version = String(tag).replace(/^v/i, '');
-        const state = getUpdateState();
-        state.lastCheck = Date.now();
-        state.lastTag = tag;
-        localStorage.setItem(UPDATE_CHECK_STORAGE, JSON.stringify(state));
+        const stored = getUpdateState();
+        stored.lastCheck = Date.now();
+        stored.lastTag = tag;
+        localStorage.setItem(UPDATE_CHECK_STORAGE, JSON.stringify(stored));
         disarmOnlineRetry();
 
         // A tag dismissed with ✕ stays hidden for automatic checks;
         // a manual check is an explicit request and shows it again.
-        const updateDismissed = !manual && state.dismissedTag === tag;
+        const updateDismissed = !manual && stored.dismissedTag === tag;
 
         if (version && compareVersions(version, state.appVersion) > 0) {
             // Set only when an update is really available: applyLanguage()
@@ -176,11 +175,11 @@ async function checkForUpdates(manual = false) {
         syncLastUpdateCheck();
     } catch (err) {
         // Offline or API failure: fall back to the last cached release.
-        const state = getUpdateState();
-        const cachedTag = String(state.lastTag || '').replace(/^v/i, '');
-        const cachedDismissed = state.dismissedTag === state.lastTag;
+        const stored = getUpdateState();
+        const cachedTag = String(stored.lastTag || '').replace(/^v/i, '');
+        const cachedDismissed = stored.dismissedTag === stored.lastTag;
         if (!manual && !cachedDismissed && cachedTag && compareVersions(cachedTag, state.appVersion) > 0) {
-            useReleaseFromState(state);
+            useReleaseFromState(stored);
         } else {
             hideUpdateNotice();
         }
@@ -196,10 +195,10 @@ async function checkForUpdates(manual = false) {
     }
 }
 
-function useReleaseFromState(state) {
+function useReleaseFromState(stored) {
     state.latestRelease = {
-        tag: state.lastTag,
-        html_url: `https://github.com/${GITHUB_REPO}/releases/tag/${encodeURIComponent(state.lastTag)}`,
+        tag: stored.lastTag,
+        html_url: `https://github.com/${GITHUB_REPO}/releases/tag/${encodeURIComponent(stored.lastTag)}`,
         assets: []
     };
     showUpdateNotice(state.latestRelease);

@@ -2,6 +2,20 @@
 
 Le release sono create automaticamente a ogni push sul ramo `main` e riportano qui il relativo changelog.
 
+## v2.0.1
+
+### Italiano
+
+- **Fix controllo aggiornamenti (AppImage/APK)**: risolto il bug che mostrava "Connessione non disponibile" spurio quando si verificava manualmente la presenza di aggiornamenti. L'errore era causato da una variabile `state` shadowizzata in `checkForUpdates()` che faceva crashare `showUpdateNotice()` con un TypeError mascherato come errore di rete.
+- **Versione corretta nel confronto aggiornamenti**: `state.appVersion` ora viene letta correttamente dallo stato del modulo (sincronizzata da `resolveAppVersion()`) invece che dall'oggetto locale `getUpdateState()` che non la conteneva.
+- **Pulizia codice**: rimosso commento artefatto `// ... rest of function` in `updates.js`.
+
+### English
+
+- **Fix update check (AppImage/APK)**: fixed the bug showing spurious "Connection unavailable" when manually checking for updates. The error was caused by a shadowed `state` variable in `checkForUpdates()` that crashed `showUpdateNotice()` with a TypeError disguised as a network error.
+- **Correct version in update comparison**: `state.appVersion` is now properly read from the module state (synced by `resolveAppVersion()`) instead of the local `getUpdateState()` object which didn't contain it.
+- **Code cleanup**: removed artifact comment `// ... rest of function` in `updates.js`.
+
 ## v2.0.0
 
 ### Italiano
