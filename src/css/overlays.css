@@ -1,0 +1,149 @@
+/* ===== SETTINGS OVERLAY ===== */
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(5, 7, 9, 0.78);
+    backdrop-filter: blur(3px);
+    display: flex;
+    justify-content: center;
+    padding: 1.4rem;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    z-index: 50;
+}
+
+.settings-panel {
+    margin: auto;
+    width: 100%;
+    max-width: 480px;
+    background: var(--paper-hi);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    padding: 1.6rem 1.6rem 1.4rem;
+}
+
+.settings-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.2rem;
+}
+
+.settings-head .eyebrow { margin-bottom: 0.3rem; }
+
+.settings-head h2 {
+    font-family: 'Archivo', sans-serif;
+    font-weight: 700;
+    font-size: 1.4rem;
+    line-height: 1.1;
+    margin: 0;
+}
+
+.settings-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-bottom: 1.2rem;
+}
+
+.settings-field label {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--lago);
+}
+
+.settings-field input {
+    font-family: var(--font-mono);
+    font-size: 0.88rem;
+    color: var(--ink);
+    background: var(--paper);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-sm);
+    padding: 0.55rem 0.7rem;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.settings-field input:focus-visible {
+    border-color: var(--lago);
+    box-shadow: 0 0 0 2px rgba(224, 67, 52, 0.28);
+}
+
+.settings-field .settings-hint {
+    font-size: 0.72rem;
+    color: var(--meta);
+    margin: 0;
+}
+
+.settings-actions {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-top: 1.2rem;
+}
+
+.settings-status {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--meta);
+    text-transform: uppercase;
+}
+
+.settings-status.is-error { color: var(--rosso); }
+
+.settings-check {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.9rem;
+    color: var(--ink);
+    cursor: pointer;
+    width: fit-content;
+}
+
+.settings-check input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--lago);
+    cursor: pointer;
+}
+
+.settings-field select {
+    width: fit-content;
+    min-width: 190px;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--ink);
+    background: var(--paper);
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='none' stroke='%23E6EAEE' stroke-width='2' d='M1 3l4 4 4-4'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-sm);
+    padding: 8px 30px 8px 10px;
+    appearance: none;
+    -webkit-appearance: none;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.settings-field select:focus-visible {
+    border-color: var(--lago);
+    box-shadow: 0 0 0 2px rgba(224, 67, 52, 0.28);
+}
+
+.settings-field select option {
+    background: var(--paper-hi);
+    color: var(--ink);
+}
+

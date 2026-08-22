@@ -4,7 +4,7 @@
 
 [![Get BlameFlix on GitHub](https://img.shields.io/badge/Get%20BlameFlix%20on%20GitHub-e04334?style=for-the-badge&logo=github&logoColor=white)](https://github.com/padelle2603/blameflix/releases/latest)
 
-> ⬇ Download the **APK (Android)** or the **AppImage (Linux)** from the [latest release](https://github.com/padelle2603/blameflix/releases/latest). See the [changelog](CHANGELOG.md) for what's new.
+> ⬇ Download the **APK (Android)** or the **AppImage (Linux)** from the [latest release](https://github.com/padelle2603/blameflix/releases/latest).
 
 BlameFlix is your **personal catalog** for movies and TV series: a single place
 where you can search a title, save it to your library, remember which episodes
@@ -33,8 +33,10 @@ freedom) see the [manifesto](Note%20Legali/MANIFEST_EN.md).
 
 ## How it works
 
-The app is a single web page in pure JavaScript (no framework), contained in
-`www/index.html`, packaged as an Android app and as a Linux desktop app.
+The app is a single-page web application in pure JavaScript (no framework).
+The sources live in `src/` — HTML template, CSS split by section and JS
+organized in ES modules — and are bundled by [esbuild](https://esbuild.github.io/)
+into `www/`, which is what Capacitor (Android) and Electron (Linux) package.
 
 - **Search**: type a title and BlameFlix searches it in the public API of The
   Movie Database (TMDB). You just need to enter a free personal key in the
@@ -95,6 +97,24 @@ before using it.
 | Android | Capacitor | `BlameFlix-<version>.apk` |
 | Linux desktop | Electron | `BlameFlix-<version>.AppImage` |
 | Web | Static HTML/CSS/JS | `www/` |
+
+## Development
+
+The web sources are in `src/` (`index.html`, `css/`, `js/` as ES modules);
+the build bundles them into `www/`, the folder packaged by Capacitor and
+Electron. The app version is injected at build time from `package.json`.
+`www/` is generated and **not tracked in git**: after cloning, run
+`npm install` and `npm run build` before opening or packaging the app.
+
+```sh
+npm install        # dependencies (esbuild, Capacitor)
+npm run build      # bundle src/ -> www/
+npm run watch      # rebuild on change
+npm run sync       # build + cap sync (Android)
+```
+
+`www/index.backup.html` is a frozen snapshot of the pre-modular monolith,
+kept only as a fallback.
 
 ## Updates
 

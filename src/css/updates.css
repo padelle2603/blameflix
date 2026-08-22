@@ -1,0 +1,8 @@
+/* ===== UPDATE NOTICE ===== */
+.update-notice__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+}
+

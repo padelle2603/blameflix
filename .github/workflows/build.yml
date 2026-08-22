@@ -22,9 +22,6 @@ jobs:
           APP_VERSION=$(node -p "require('./package.json').version")
           echo "APP_VERSION=$APP_VERSION" >> "$GITHUB_ENV"
 
-      - name: Inject version into web app
-        run: sed -i "s/APP_VERSION = '[^']*'/APP_VERSION = '$APP_VERSION'/" www/index.html
-
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
@@ -42,6 +39,9 @@ jobs:
 
       - name: Install web dependencies
         run: npm ci
+
+      - name: Build web app
+        run: npm run build
 
       - name: Capacitor sync
         run: npx cap sync android
@@ -95,8 +95,11 @@ jobs:
           APP_VERSION=$(node -p "require('./package.json').version")
           echo "APP_VERSION=$APP_VERSION" >> "$GITHUB_ENV"
 
-      - name: Inject version into web app
-        run: sed -i "s/APP_VERSION = '[^']*'/APP_VERSION = '$APP_VERSION'/" www/index.html
+      - name: Install web dependencies
+        run: npm ci
+
+      - name: Build web app
+        run: npm run build
 
       - name: Install Electron dependencies
         working-directory: electron
@@ -157,17 +160,20 @@ jobs:
         run: |
           gh release delete "v$APP_VERSION" --yes 2>/dev/null || true
           if [ -f CHANGELOG.md ] && awk -v v="## v$APP_VERSION" '$0 == v { f = 1 } f' CHANGELOG.md | grep -q .; then
+            # Extract only the English subsection of the matching changelog entry.
             awk -v v="## v$APP_VERSION" '
               $0 == v { flag = 1; next }
               flag && /^## / { exit }
-              flag { print }
+              flag && /^### English/ { en = 1; next }
+              flag && en && /^### / { exit }
+              flag && en { print }
             ' CHANGELOG.md > release-notes.md
-            printf '\nAPK Android (com.padelle.blameflix) e AppImage Linux.\n' >> release-notes.md
+            printf '\nAndroid APK and Linux AppImage.\n' >> release-notes.md
             gh release create "v$APP_VERSION" release/* \
-              --title "BlameFlix v$APP_VERSION" \
+              --title "v$APP_VERSION" \
               --notes-file release-notes.md
           else
             gh release create "v$APP_VERSION" release/* \
-              --title "BlameFlix v$APP_VERSION" \
-              --notes "Automatic release of BlameFlix $APP_VERSION. Android APK (com.padelle.blameflix) and Linux AppImage."
+              --title "v$APP_VERSION" \
+              --notes "Automatic release of BlameFlix v$APP_VERSION. Android APK (com.padelle.blameflix) and Linux AppImage."
           fi

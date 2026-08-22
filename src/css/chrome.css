@@ -1,0 +1,199 @@
+/* ===== TOP BAR ===== */
+.topbar {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 1.4rem 1.4rem 0.4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.brand {
+    appearance: none;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: 'Archivo Black', 'Archivo', sans-serif;
+    font-size: 1.35rem;
+    letter-spacing: 0.02em;
+    color: var(--ink);
+}
+
+.brand__mark {
+    width: 14px;
+    height: 14px;
+    background: var(--lago);
+    border-radius: 4px;
+    display: inline-block;
+}
+
+/* ===== CATALOG OPTIONS MENU (⋮) ===== */
+.topbar__cluster {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+}
+
+.catalog-menu { position: relative; }
+
+.catalog-menu__panel {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 0;
+    z-index: 60;
+    min-width: 230px;
+    padding: 0.6rem;
+    background: var(--paper-hi);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+}
+
+.catalog-menu__label {
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--meta);
+    margin: 0.7rem 0.5rem 0.35rem;
+}
+
+.catalog-menu__panel > .catalog-menu__label:first-child { margin-top: 0; }
+
+.catalog-menu__section { display: flex; flex-direction: column; }
+
+.catalog-menu__section .ctl {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    border-color: transparent;
+}
+
+.catalog-menu__section .ctl:hover {
+    border-color: var(--line-strong);
+    background: var(--paper);
+}
+
+.count-tag {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--ink);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-pill);
+    padding: 5px 12px;
+    white-space: nowrap;
+    margin-left: auto;
+}
+
+.count-tag em {
+    font-style: normal;
+    color: var(--lago);
+}
+
+.btn-settings {
+    appearance: none;
+    background: none;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-sm);
+    color: var(--ink);
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+    line-height: 1;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, color 0.15s;
+}
+
+.btn-settings:hover {
+    background: var(--ink);
+    color: var(--paper);
+}
+
+/* ===== MISSING API KEY ===== */
+.key-notice {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 0 1.4rem;
+}
+
+.key-notice__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    border: 1px solid var(--rosso);
+    background: var(--paper-hi);
+    border-radius: var(--radius);
+    padding: 0.8rem 1rem;
+}
+
+.key-notice p {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--rosso);
+    margin: 0;
+}
+
+.key-notice .btn {
+    padding: 7px 14px;
+    font-size: 0.7rem;
+    white-space: nowrap;
+}
+
+.key-notice + .key-notice { margin-top: 0.6rem; }
+
+/* ===== PULL TO REFRESH ===== */
+.ptr-indicator {
+    position: fixed;
+    top: 3.4rem;
+    left: 50%;
+    transform: translate(-50%, -200%);
+    transition: transform 0.25s ease;
+    z-index: 40;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--meta);
+    background: var(--paper-hi);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-pill);
+    padding: 0.45rem 0.95rem;
+    pointer-events: none;
+}
+
+.ptr-indicator__arrow {
+    display: inline-block;
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.ptr-indicator.is-ready .ptr-indicator__arrow {
+    transform: rotate(180deg);
+    color: var(--lago);
+}
+
+.ptr-indicator.is-syncing .ptr-indicator__arrow { animation: ptr-spin 0.9s linear infinite; }
+
+@keyframes ptr-spin {
+    to { transform: rotate(360deg); }
+}
+

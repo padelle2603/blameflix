@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlameFlix</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<header class="topbar">
+    <div class="topbar__cluster">
+        <div class="catalog-menu">
+            <button type="button" class="btn-settings" id="btn-catalog-menu" onclick="toggleCatalogMenu()" aria-expanded="false" aria-controls="catalog-menu-panel" data-i18n-aria="tools.menu" data-i18n-title="tools.menu">⋮</button>
+            <div class="catalog-menu__panel" id="catalog-menu-panel" hidden>
+                <p class="catalog-menu__label" data-i18n="tools.filterBy">Filtra per tipo</p>
+                <div class="catalog-menu__section" role="group" aria-label="Filtra per tipo" data-i18n-aria="tools.filterBy">
+                    <button type="button" class="ctl" data-type="all" aria-pressed="true" onclick="setFilter('all')" data-i18n="tools.all">Tutti</button>
+                    <button type="button" class="ctl" data-type="movie" aria-pressed="false" onclick="setFilter('movie')" data-i18n="tools.movie">Film</button>
+                    <button type="button" class="ctl" data-type="tv" aria-pressed="false" onclick="setFilter('tv')" data-i18n="tools.tv">Serie</button>
+                </div>
+                <p class="catalog-menu__label" data-i18n="tools.viewMode">Cambia visualizzazione</p>
+                <div class="catalog-menu__section" role="group" aria-label="Cambia visualizzazione" data-i18n-aria="tools.viewMode">
+                    <button type="button" class="ctl ctl--icon" data-view="grid" aria-pressed="true" onclick="setView('grid')" title="Griglia" data-i18n="tools.grid" data-i18n-title="tools.grid">▦ Griglia</button>
+                    <button type="button" class="ctl ctl--icon" data-view="list" aria-pressed="false" onclick="setView('list')" title="Lista" data-i18n="tools.list" data-i18n-title="tools.list">☰ Lista</button>
+                </div>
+                <p class="catalog-menu__label" data-i18n="tools.orderSection">Ordine righe film/serie</p>
+                <div class="catalog-menu__section" role="group">
+                    <button type="button" class="ctl ctl--icon" id="btn-swap" onclick="toggleKindOrder()" aria-pressed="false" title="Inverti ordine film e serie" data-i18n="tools.swap" data-i18n-title="tools.swap">⇅ Inverti</button>
+                </div>
+            </div>
+        </div>
+        <button class="brand" onclick="showHome()" data-i18n-aria="nav.home">
+            <span class="brand__mark" aria-hidden="true"></span>BLAMEFLIX
+        </button>
+    </div>
+    <span class="count-tag"><span data-i18n="nav.saved">SALVATI:</span> <em id="count-tag">0</em></span>
+    <button type="button" class="ctl" id="btn-sync" onclick="syncReleases()" title="Verifica nuove uscite" data-i18n="common.sync" data-i18n-title="tools.sync">⟳ Sync</button>
+    <button type="button" class="btn-settings" onclick="openSettings()" data-i18n-aria="nav.settings" data-i18n-title="nav.settings">⚙</button>
+</header>
+
+<div class="ptr-indicator" id="ptr-indicator" aria-hidden="true"><span class="ptr-indicator__arrow">↓</span></div>
+
+<div class="key-notice" id="key-notice" hidden>
+    <div class="key-notice__inner">
+        <p data-i18n="notice.nokey">⚠ Nessuna chiave TMDB · impossibile cercare</p>
+        <button type="button" class="btn" onclick="openSettings()" data-i18n="notice.setkey">Imposta la chiave</button>
+    </div>
+</div>
+
+<div class="key-notice" id="resolver-notice" hidden>
+    <div class="key-notice__inner">
+        <p data-i18n="notice.noresolver">⚠ Nessuna sorgente configurata · «Guarda ora» non attivo</p>
+        <button type="button" class="btn" onclick="openSettings()" data-i18n="notice.configsource">Configura la sorgente</button>
+    </div>
+</div>
+
+<div class="key-notice" id="update-notice" hidden>
+    <div class="key-notice__inner">
+        <p id="update-notice-text">⚠ Nuova versione disponibile</p>
+        <div class="update-notice__actions">
+            <button type="button" class="btn" onclick="openLatestRelease()" data-i18n="notice.downloadGitHub">Scarica dal GitHub</button>
+            <button type="button" class="btn" id="update-notice-apk" onclick="downloadLatestApk()" hidden data-i18n="notice.downloadApk">Scarica APK</button>
+            <button type="button" class="btn btn--ghost" onclick="dismissUpdate()" data-i18n-aria="notice.dismiss" data-i18n-title="notice.dismiss">✕</button>
+        </div>
+    </div>
+</div>
+
+<div id="update-popup" class="overlay update-popup" hidden role="alertdialog" aria-modal="true" aria-labelledby="update-popup-title">
+    <div class="settings-panel update-popup__panel">
+        <div class="settings-head">
+            <div>
+                <span class="eyebrow" data-i18n="settings.updates">Aggiornamenti</span>
+                <h2 id="update-popup-title" data-i18n="update.popupTitle">Nuova versione disponibile</h2>
+            </div>
+        </div>
+        <p class="settings-hint" id="update-popup-text"></p>
+        <div class="settings-actions">
+            <button type="button" class="btn btn--rosso" id="update-popup-download" onclick="updatePopupDownload()"></button>
+            <button type="button" class="btn" onclick="dismissUpdatePopup()" data-i18n="update.later">Più tardi</button>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+    <div class="searchbar">
+        <label class="searchbar-label" for="search-input" data-i18n="search.label">Cerca un titolo</label>
+        <div class="searchbar-row">
+            <input type="text" id="search-input" placeholder="Cerca film o serie TV…" autocomplete="off"
+                   onkeyup="handleSearch(this.value)" data-i18n-placeholder="search.placeholder">
+            <button type="button" class="searchbar-clear" id="search-clear" onclick="clearSearch()"
+                    aria-label="Torna alla tua homepage" hidden data-i18n-aria="search.clearAria">&times;</button>
+        </div>
+    </div>
+
+    <!-- HOMEPAGE / SEARCH -->
+    <main id="home-view">
+        <div class="section-head">
+            <span class="eyebrow" id="section-eyebrow">La tua sala</span>
+            <h2 class="section-title" id="section-title">BlameFlix</h2>
+            <span class="section-count" id="section-count"></span>
+            <span class="section-unwatched" id="home-unwatched" hidden></span>
+        </div>
+
+        <section class="news-section" id="news-section" hidden>
+            <div class="news-section__head">
+                <h3 class="news-section__title" data-i18n="home.news">Novità</h3>
+                <button type="button" class="btn btn--ghost news-section__clear" onclick="clearNewsHistory()" data-i18n="home.clearNews">Svuota</button>
+            </div>
+            <ul class="news-list" id="news-list"></ul>
+        </section>
+
+        <div id="results-grid" class="grid"></div>
+
+        <div id="empty-state" class="empty-state" hidden>
+            <p class="empty-kicker">Nessun titolo in sala</p>
+            <p>La tua sala è vuota. Cerca il primo film o la prima serie qui sopra per iniziare.</p>
+        </div>
+    </main>
+
+    <!-- DETAIL (overlay, nessuna pagina nuova) -->
+    <main id="detail-view" hidden>
+        <button class="btn btn--ghost" onclick="showHome()" data-i18n="detail.back">&larr; BlameFlix</button>
+
+        <div class="detail-backdrop" id="detail-backdrop" hidden aria-hidden="true"></div>
+
+        <div class="detail-header">
+            <div class="detail-poster-wrap">
+                <img id="detail-poster" class="detail-poster" src="" alt="Poster" data-i18n-alt="detail.posterAlt">
+                <span id="detail-kind" class="detail-kind">FILM</span>
+            </div>
+            <div class="detail-content">
+                <span class="eyebrow" data-i18n="detail.sheet">Scheda titolo</span>
+                <h2 id="detail-title" class="detail-title"></h2>
+                <p id="detail-overview" class="detail-overview"></p>
+
+                <dl class="detail-facts">
+                    <div>
+                        <dt data-i18n="detail.year">Anno</dt>
+                        <dd id="detail-date"></dd>
+                    </div>
+                    <div>
+                        <dt data-i18n="detail.vote">Voto</dt>
+                        <dd id="detail-vote"></dd>
+                    </div>
+                </dl>
+
+                <span class="detail-unwatched" id="detail-unwatched" hidden></span>
+
+                <button type="button" class="btn detail-mark-all" id="btn-mark-all-aired" onclick="markAllAiredWatched()" hidden data-i18n="detail.markAllAired">
+                    ✓ Segna tutte le uscite come viste
+                </button>
+
+                <div class="detail-actions">
+                    <button type="button" class="btn btn--rosso" id="btn-watch" onclick="openPlayer(true)" data-i18n="detail.watchNow">↗ Apri nel browser</button>
+                    <button type="button" class="btn btn--stamp" id="btn-watchlist" onclick="toggleWatchlist()">+ Aggiungi ai salvati</button>
+                </div>
+
+                <div class="resolver-override">
+<button type="button" class="btn btn--ghost" id="btn-resolver-override" onclick="toggleResolverOverride()">Sorgente: globale</button>
+                    <div class="resolver-override__panel" id="resolver-override-panel" hidden>
+                        <label for="resolver-override-input" data-i18n="detail.sourceForTitle">Sorgente per questo titolo</label>
+                        <input type="url" id="resolver-override-input" autocomplete="off"
+                               placeholder="https://esempio.com/title/{id}/" data-i18n-placeholder="detail.sourceOverridePlaceholder">
+                        <p class="settings-hint" data-i18n="detail.sourceOverrideHint">Se vuoto, «Guarda ora» usa la sorgente globale delle Impostazioni. Usa i segnaposto {id}, {type}, {season}, {episode} per inserire id, stagione ed episodio nell'URL: senza segnaposto l'URL viene aperto così com'è. Solo collegamenti http/https.</p>
+                        <div class="settings-actions">
+                            <button type="button" class="btn btn--rosso" onclick="saveResolverOverride()" data-i18n="detail.useForTitle">Usa per questo titolo</button>
+                            <button type="button" class="btn" onclick="clearResolverOverride()" data-i18n="detail.useGlobal">Usa quello globale</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tv-controls" class="season-controls" hidden>
+                    <label for="input-season" data-i18n="detail.season">Stagione</label>
+                    <select id="input-season" onchange="onSeasonChange(value)"></select>
+
+                    <div id="custom-controls" class="season-controls__custom" hidden>
+                        <label for="input-season-custom" data-i18n="detail.season">Stagione</label>
+                        <input type="number" id="input-season-custom" min="1" step="1" inputmode="numeric" value="1">
+                        <label for="input-episode-custom" data-i18n="detail.episode">Episodio</label>
+                        <input type="number" id="input-episode-custom" min="1" step="1" inputmode="numeric" value="1">
+                        <p class="season-controls__custom-hint" data-i18n="detail.customHint">Stagioni o episodi non elencati da TMDB</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <section class="episode-section" id="episode-section" hidden>
+            <div class="episode-section__head">
+                <h3 class="episode-section__title" data-i18n="detail.episodes">Episodi</h3>
+                <button type="button" class="btn episode-section__mark" id="btn-mark-season" onclick="markSeasonWatched()">✓ Segna tutte come viste</button>
+            </div>
+            <div id="episode-list" class="episode-list"></div>
+        </section>
+    </main>
+</div>
+
+<div id="settings-overlay" class="overlay" hidden>
+    <div class="settings-panel" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+        <div class="settings-head">
+            <div>
+                <span class="eyebrow" data-i18n="settings.preferences">Preferenze</span>
+                <h2 id="settings-title" data-i18n="settings.title">Impostazioni</h2>
+            </div>
+            <button type="button" class="btn btn--ghost" onclick="closeSettings()" data-i18n="settings.close">&times; Chiudi</button>
+        </div>
+
+        <nav class="settings-tabs" role="tablist" aria-label="Impostazioni">
+            <button type="button" class="settings-tab is-active" data-tab="settings-tab-api" role="tab" aria-selected="true" data-i18n="settings.tab.api">API e Sorgenti</button>
+            <button type="button" class="settings-tab" data-tab="settings-tab-notify" role="tab" aria-selected="false" data-i18n="settings.tab.notify">Notifiche</button>
+            <button type="button" class="settings-tab" data-tab="settings-tab-prefs" role="tab" aria-selected="false" data-i18n="settings.tab.preferences">Preferenze</button>
+            <button type="button" class="settings-tab" data-tab="settings-tab-data" role="tab" aria-selected="false" data-i18n="settings.tab.data">Dati</button>
+            <button type="button" class="settings-tab" data-tab="settings-tab-updates" role="tab" aria-selected="false" data-i18n="settings.tab.updates">Aggiornamenti</button>
+            <button type="button" class="settings-tab" data-tab="settings-tab-help" role="tab" aria-selected="false" data-i18n="settings.tab.help">Aiuto</button>
+        </nav>
+
+        <section class="settings-tabpage" id="settings-tab-api" role="tabpanel">
+            <div class="settings-field">
+                <label for="settings-api-key" data-i18n="settings.apiKey">Chiave API TMDB</label>
+                <input type="text" id="settings-api-key" inputmode="text" autocomplete="off"
+                       placeholder="Inserisci la tua chiave personale" data-i18n-placeholder="settings.apiKeyPlaceholder">
+                <p class="settings-hint" data-i18n="settings.apiKeyHint">La chiave personale si ottiene gratuitamente su themoviedb.org → Settings → API. Senza chiave non puoi cercare titoli.</p>
+            </div>
+
+            <div class="settings-field settings-field--divider">
+                <label for="settings-resolver-movie" data-i18n="settings.sourceMovie">Sorgente film</label>
+                <input type="url" id="settings-resolver-movie" autocomplete="off"
+                       placeholder="https://esempio.com/movie/{id}/" data-i18n-placeholder="settings.sourceMoviePlaceholder">
+                <label for="settings-resolver-tv" data-i18n="settings.sourceTv">Sorgente serie</label>
+                <input type="url" id="settings-resolver-tv" autocomplete="off"
+                       placeholder="https://esempio.com/tv/{id}/{season}/{episode}/" data-i18n-placeholder="settings.sourceTvPlaceholder">
+                <p class="settings-hint" data-i18n="settings.sourceHint">L'app apre l'URL della sorgente che tu configuri, sostituendo i segnaposto {id}, {type}, {season}, {episode} con i valori del titolo. Senza segnaposto l'URL viene aperto esattamente com'è. Solo collegamenti http/https: magnet, torrent e altri protocolli non sono supportati. Se lasci vuoto, «Guarda ora» non è attivo.</p>
+            </div>
+        </section>
+
+        <section class="settings-tabpage" id="settings-tab-notify" role="tabpanel" hidden>
+            <div class="settings-field">
+                <label data-i18n="settings.notify">Notifiche di rilascio</label>
+                <p class="settings-hint" data-i18n="settings.notifyHint">Ti avvisiamo quando esce una nuova puntata di una serie o esce un film della tua sala. Le novità restano anche nella cronologia «Novità» in home. Il controllo avviene all'apertura dell'app, automaticamente a intervalli regolari e con il tasto «⟳ Sync» nella sala. Su Android serve il permesso di notifica di sistema.</p>
+                <label class="settings-check">
+                    <input type="checkbox" id="settings-notify-enabled">
+                    <span data-i18n="settings.notifyEnable">Abilita notifiche</span>
+                </label>
+                <label class="settings-check">
+                    <input type="checkbox" id="settings-notify-tv">
+                    <span data-i18n="settings.notifyTv">Notifiche per le nuove puntate</span>
+                </label>
+                <label class="settings-check">
+                    <input type="checkbox" id="settings-notify-movies">
+                    <span data-i18n="settings.notifyMovies">Notifiche per le uscite dei film</span>
+                </label>
+                <label for="settings-notify-interval" data-i18n="settings.notifyInterval">Sincronizzazione automatica</label>
+                <select id="settings-notify-interval">
+                    <option value="8" data-i18n="settings.every8">Ogni 8 ore</option>
+                    <option value="12" data-i18n="settings.every12">Ogni 12 ore</option>
+                    <option value="24" data-i18n="settings.every24">Ogni 24 ore</option>
+                    <option value="48" data-i18n="settings.every48">Ogni 48 ore</option>
+                </select>
+                <div class="settings-actions">
+                    <button type="button" class="btn" onclick="sendTestNotification()" data-i18n="settings.testNotify">🔔 Prova notifica</button>
+                </div>
+                <span class="settings-status" id="notify-status" hidden></span>
+            </div>
+        </section>
+
+        <section class="settings-tabpage" id="settings-tab-prefs" role="tabpanel" hidden>
+            <div class="settings-field">
+                <label for="settings-lang" data-i18n="settings.language">Lingua</label>
+                <select id="settings-lang">
+                    <option value="it">Italiano</option>
+                    <option value="en">English</option>
+                </select>
+                <p class="settings-hint" data-i18n="settings.langHint">Lingua dell'interfaccia. Al primo avvio viene rilevata automaticamente.</p>
+            </div>
+        </section>
+
+        <section class="settings-tabpage" id="settings-tab-data" role="tabpanel" hidden>
+            <div class="settings-field">
+                <label for="backup-status" data-i18n="settings.backup">Backup dati</label>
+                <p class="settings-hint" data-i18n="settings.backupHint">Salva i tuoi dati (salvati, puntate viste, ultime riproduzioni, stagioni personalizzate, novità e preferenze) e ripristinali in un secondo momento. Il backup contiene solo gli identificativi dei titoli: al ripristino i dettagli vengono riscaricati da TMDB (serve la connessione).</p>
+                <div class="settings-actions">
+                    <button type="button" class="btn" onclick="createBackup()" data-i18n="settings.backupCreate">⬇ Crea backup</button>
+                    <button type="button" class="btn" onclick="restoreBackup()" data-i18n="settings.backupRestore">⬆ Ripristina</button>
+                    <input type="file" id="backup-file" accept="application/json,.json" hidden>
+                </div>
+                <span class="settings-status" id="backup-status" hidden></span>
+            </div>
+        </section>
+
+        <section class="settings-tabpage" id="settings-tab-updates" role="tabpanel" hidden>
+            <div class="settings-field">
+                <label for="update-status" data-i18n="settings.updates">Aggiornamenti</label>
+                <p class="settings-hint" id="settings-version">Versione installata: 1.0.0</p>
+                <p class="settings-hint" id="settings-updates-web-hint" hidden data-i18n="settings.updatesWebOnly"></p>
+                <p class="settings-hint" data-i18n="settings.updatesHint">BlameFlix controlla su GitHub se è disponibile una nuova versione e te la segnala all'avvio. Puoi verificare manualmente quando vuoi.</p>
+                <div class="settings-actions">
+                    <button type="button" class="btn" id="settings-update-check" onclick="checkForUpdates(true)" data-i18n="settings.checkUpdates">⟳ Verifica aggiornamenti</button>
+                    <button type="button" class="btn" id="settings-update-open" onclick="openLatestRelease()" hidden data-i18n="settings.goRelease">Vai alla release</button>
+                </div>
+                <span class="settings-status" id="update-status" hidden></span>
+                <p class="settings-hint" id="update-last-check" hidden></p>
+            </div>
+        </section>
+
+        <section class="settings-tabpage" id="settings-tab-help" role="tabpanel" hidden>
+            <div class="settings-field">
+                <label for="docs-status" data-i18n="settings.help">Aiuto</label>
+                <p class="settings-hint" data-i18n="settings.helpHint">Hai domande su come usare BlameFlix? Trovi tutto spiegato nella guida.</p>
+                <div class="settings-actions">
+                    <button type="button" class="btn" onclick="openDocs()" data-i18n="settings.docs">❓ Documentazione</button>
+                </div>
+            </div>
+        </section>
+
+        <div class="settings-actions settings-savebar">
+            <button type="button" class="btn btn--rosso" onclick="saveSettings()" data-i18n="settings.save">Salva</button>
+            <span class="settings-status" id="settings-status" hidden></span>
+        </div>
+    </div>
+</div>
+
+<div id="docs-overlay" class="overlay" hidden>
+    <div class="settings-panel docs-panel" role="dialog" aria-modal="true" aria-labelledby="docs-title">
+        <div class="settings-head">
+            <div>
+                <span class="eyebrow" data-i18n="docs.guide">Guida</span>
+                <h2 id="docs-title" data-i18n="docs.title">Documentazione</h2>
+            </div>
+            <button type="button" class="btn btn--ghost" onclick="closeDocs()" data-i18n="docs.close">&times; Chiudi</button>
+        </div>
+
+        <div class="docs-body" data-i18n-html="docs.body">
+            <p class="docs-hint">Come usare BlameFlix</p>
+
+            <h3>Cos'è BlameFlix</h3>
+            <p>BlameFlix è la tua sala personale: un catalogo dove raccogli i film e le serie TV che ti interessano. Puoi cercare titoli, tenerli nei salvati e guardarli quando vuoi, ripartendo sempre da dove eri rimasto.</p>
+
+            <h3>Cercare e salvare un titolo</h3>
+            <p>Usa la barra di ricerca in alto per trovare un film o una serie. Apri la scheda del titolo che ti interessa e premi <strong>«+ Aggiungi ai salvati»</strong>: il titolo entra nella tua sala, dove resta fino a quando non lo togli. Puoi filtrare la sala per <strong>Tutti</strong>, <strong>Film</strong> o <strong>Serie</strong> e scegliere tra la vista a griglia e quella a lista.</p>
+
+<h3>Guardare un film</h3>
+            <p>Apri la scheda del film e premi <strong>«↗ Apri nel browser»</strong>. BlameFlix apre l'URL della <strong>sorgente</strong> che hai configurato nelle Impostazioni. Su telefono si apre l'app esterna, su computer una nuova finestra.</p>
+
+            <h3>Guardare una serie TV</h3>
+            <p>Nella scheda di una serie scegli la <strong>stagione</strong> dal selettore: sotto compaiono le <strong>puntate</strong> di quella stagione, con miniatura, titolo e descrizione. Premi «▶ Guarda» sulla puntata che vuoi vedere. Le puntate già viste appaiono <strong>grigiate</strong> con il badge «✓ VISTO»; quelle non ancora in onda restano bloccate fino alla data di messa in onda.</p>
+            <p>BlameFlix segna automaticamente come vista la puntata che guardi, ma puoi cambiarlo cliccando sul badge «✓ VISTO» di una puntata. Con il tasto <strong>«Segna tutte come viste»</strong> in cima alla lista puoi marcare in un tocco tutte le puntate già in onda della stagione (premilo di nuovo per toglierle). Quando riapri una serie riparti dalla stagione dell'ultima puntata vista e «Guarda ora» apre direttamente la prima puntata non ancora vista. Se una stagione o un episodio non compare nell'elenco (perché non è elencato da TMDB), scegli <strong>«Altro…»</strong> e digita il numero a mano: la tua scelta viene ricordata.</p>
+
+            <h3>La sorgente</h3>
+            <p>BlameFlix non contiene sorgenti di streaming: apre semplicemente l'URL del servizio che scegli tu. Nelle <strong>Impostazioni</strong> inserisci il template per i film e quello per le serie. L'app sostituisce i segnaposto <code>{id}</code>, <code>{type}</code>, <code>{season}</code> e <code>{episode}</code> con i valori del titolo (es. <code>https://esempio.com/watch?id={id}&s={season}&e={episode}</code>). Se il template non contiene segnaposto, l'URL viene aperto esattamente com'è. Sono accettati solo collegamenti <strong>http/https</strong>: magnet, torrent e altri protocolli non sono supportati. Se un template è vuoto, il pulsante «Guarda ora» non è attivo.</p>
+            <p>Nella scheda di un titolo puoi impostare una <strong>sorgente specifica</strong> che ha la precedenza su quella globale: premi <strong>«Sorgente: globale»</strong> sotto i pulsanti, inserisci il template e salvalo con «Usa per questo titolo». Con «Usa quella globale» torni al comportamento predefinito. Le sorgenti per titolo sono salvate nel dispositivo e incluse nel backup.</p>
+
+            <h3>Aggiornamenti</h3>
+            <p>BlameFlix controlla su GitHub se è disponibile una nuova versione e, se c'è, mostra un avviso con il link alla pagina di download. Puoi anche verificare a mano nelle <strong>Impostazioni</strong> («Verifica aggiornamenti»), dove vedi la versione installata. Su Android l'APK nuovo si installa <strong>sopra</strong> quello già presente, senza disinstallare nulla.</p>
+
+            <h3>Disclaimer di avvio</h3>
+            <p>Al primo utilizzo BlameFlix mostra un avviso legale sull'uso dell'app: l'avvio è sbloccato solo dopo l'accettazione (attivabile dopo 10 secondi). L'accettazione è ricordata e non viene più richiesta alle aperture successive.</p>
+
+            <h3>Notifiche di rilascio</h3>
+            <p>BlameFlix può avvisarti quando esce una <strong>nuova puntata</strong> di una serie della tua sala (alla data di messa in onda). Il controllo avviene automaticamente all'apertura dell'app, a intervalli regolari configurabili nelle Impostazioni (ogni 8, 12, 24 o 48 ore) e manualmente con il tasto <strong>«⟳ Sync»</strong> nella sala.</p>
+            <p>Ogni nuova uscita finisce anche nella cronologia <strong>«Novità»</strong> in home: toccando una voce apri la scheda del titolo e con <strong>«Svuota»</strong> puoi azzerarla. Le puntate che hai già segnato come viste non vengono considerate nuove.</p>
+            <p>Nelle <strong>Impostazioni</strong> la sezione notifiche è semplice: <strong>«Abilita notifiche»</strong> e <strong>«Notifiche per le nuove puntate»</strong>. Puoi regolare la frequenza della <strong>sincronizzazione automatica</strong> e inviare una <strong>notifica di prova</strong>. Su Android la prima notifica chiede il permesso di sistema e toccando una notifica si apre la scheda della serie. Le date arrivano da TMDB: se mancano o cambiano, gli avvisi arrivano al primo controllo utile.</p>
+
+            <h3>Legalità dei contenuti</h3>
+            <p>BlameFlix è un lettore generico: le sorgenti di streaming le configuri tu nelle Impostazioni. Sei <strong>responsabile della legalità dei contenuti</strong> a cui accedi tramite la tua sorgente, secondo le leggi del tuo Paese. In Italia l'accesso a streaming non autorizzato può comportare sanzioni amministrative (legge 93/2023) e sono in discussione multe più severe. BlameFlix non fornisce né segnala alcuna fonte di contenuti.</p>
+
+            <h3>Backup dei dati</h3>
+            <p>Con <strong>«Crea backup»</strong> salvi un file con i tuoi dati: i titoli salvati, le puntate viste (stagione ed episodio per ogni serie), gli ultimi film e serie visti, la cronologia «Novità», la tua chiave personale e le preferenze di visualizzazione. Il programma ti chiede dove salvare il file.</p>
+            <p>Con <strong>«Ripristina»</strong> scegli il file di backup salvato in precedenza e BlameFlix riporta al suo posto tutti i dati. Il backup contiene solo gli identificativi dei titoli: al ripristino i dettagli vengono riscaricati da TMDB, quindi serve una connessione internet. I titoli non scaricabili compaiono comunque come card senza dati e i dettagli si caricano appena li apri.</p>
+
+            <h3>I titoli non si caricano</h3>
+            <p>BlameFlix riceve i dati dei titoli da TMDB. Se la ricerca o le schede non si caricano, assicurati di essere connesso a internet. In caso di problemi, nelle Impostazioni puoi inserire una chiave personale gratuita, ottenibile su themoviedb.org nella sezione API.</p>
+
+            <h3>Privacy</h3>
+            <p>Tutti i tuoi dati restano sul dispositivo e non vengono inviati a nessuno, a parte le normali richieste a TMDB per cercare i titoli. Conserva bene il file di backup: contiene i tuoi dati personali. Per i dettagli, consulta la privacy policy del progetto.</p>
+
+            <h3>Crediti</h3>
+            <p><img src="tmdb.svg" alt="The Movie Database (TMDB)" class="docs-tmdb"></p>
+            <p><em>This product uses the TMDB API but is not endorsed or certified by TMDB.</em></p>
+            <p>Questo prodotto usa l'API TMDB ma non è approvato né certificato da TMDB. Titoli, testi e immagini provengono da <a href="https://www.themoviedb.org" target="_blank" rel="noopener">The Movie Database (TMDB)</a>, che non è affiliato a questa applicazione. Le immagini dei poster sono mostrate per la sola consultazione del catalogo.</p>
+        </div>
+    </div>
+</div>
+
+<footer class="colophon">
+    <a class="colophon__tmdb" href="https://www.themoviedb.org" target="_blank" rel="noopener" aria-label="The Movie Database (TMDB)">
+        <img src="tmdb.svg" alt="The Movie Database (TMDB)">
+    </a>
+    <p class="colophon__note" data-i18n-html="footer.tmdb">
+        This product uses the TMDB API but is not endorsed or certified by TMDB.<br>
+        Questo prodotto usa l'API TMDB ma non è approvato né certificato da TMDB. The Movie Database (TMDB) non è affiliato a questa applicazione.
+    </p>
+    <span class="colophon__tag" data-i18n="footer.tag">Schermo: la tua sala</span>
+</footer>
+
+<div id="disclaimer-overlay" class="overlay disclaimer-overlay" hidden role="alertdialog" aria-modal="true" aria-labelledby="disclaimer-title">
+    <div class="settings-panel disclaimer-panel">
+        <div class="settings-head">
+            <div>
+                <span class="eyebrow" data-i18n="disclaimer.legal">Avviso legale</span>
+                <h2 id="disclaimer-title" data-i18n="disclaimer.title">ATTENZIONE</h2>
+            </div>
+        </div>
+        <div class="disclaimer-body" data-i18n-html="disclaimer.body">
+            <p>Questa applicazione è di proprietà di <strong>padelle2603</strong> e tutelata dalla legge sul diritto d'autore, va usata nel rispetto delle norme europee ed italiane sulla visione di contenuti soggetti a proprietà intellettuale, il proprietario non assume alcuna responsabilità sull'uso illegale della stessa, e si riserva ogni diritto ragione ed azione a propria tutela compreso il ricorso alle autorità competenti qualora dall'uso illecito che ne fa l'utente, gliene derivi un danno di qualsiasi natura, solo cliccando su accetta queste condizioni, il programma si avvierà.</p>
+        </div>
+        <div class="settings-actions">
+            <button type="button" class="btn btn--rosso" id="disclaimer-accept" onclick="acceptDisclaimer()" disabled data-i18n="disclaimer.accept">Accetta</button>
+            <span class="disclaimer-status" id="disclaimer-status">Accettabile tra 10s</span>
+        </div>
+    </div>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite">
+    <strong class="toast__title" id="toast-title"></strong>
+    <span class="toast__body" id="toast-body"></span>
+</div>
+
+
+<script src="js/app.js"></script>
+</body>
+</html>

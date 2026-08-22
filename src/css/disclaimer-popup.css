@@ -1,0 +1,34 @@
+/* ===== STARTUP DISCLAIMER ===== */
+.disclaimer-overlay { z-index: 100; }
+
+/* ===== UPDATE POPUP ===== */
+.update-popup { z-index: 110; }
+
+.update-popup__panel {
+    max-width: 520px;
+    border: 1px solid var(--rosso);
+}
+
+.disclaimer-panel {
+    max-width: 620px;
+    border: 1px solid var(--rosso);
+}
+
+.disclaimer-body {
+    max-height: 52vh;
+    overflow-y: auto;
+    padding-right: 0.6rem;
+    line-height: 1.6;
+}
+
+.disclaimer-body p { margin: 0; font-size: 0.95rem; }
+
+.disclaimer-status {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--meta);
+    text-transform: uppercase;
+}
+

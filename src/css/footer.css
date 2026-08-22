@@ -1,0 +1,50 @@
+/* ===== COLOPHON ===== */
+.colophon {
+    max-width: 1240px;
+    margin: 3rem auto 0;
+    padding: 0 1.4rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    color: var(--meta);
+}
+
+.colophon__tmdb {
+    display: inline-flex;
+    align-items: center;
+    line-height: 0;
+}
+
+.colophon__tmdb img {
+    height: 22px;
+    width: auto;
+    display: block;
+}
+
+.colophon__note {
+    margin: 0;
+    font-size: 0.6rem;
+    line-height: 1.6;
+    letter-spacing: 0.02em;
+    max-width: 46rem;
+}
+
+.colophon__note a { color: var(--meta); text-decoration: underline; }
+
+.colophon__tag {
+    display: none;
+}
+
+.docs-tmdb {
+    height: 26px;
+    width: auto;
+    display: block;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: #0d253f;
+    padding: 4px;
+}
+

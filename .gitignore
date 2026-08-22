@@ -24,15 +24,21 @@ android/app/src/main/res/xml/config.xml
 android/*.keystore
 android/keystore.properties
 
-# www lib è rigenerato da cap sync
-www/lib/
+# www è interamente generato da npm run build (esbuild) a partire da src/
+/www/
 
 # OS / editor
 .DS_Store
 *.swp
 
+# Local archives
+/src.zip
+/index.backup.zip
+
 # Note legali
 Note Legali/DOCUMENTAZIONE_TECNICA.md
 Note Legali/DOCUMENTAZIONE_TECNICA_EN.md
+
+# Direttive
 AGENTS.md
 CHANGELOG.md

@@ -4,7 +4,7 @@
 
 [![Scarica BlameFlix su GitHub](https://img.shields.io/badge/Scarica%20BlameFlix%20su%20GitHub-e04334?style=for-the-badge&logo=github&logoColor=white)](https://github.com/padelle2603/blameflix/releases/latest)
 
-> ⬇ Scarica l'**APK (Android)** o l'**AppImage (Linux)** dall'[ultima release](https://github.com/padelle2603/blameflix/releases/latest). Vedi il [changelog](CHANGELOG.md) per le novità.
+> ⬇ Scarica l'**APK (Android)** o l'**AppImage (Linux)** dall'[ultima release](https://github.com/padelle2603/blameflix/releases/latest). 
 
 BlameFlix è il tuo **catalogo personale** per film e serie TV: un unico posto dove
 cercare un titolo, salvarlo nella tua libreria, ricordare quali puntate hai visto
@@ -32,8 +32,11 @@ dell'utente) vedi il [manifesto](Note%20Legali/MANIFEST.md).
 
 ## Come funziona
 
-L'app è un'unica pagina web in JavaScript puro (nessun framework), racchiusa in
-`www/index.html`, e viene impacchettata come app Android e come app desktop Linux.
+L'app è una single-page application in JavaScript puro (nessun framework). I
+sorgenti vivono in `src/` — template HTML, CSS diviso per sezioni e JS
+organizzato in moduli ES — e vengono bundled da
+[esbuild](https://esbuild.github.io/) dentro `www/`, la cartella impacchettata
+da Capacitor (Android) ed Electron (Linux).
 
 - **Ricerca**: scrivi un titolo e BlameFlix lo cerca nell'API pubblica di
   The Movie Database (TMDB). Ti basta inserire una chiave personale gratuita
@@ -94,6 +97,24 @@ prima di poterla usare.
 | Android | Capacitor | `BlameFlix-<versione>.apk` |
 | Linux desktop | Electron | `BlameFlix-<versione>.AppImage` |
 | Web | HTML/CSS/JS statico | `www/` |
+
+## Sviluppo
+
+I sorgenti web sono in `src/` (`index.html`, `css/`, `js/` come moduli ES); la
+build li compatta dentro `www/`, la cartella impacchettata da Capacitor ed
+Electron. La versione dell'app viene iniettata in fase di build da
+`package.json`. `www/` è generato e **non tracciato su git**: dopo il clone,
+esegui `npm install` e `npm run build` prima di aprire o impacchettare l'app.
+
+```sh
+npm install        # dipendenze (esbuild, Capacitor)
+npm run build      # bundle src/ -> www/
+npm run watch      # rebuild a ogni modifica
+npm run sync       # build + cap sync (Android)
+```
+
+`www/index.backup.html` è un'istantanea congelata del monolite precedente alla
+modularizzazione, tenuta solo come riserva.
 
 ## Aggiornamenti
 

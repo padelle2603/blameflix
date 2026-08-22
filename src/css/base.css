@@ -1,0 +1,59 @@
+:root {
+    /* Cold graphite surfaces — depth via lightness, not shadow */
+    --paper: #0A0C0E;
+    --paper-hi: #13161A;
+    --line: #242930;
+    --line-strong: #333B45;
+
+    /* Ice-white text scale */
+    --ink: #E6EAEE;
+    --ink-hi: #FFFFFF;
+    --meta: #8B96A3;
+
+    /* Brand red — the single accent (legacy token name kept) */
+    --lago: #E04334;
+
+    /* Glacial teal — "all caught up" success state only */
+    --ok: #7ED4CB;
+
+    /* Muted red — errors, warnings, legal notices only */
+    --rosso: #C97C74;
+
+    --font-mono: 'IBM Plex Mono', monospace;
+    --radius-sm: 4px;
+    --radius: 6px;
+    --radius-lg: 10px;
+    --radius-pill: 999px;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.35);
+    --shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+}
+
+* { box-sizing: border-box; }
+
+[hidden] { display: none !important; }
+
+html { scroll-behavior: smooth; overscroll-behavior-y: contain; }
+
+body {
+    font-family: 'Archivo', Helvetica, Arial, sans-serif;
+    background-color: var(--paper);
+    color: var(--ink);
+    margin: 0;
+    padding: 0 0 4rem;
+    line-height: 1.5;
+}
+
+::selection {
+    background: var(--lago);
+    color: var(--paper);
+}
+
+:focus-visible {
+    outline: 2px solid var(--lago);
+    outline-offset: 2px;
+}
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--line-strong) transparent;
+}

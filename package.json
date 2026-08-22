@@ -1,10 +1,12 @@
 {
   "name": "blameflix",
-  "version": "1.3.0",
+  "version": "2.0.0",
   "description": "BlameFlix - your screening room",
   "private": true,
   "scripts": {
-    "sync": "cap sync"
+    "build": "node build.mjs",
+    "watch": "node build.mjs --watch",
+    "sync": "npm run build && cap sync"
   },
   "dependencies": {
     "@capacitor/app": "^8.1.1",
@@ -17,6 +19,7 @@
   "devDependencies": {
     "@capacitor/android": "^8.5.0",
     "@capacitor/cli": "^8.5.0",
+    "esbuild": "^0.25.0",
     "typescript": "^7.0.2"
   }
 }

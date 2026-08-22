@@ -1,0 +1,117 @@
+/* ===== NEWS (in-app history) ===== */
+.news-section {
+    border: 1px solid var(--line);
+    background: var(--paper-hi);
+    border-radius: var(--radius-lg);
+    margin: 0 0 2rem;
+    padding: 1rem 1.2rem;
+}
+
+.news-section__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.6rem;
+}
+
+.news-section__title {
+    font-family: 'Archivo', sans-serif;
+    font-weight: 700;
+    font-size: 1.25rem;
+    margin: 0;
+}
+
+.news-section__clear { font-size: 0.7rem; }
+
+.news-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.news-item {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.55rem 0;
+    border-top: 1px dashed var(--line-strong);
+}
+
+.news-item__kind {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--lago);
+    flex: 0 0 auto;
+}
+
+.news-item__title {
+    appearance: none;
+    background: none;
+    border: none;
+    padding: 0;
+    font: inherit;
+    color: var(--ink);
+    text-align: left;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.news-item__title:hover { color: var(--lago); }
+
+.news-item__date {
+    font-family: var(--font-mono);
+    font-size: 0.64rem;
+    color: var(--meta);
+    margin-left: auto;
+    white-space: nowrap;
+}
+
+.settings-field--divider {
+    border-top: 1px solid var(--line);
+    padding-top: 1.2rem;
+}
+
+.settings-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.2rem;
+    border-bottom: 1px solid var(--line);
+    margin: 0 0 1.2rem;
+}
+
+.settings-tab {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--meta);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    padding: 0.5rem 0.7rem;
+    margin: 0 0 -1px;
+    cursor: pointer;
+}
+
+.settings-tab:hover { color: var(--ink-hi); }
+
+.settings-tab.is-active {
+    color: var(--lago);
+    border-bottom-color: var(--lago);
+}
+
+.settings-tabpage:first-of-type { padding-top: 0.1rem; }
+
+.settings-savebar {
+    border-top: 1px solid var(--line);
+    padding-top: 1.2rem;
+    margin-top: 1.2rem;
+}
+
