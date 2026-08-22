@@ -4,7 +4,7 @@
 
 [![Get BlameFlix on GitHub](https://img.shields.io/badge/Get%20BlameFlix%20on%20GitHub-e04334?style=for-the-badge&logo=github&logoColor=white)](https://github.com/padelle2603/blameflix/releases/latest)
 
-> ⬇ Download the **APK (Android)** or the **AppImage (Linux)** from the [latest release](https://github.com/padelle2603/blameflix/releases/latest).
+> ⬇ Download the **APK (Android)**, the **AppImage (Linux)** or the **portable exe (Windows)** from the [latest release](https://github.com/padelle2603/blameflix/releases/latest).
 
 BlameFlix is your **personal catalog** for movies and TV series: a single place
 where you can search a title, save it to your library, remember which episodes
@@ -96,6 +96,7 @@ before using it.
 |---|---|---|
 | Android | Capacitor | `BlameFlix-<version>.apk` |
 | Linux desktop | Electron | `BlameFlix-<version>.AppImage` |
+| Windows desktop | Electron | `BlameFlix-<version>.exe` |
 | Web | Static HTML/CSS/JS | `www/` |
 
 ## Development
