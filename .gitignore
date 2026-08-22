@@ -31,6 +31,9 @@ android/keystore.properties
 .DS_Store
 *.swp
 
+# Script locale di sviluppo
+/dev.sh
+
 # Local archives
 /src.zip
 /index.backup.zip

@@ -10,7 +10,12 @@
 <body>
 
 <header class="topbar">
-    <div class="topbar__cluster">
+    <button class="brand" onclick="showHome()" data-i18n-aria="nav.home">
+        <span class="brand__mark" aria-hidden="true"></span>BLAMEFLIX
+    </button>
+
+    <!-- Right-hand action cluster: library options, saved count, sync, settings -->
+    <div class="topbar__actions">
         <div class="catalog-menu">
             <button type="button" class="btn-settings" id="btn-catalog-menu" onclick="toggleCatalogMenu()" aria-expanded="false" aria-controls="catalog-menu-panel" data-i18n-aria="tools.menu" data-i18n-title="tools.menu">⋮</button>
             <div class="catalog-menu__panel" id="catalog-menu-panel" hidden>
@@ -31,13 +36,10 @@
                 </div>
             </div>
         </div>
-        <button class="brand" onclick="showHome()" data-i18n-aria="nav.home">
-            <span class="brand__mark" aria-hidden="true"></span>BLAMEFLIX
-        </button>
+        <span class="count-tag"><span class="count-tag__label" data-i18n="nav.saved">SALVATI</span> <em id="count-tag">0</em></span>
+        <button type="button" class="btn-settings btn-sync" id="btn-sync" onclick="syncReleases()" title="Verifica nuove uscite" data-i18n-title="tools.sync" data-i18n-aria="common.sync">⟳</button>
+        <button type="button" class="btn-settings" onclick="openSettings()" data-i18n-aria="nav.settings" data-i18n-title="nav.settings">⚙</button>
     </div>
-    <span class="count-tag"><span data-i18n="nav.saved">SALVATI:</span> <em id="count-tag">0</em></span>
-    <button type="button" class="ctl" id="btn-sync" onclick="syncReleases()" title="Verifica nuove uscite" data-i18n="common.sync" data-i18n-title="tools.sync">⟳ Sync</button>
-    <button type="button" class="btn-settings" onclick="openSettings()" data-i18n-aria="nav.settings" data-i18n-title="nav.settings">⚙</button>
 </header>
 
 <div class="ptr-indicator" id="ptr-indicator" aria-hidden="true"><span class="ptr-indicator__arrow">↓</span></div>
@@ -134,18 +136,22 @@
             <div class="detail-content">
                 <span class="eyebrow" data-i18n="detail.sheet">Scheda titolo</span>
                 <h2 id="detail-title" class="detail-title"></h2>
-                <p id="detail-overview" class="detail-overview"></p>
+                <!-- Collapsible meta: synopsis + year/vote start collapsed on every
+                     open; tap/click or Enter/Space toggles the whole block -->
+                <div class="detail-meta" data-spoiler tabindex="0" role="button" aria-expanded="false">
+                    <p id="detail-overview" class="detail-overview"></p>
 
-                <dl class="detail-facts">
-                    <div>
-                        <dt data-i18n="detail.year">Anno</dt>
-                        <dd id="detail-date"></dd>
-                    </div>
-                    <div>
-                        <dt data-i18n="detail.vote">Voto</dt>
-                        <dd id="detail-vote"></dd>
-                    </div>
-                </dl>
+                    <dl class="detail-facts">
+                        <div>
+                            <dt data-i18n="detail.year">Anno</dt>
+                            <dd id="detail-date"></dd>
+                        </div>
+                        <div>
+                            <dt data-i18n="detail.vote">Voto</dt>
+                            <dd id="detail-vote"></dd>
+                        </div>
+                    </dl>
+                </div>
 
                 <span class="detail-unwatched" id="detail-unwatched" hidden></span>
 

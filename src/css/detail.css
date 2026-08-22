@@ -81,6 +81,27 @@
     margin: 0;
 }
 
+/* ===== COLLAPSIBLE META ===== */
+/* The synopsis and the year/vote facts start collapsed on every sheet
+   open; tapping (or Enter/Space) expands the block in full. */
+.detail-meta.is-collapsed { cursor: pointer; }
+
+.detail-meta.is-collapsed .detail-overview {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(180deg, #000 62%, rgba(0, 0, 0, 0.25) 88%, transparent 100%);
+    mask-image: linear-gradient(180deg, #000 62%, rgba(0, 0, 0, 0.25) 88%, transparent 100%);
+}
+
+.detail-meta.is-collapsed .detail-facts { display: none; }
+
+.detail-meta[data-spoiler]:focus-visible {
+    outline: 2px solid var(--lago);
+    outline-offset: 3px;
+}
+
 .detail-unwatched {
     display: inline-flex;
     align-items: center;

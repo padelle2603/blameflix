@@ -7,7 +7,13 @@
     justify-content: space-between;
     align-items: center;
     gap: 1rem;
-    flex-wrap: wrap;
+}
+
+/* Right-hand action cluster: library menu, saved count, sync, settings */
+.topbar__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .brand {
@@ -34,18 +40,12 @@
 }
 
 /* ===== CATALOG OPTIONS MENU (⋮) ===== */
-.topbar__cluster {
-    display: flex;
-    align-items: center;
-    gap: 0.9rem;
-}
-
 .catalog-menu { position: relative; }
 
 .catalog-menu__panel {
     position: absolute;
     top: calc(100% + 10px);
-    left: 0;
+    right: 0;
     z-index: 60;
     min-width: 230px;
     padding: 0.6rem;
@@ -83,20 +83,23 @@
 
 .count-tag {
     font-family: var(--font-mono);
-    font-size: 0.72rem;
+    font-size: 0.66rem;
     font-weight: 600;
-    letter-spacing: 0.1em;
-    color: var(--ink);
-    border: 1px solid var(--line-strong);
-    border-radius: var(--radius-pill);
-    padding: 5px 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--meta);
     white-space: nowrap;
-    margin-left: auto;
+    margin-right: 0.45rem;
 }
 
 .count-tag em {
     font-style: normal;
+    font-weight: 700;
     color: var(--lago);
+}
+
+.btn-sync.is-busy {
+    animation: ptr-spin 0.9s linear infinite;
 }
 
 .btn-settings {

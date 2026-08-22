@@ -154,13 +154,11 @@ async function checkReleases(manual = false) {
 
 async function syncReleases() {
     if (btnSync.classList.contains('is-busy')) return;
-    btnSync.classList.add('is-busy');
-    btnSync.innerText = t('common.syncing');
+    btnSync.classList.add('is-busy'); // icon-only button: the class drives the spin
     try {
         await checkReleases(true);
     } finally {
         btnSync.classList.remove('is-busy');
-        btnSync.innerText = t('common.sync');
     }
 }
 

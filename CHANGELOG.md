@@ -2,6 +2,26 @@
 
 Le release sono create automaticamente a ogni push sul ramo `main` e riportano qui il relativo changelog.
 
+## v2.1.0
+
+### Italiano
+
+- **Scheda titolo più pulita**: la sinossi parte troncata a tre righe con una sfumatura finale e Anno/Voto restano nascosti; un tap (o click / Invio / Spazio da tastiera) espande l'intero blocco, un secondo tap lo richiude. Lo stato torna collassato a ogni apertura di un nuovo titolo.
+- **Header ridisegnato**: logo BlameFlix isolato a sinistra e unico gruppo azioni a destra con ritmo uniforme: ⋮ menu opzioni libreria, conteggio SALVATI come testo discreto (numero in rosso), ⟳ Sync solo-icona, ⚙ Impostazioni. Il pannello opzioni si apre ora ancorato al bordo destro senza uscire dallo schermo.
+- **Sync solo icona**: il bottone «⟳ Sync» diventa un'icona come gli altri comandi; durante la verifica gira su se stessa invece di cambiare etichetta.
+- **Pull-to-refresh solo sull'app Android**: il gesto non scatta più nei browser desktop o mobile (notebook touchscreen ed emulazione dispositivi incluse) né in Electron; resta esclusivo del runtime nativo Capacitor.
+- **Responsive**: header compatto sotto 640px; sotto 480px il counter salvati mostra solo il numero per tenere tutto su una riga anche a 360px.
+- **Refactor**: `isMobile()` spostata in `env.js` e condivisa da player, controllo aggiornamenti e pull-to-refresh.
+
+### English
+
+- **Cleaner title sheet**: the synopsis starts clamped to three lines with a fade and Year/Rating stay hidden; one tap (or click / Enter / Space on keyboard) expands the whole block, tapping again collapses it. The state resets every time a new title is opened.
+- **Redesigned top bar**: the BlameFlix brand sits alone on the left with a single action cluster on the right at an even rhythm: ⋮ library options menu, SAVED count as quiet text (red number), icon-only ⟳ Sync, ⚙ Settings. The options panel now anchors to the right edge without overflowing the screen.
+- **Icon-only sync**: the «⟳ Sync» button becomes an icon like the other controls; while checking it spins instead of swapping labels.
+- **Pull-to-refresh in the Android app only**: the gesture no longer engages in desktop or mobile browsers (touchscreen laptops and device emulation included) nor in Electron; it stays exclusive to the native Capacitor runtime.
+- **Responsive**: compact header below 640px; below 480px the saved counter shows just the number so everything fits on one row even at 360px.
+- **Refactor**: `isMobile()` moved to `env.js`, shared by player, update check and pull-to-refresh.
+
 ## v2.0.1
 
 ### Italiano

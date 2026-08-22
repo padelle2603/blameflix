@@ -1,9 +1,9 @@
 import { state } from './state.js';
 import { readStoredJson } from './storage.js';
-import { GITHUB_REPO, GITHUB_LATEST_URL, UPDATE_CHECK_STORAGE, resolveAppVersion, isNativeRuntime } from './env.js';
+import { GITHUB_REPO, GITHUB_LATEST_URL, UPDATE_CHECK_STORAGE, resolveAppVersion, isNativeRuntime, isMobile } from './env.js';
 import { t, locale } from './i18n.js';
 import { updateNotice, updateNoticeText, updateNoticeApk, updateStatus, updatePopup, updatePopupText, updatePopupDownloadBtn } from './dom.js';
-import { isMobile, openBrowser, openWindow } from './player.js';
+import { openBrowser, openWindow } from './player.js';
 
 // Numeric semver comparison (handles "v" prefixes and suffixes).
 function compareVersions(a, b) {

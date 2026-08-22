@@ -48,4 +48,15 @@ function isNativeRuntime() {
     );
 }
 
-export { resolveAppVersion, isNativeRuntime };
+// Detects whether the app is being used from a phone/tablet rather than a
+// desktop machine: native Capacitor runtime, mobile user agent, or a touch
+// screen driven by a coarse primary pointer (covers iPad desktop-UA mode).
+function isMobile() {
+    if (window.Capacitor?.isNativePlatform?.()) return true;
+    const ua = navigator.userAgent || '';
+    const mobileUA = /Android|iPhone|iPad|iPod|Mobile/i.test(ua);
+    const coarse = window.matchMedia?.('(pointer: coarse)').matches;
+    return mobileUA || (('ontouchstart' in window || navigator.maxTouchPoints > 0) && coarse);
+}
+
+export { resolveAppVersion, isNativeRuntime, isMobile };

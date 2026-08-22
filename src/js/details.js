@@ -33,6 +33,7 @@ async function showDetails(id, type, opts) {
         document.getElementById('detail-overview').innerText = data.overview || t('detail.noOverview');
         document.getElementById('detail-date').innerText = data.release_date || data.first_air_date || '—';
         document.getElementById('detail-vote').innerText = formatVote(data.vote_average);
+        resetDetailSpoilers();
         document.getElementById('detail-poster').src = tmdbImagePath(data.poster_path) ? `${IMG_BASE}${data.poster_path}` : PLACEHOLDER;
         document.getElementById('detail-kind').innerText = type === 'tv' ? t('common.tvKindLong') : t('common.movieKindLong');
 
@@ -75,6 +76,40 @@ async function showDetails(id, type, opts) {
         showHome();
     }
 }
+
+// Collapsible meta block: every sheet opens with the synopsis clamped and
+// the year/vote facts hidden; tapping (or Enter/Space) toggles the block.
+// The state resets each time a new title is opened.
+function resetDetailSpoilers() {
+    const hint = t('detail.revealHint');
+    document.querySelectorAll('#detail-view [data-spoiler]').forEach(el => {
+        el.classList.add('is-collapsed');
+        el.setAttribute('aria-expanded', 'false');
+        el.setAttribute('title', hint);
+        el.setAttribute('aria-label', hint);
+    });
+}
+
+function toggleSpoiler(el) {
+    const collapsed = el.classList.toggle('is-collapsed');
+    el.setAttribute('aria-expanded', String(!collapsed));
+    if (collapsed) el.setAttribute('title', t('detail.revealHint'));
+    else el.removeAttribute('title');
+}
+
+// Tap/click and keyboard reveal for the spoilered sheet fields.
+detailView.addEventListener('click', e => {
+    const spoiler = e.target.closest('[data-spoiler]');
+    if (spoiler) toggleSpoiler(spoiler);
+});
+
+detailView.addEventListener('keydown', e => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const spoiler = e.target.closest('[data-spoiler]');
+    if (!spoiler) return;
+    e.preventDefault();
+    toggleSpoiler(spoiler);
+});
 
 // Event delegation on the episode list: a single listener handles play and
 // watched-toggle for every row, including the ones rendered later.

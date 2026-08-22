@@ -5,17 +5,9 @@ import { effectiveResolverTemplate, resolveTemplate, sourceTemplateError } from 
 import { syncResolverNotice } from './settings.js';
 import { showToast } from './toast.js';
 import { t } from './i18n.js';
+import { isMobile } from './env.js';
 
 // --- PLAYER LOGIC ---
-
-// Detects whether the app is being used from a phone or a PC
-function isMobile() {
-    if (window.Capacitor?.isNativePlatform?.()) return true;
-    const ua = navigator.userAgent || '';
-    const mobileUA = /Android|iPhone|iPad|iPod|Mobile/i.test(ua);
-    const coarse = window.matchMedia?.('(pointer: coarse)').matches;
-    return mobileUA || (('ontouchstart' in window || navigator.maxTouchPoints > 0) && coarse);
-}
 
 // Opens the player in a new window/tab (desktop browser)
 function openWindow(url) {
@@ -102,4 +94,4 @@ async function openPlayer(resume = false) {
     }
 }
 
-export { isMobile, openWindow, openBrowser, getLastPlayed, openPlayer };
+export { openWindow, openBrowser, getLastPlayed, openPlayer };

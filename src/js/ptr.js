@@ -1,6 +1,7 @@
 // Pull-to-refresh (Mihon-style): dragging a finger down from the very top of
 // the page reveals an indicator; releasing past the threshold triggers the
-// release sync. Touch-only, so desktop input is never affected.
+// release sync. Native Android app only: plain web (desktop or mobile,
+// emulation and touchscreens included) and Electron never engage the gesture.
 import { syncReleases } from './releases.js';
 import { ptrIndicator } from './dom.js';
 
@@ -12,8 +13,7 @@ let startY = null;
 let engaged = false;
 
 function gestureAllowed() {
-    if (!window.matchMedia('(pointer: coarse)').matches) return false;
-    if (window.scrollY > 0 || document.body.classList.contains('ptr-active')) return false;
+    if (!window.Capacitor?.isNativePlatform?.()) return false; // native Android app only
     // Never engage while a modal layer is on screen.
     if (document.querySelector('.overlay:not([hidden])')) return false;
     return true;
