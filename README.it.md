@@ -28,7 +28,7 @@ BlameFlix nasce per riunire ciò che è disperso: uno strato personale e privato
 interamente sul tuo dispositivo, che ti restituisce un'immagine unica della tua
 visione. Tutto senza account, senza server, senza tracciamento. Per la missione
 completa e i principi guida (privacy by design, neutralità, legalità, libertà
-dell'utente) vedi il [manifesto](Note%20Legali/MANIFEST.md).
+dell'utente) vedi il [manifesto](Legal%20Notes/MANIFEST.md).
 
 ## Come funziona
 
@@ -73,7 +73,7 @@ controllo aggiornamenti, Google Fonts per i caratteri, e l'URL della sorgente ch
 hai configurato). L'app non legge, non intercetta e non registra nulla: si limita
 a fare da ponte tra te e i servizi che usi. I permessi Android sono chiesti solo
 al bisogno (notifiche e backup), mai all'avvio. Dettagli nel documento
-[informativa sulla privacy](Note%20Legali/PRIVACY.md).
+[informativa sulla privacy](Legal%20Notes/PRIVACY.md).
 
 ## Legalità
 
@@ -86,7 +86,7 @@ legalità dei contenuti a cui accedi è interamente tua, secondo le leggi del tu
 Paese. Il blocco di magnet e torrent riguarda una *categoria di protocollo*, non
 singoli siti: non è un giudizio su nessun servizio. Per l'analisi completa del
 quadro normativo (Berna, TRIPS, WCT, direttive UE, legge italiana 633/1941 e
-L. 93/2023) vedi la [nota sulla legalità](Note%20Legali/LEGAL.md). Al primo avvio
+L. 93/2023) vedi la [nota sulla legalità](Legal%20Notes/LEGAL.md). Al primo avvio
 l'app mostra inoltre un **disclaimer** obbligatorio che l'utente deve accettare
 prima di poterla usare.
 
