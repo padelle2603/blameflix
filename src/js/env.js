@@ -22,10 +22,16 @@ async function resolveAppVersion() {
     try {
         if (window.blameflixAppInfo && typeof window.blameflixAppInfo.getVersion === 'function') {
             const v = await window.blameflixAppInfo.getVersion();
-            if (v) state.appVersion = String(v);
+            if (v) {
+                state.appVersion = String(v);
+                return state.appVersion;
+            }
         } else if (window.Capacitor?.Plugins?.App && typeof window.Capacitor.Plugins.App.getInfo === 'function') {
             const info = await window.Capacitor.Plugins.App.getInfo();
-            if (info && info.version) state.appVersion = String(info.version);
+            if (info && info.version) {
+                state.appVersion = String(info.version);
+                return state.appVersion;
+            }
         }
     } catch (err) { /* native lookup unavailable: keep the injected/placeholder version */ }
     return state.appVersion;

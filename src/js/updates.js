@@ -115,6 +115,7 @@ async function checkForUpdates(manual = false) {
         }
         return;
     }
+    // ... rest of function
     if (manual && updateStatus) {
         updateStatus.classList.remove('is-error');
         updateStatus.innerText = t('msg.checkingUpdates');

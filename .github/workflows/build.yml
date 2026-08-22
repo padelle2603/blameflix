@@ -107,8 +107,7 @@ jobs:
 
       - name: Sync Electron version
         working-directory: electron
-        run: |
-          node -e "const fs=require('fs');const p='package.json';const j=JSON.parse(fs.readFileSync(p,'utf8'));j.version='$APP_VERSION';fs.writeFileSync(p,JSON.stringify(j,null,2)+'\n')"
+        run: npm run set-version
 
       - name: Build AppImage
         working-directory: electron
@@ -163,8 +162,7 @@ jobs:
 
       - name: Sync Electron version
         working-directory: electron
-        run: |
-          node -e "const fs=require('fs');const p='package.json';const j=JSON.parse(fs.readFileSync(p,'utf8'));j.version='$APP_VERSION';fs.writeFileSync(p,JSON.stringify(j,null,2)+'\n')"
+        run: npm run set-version
 
       - name: Build portable exe
         working-directory: electron

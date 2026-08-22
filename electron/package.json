@@ -1,6 +1,6 @@
 {
   "name": "blameflix-desktop",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "BlameFlix desktop (Electron wrapper)",
   "main": "main.js",
   "private": true,
@@ -8,7 +8,8 @@
   "scripts": {
     "start": "electron .",
     "dist": "electron-builder --linux --publish never",
-    "dist:win": "electron-builder --win --publish never -c.directories.output=../dist/win"
+    "dist:win": "electron-builder --win --publish never -c.directories.output=../dist/win",
+    "set-version": "node -e \"const fs=require('fs');const root=JSON.parse(fs.readFileSync('../package.json','utf8'));const p='package.json';const j=JSON.parse(fs.readFileSync(p,'utf8'));j.version=root.version;fs.writeFileSync(p,JSON.stringify(j,null,2)+'\\n')\""
   },
   "devDependencies": {
     "electron": "^33.0.0",
@@ -23,19 +24,33 @@
       "package.json"
     ],
     "extraResources": [
-      { "from": "../www", "to": "www" },
-      { "from": "../assets/icon.png", "to": "icon.png" }
+      {
+        "from": "../www",
+        "to": "www",
+        "filter": [
+          "**/*"
+        ]
+      },
+      {
+        "from": "../assets/icon.png",
+        "to": "icon.png"
+      }
     ],
     "directories": {
       "output": "../dist/linux"
     },
     "linux": {
-      "target": ["AppImage", "dir"],
+      "target": [
+        "AppImage",
+        "dir"
+      ],
       "category": "AudioVideo",
       "icon": "../assets/icon.png"
     },
     "win": {
-      "target": ["portable"],
+      "target": [
+        "portable"
+      ],
       "artifactName": "${productName}-${version}.exe",
       "icon": "../assets/icon.png"
     }

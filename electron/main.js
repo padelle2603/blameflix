@@ -3,15 +3,24 @@ const path = require('path');
 const fs = require('fs');
 
 function getWebRoot() {
-    const packaged = path.join(process.resourcesPath, 'www', 'index.html');
+    // In packaged app (AppImage), resources are at process.resourcesPath/app/
+    // In development, they're at __dirname/../www/
+    const packaged = path.join(process.resourcesPath, 'app', 'www', 'index.html');
     if (fs.existsSync(packaged)) return packaged;
-    return path.join(__dirname, '..', 'www', 'index.html');
+    const dev = path.join(__dirname, '..', 'www', 'index.html');
+    if (fs.existsSync(dev)) return dev;
+    // Fallback for other packaging scenarios
+    const fallback = path.join(process.resourcesPath, 'www', 'index.html');
+    return fallback;
 }
 
 function getAppIcon() {
-    const packaged = path.join(process.resourcesPath, 'icon.png');
+    const packaged = path.join(process.resourcesPath, 'app', 'icon.png');
     if (fs.existsSync(packaged)) return packaged;
-    return path.join(__dirname, '..', 'assets', 'icon.png');
+    const dev = path.join(__dirname, '..', 'assets', 'icon.png');
+    if (fs.existsSync(dev)) return dev;
+    const fallback = path.join(process.resourcesPath, 'icon.png');
+    return fallback;
 }
 
 function createWindow() {
