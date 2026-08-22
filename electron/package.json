@@ -7,7 +7,8 @@
   "author": "padelle2603",
   "scripts": {
     "start": "electron .",
-    "dist": "electron-builder --linux --publish never"
+    "dist": "electron-builder --linux --publish never",
+    "dist:win": "electron-builder --win --publish never -c.directories.output=../dist/win"
   },
   "devDependencies": {
     "electron": "^33.0.0",
@@ -31,6 +32,11 @@
     "linux": {
       "target": ["AppImage", "dir"],
       "category": "AudioVideo",
+      "icon": "../assets/icon.png"
+    },
+    "win": {
+      "target": ["portable"],
+      "artifactName": "${productName}-${version}.exe",
       "icon": "../assets/icon.png"
     }
   }

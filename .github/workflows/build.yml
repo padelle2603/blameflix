@@ -129,9 +129,65 @@ jobs:
           path: dist/linux/*.AppImage
           if-no-files-found: error
 
+  windows:
+    name: Build Windows exe
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: electron/package-lock.json
+
+      - name: Compute version
+        run: |
+          APP_VERSION=$(node -p "require('./package.json').version")
+          echo "APP_VERSION=$APP_VERSION" >> "$GITHUB_ENV"
+
+      - name: Install web dependencies
+        run: npm ci
+
+      - name: Build web app
+        run: npm run build
+
+      - name: Install Electron dependencies
+        working-directory: electron
+        run: npm ci
+
+      - name: Sync Electron version
+        working-directory: electron
+        run: |
+          node -e "const fs=require('fs');const p='package.json';const j=JSON.parse(fs.readFileSync(p,'utf8'));j.version='$APP_VERSION';fs.writeFileSync(p,JSON.stringify(j,null,2)+'\n')"
+
+      - name: Build portable exe
+        working-directory: electron
+        run: |
+          for i in 1 2 3 4 5; do
+            if npm run dist:win; then
+              exit 0
+            fi
+            echo "Attempt $i failed (transient download), retrying in 15s..."
+            sleep 15
+          done
+          exit 1
+
+      - name: Upload exe artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: win-exe
+          path: dist/win/*.exe
+          if-no-files-found: error
+
   release:
     name: Release
-    needs: [android, appimage]
+    needs: [android, appimage, windows]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -154,11 +210,23 @@ jobs:
           name: appimage
           path: release
 
+      - name: Download Windows exe
+        uses: actions/download-artifact@v4
+        with:
+          name: win-exe
+          path: release
+
       - name: Create or update GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release delete "v$APP_VERSION" --yes 2>/dev/null || true
+          # When the release already exists (e.g. a platform added after the
+          # fact), refresh its assets in place instead of recreating it, so
+          # the tag, publication date and notes are preserved.
+          if gh release view "v$APP_VERSION" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            gh release upload "v$APP_VERSION" release/* --clobber --repo "$GITHUB_REPOSITORY"
+            exit 0
+          fi
           if [ -f CHANGELOG.md ] && awk -v v="## v$APP_VERSION" '$0 == v { f = 1 } f' CHANGELOG.md | grep -q .; then
             # Extract only the English subsection of the matching changelog entry.
             awk -v v="## v$APP_VERSION" '
@@ -168,12 +236,12 @@ jobs:
               flag && en && /^### / { exit }
               flag && en { print }
             ' CHANGELOG.md > release-notes.md
-            printf '\nAndroid APK and Linux AppImage.\n' >> release-notes.md
+            printf '\nAndroid APK, Linux AppImage and Windows portable exe.\n' >> release-notes.md
             gh release create "v$APP_VERSION" release/* \
               --title "v$APP_VERSION" \
               --notes-file release-notes.md
           else
             gh release create "v$APP_VERSION" release/* \
               --title "v$APP_VERSION" \
-              --notes "Automatic release of BlameFlix v$APP_VERSION. Android APK (com.padelle.blameflix) and Linux AppImage."
+              --notes "Automatic release of BlameFlix v$APP_VERSION. Android APK (com.padelle.blameflix), Linux AppImage and Windows portable exe."
           fi
