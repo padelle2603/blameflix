@@ -1,7 +1,9 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 import { readFileSync } from 'fs';
-import { resolve } from 'path';
+import { resolve, dirname } from 'path';
+import { fileURLToPath } from 'url';
 
+const __dirname = dirname(fileURLToPath(import.meta.url));
 const rootPkg = JSON.parse(readFileSync(resolve(__dirname, 'package.json'), 'utf8'));
 
 const config: CapacitorConfig = {
