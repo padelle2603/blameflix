@@ -49,7 +49,9 @@ Una rapida occhiata alle funzionalità core.
 Scrivi un titolo e BlameFlix lo cerca nell'API pubblica di The Movie Database
 (TMDB). Ti basta inserire una chiave personale gratuita nelle Impostazioni.
 
-<video src="Videos/search.mp4" width="100%" autoplay loop muted playsinline controls></video>
+![Ricerca](gifs/search.gif)
+
+> Demo a 1080p: [search.mp4](Videos/search.mp4)
 
 ### Tracciamento
 
@@ -57,7 +59,9 @@ Segna le puntate viste (compresse in intervalli per occupare poco spazio),
 riprendi da dove eri rimasto e salva stagioni/episodi anche quando TMDB non li
 elenca.
 
-<video src="Videos/track.mp4" width="100%" autoplay loop muted playsinline controls></video>
+![Tracciamento](gifs/track.gif)
+
+> Demo a 1080p: [track.mp4](Videos/track.mp4)
 
 ### Impostazioni e «Guarda ora»
 
@@ -67,7 +71,9 @@ un template URL, anche diverso per ogni titolo, con i segnaposto `{id}`,
 `http/https` (magnet/torrent vengono rifiutati); se la sorgente è vuota il
 pulsante resta inattivo.
 
-<video src="Videos/settings.mp4" width="100%" autoplay loop muted playsinline controls></video>
+![Impostazioni](gifs/settings.gif)
+
+> Demo a 1080p: [settings.mp4](Videos/settings.mp4)
 
 ### Libreria, notifiche di rilascio e backup
 
