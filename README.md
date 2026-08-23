@@ -41,7 +41,7 @@ entirely on your device, that gives you back a single picture of your viewing.
   start (TMDB, GitHub for updates, Google Fonts, and the source URL you
   configure). See [PRIVACY_EN.md](Legal%20Notes/PRIVACY_EN.md).
 
-## Screenshots
+## Core features
 
 A quick look at the core features.
 
@@ -50,7 +50,7 @@ A quick look at the core features.
 Type a title and BlameFlix searches it in the public API of The Movie Database
 (TMDB). You just need to enter a free personal key in the Settings.
 
-![Search](gifs/search.gif)
+<video src="Videos/search.mp4" width="100%" autoplay loop muted playsinline controls></video>
 
 ### Tracking
 
@@ -58,7 +58,7 @@ Mark watched episodes (compressed into ranges to take little space), resume
 where you left off, and save seasons/episodes even when TMDB does not list
 them.
 
-![Tracking](gifs/track.gif)
+<video src="Videos/track.mp4" width="100%" autoplay loop muted playsinline controls></video>
 
 ### Settings & "Watch now"
 
@@ -67,7 +67,7 @@ template, even different per title, with `{id}`, `{type}`, `{season}`,
 `{episode}` placeholders. Only `http/https` links are accepted (magnet/torrent
 are rejected); if the source is empty the button stays inactive.
 
-![Settings](gifs/settings.gif)
+<video src="Videos/settings.mp4" width="100%" autoplay loop muted playsinline controls></video>
 
 ### Library, release notifications & backup
 

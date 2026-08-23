@@ -40,7 +40,7 @@ visione.
   sono quelle che avvii tu (TMDB, GitHub per gli aggiornamenti, Google Fonts e
   l'URL della sorgente che configuri). Vedi [PRIVACY.md](Legal%20Notes/PRIVACY.md).
 
-## Screenshots
+## Core features
 
 Una rapida occhiata alle funzionalità core.
 
@@ -49,7 +49,7 @@ Una rapida occhiata alle funzionalità core.
 Scrivi un titolo e BlameFlix lo cerca nell'API pubblica di The Movie Database
 (TMDB). Ti basta inserire una chiave personale gratuita nelle Impostazioni.
 
-![Ricerca](gifs/search.gif)
+<video src="Videos/search.mp4" width="100%" autoplay loop muted playsinline controls></video>
 
 ### Tracciamento
 
@@ -57,7 +57,7 @@ Segna le puntate viste (compresse in intervalli per occupare poco spazio),
 riprendi da dove eri rimasto e salva stagioni/episodi anche quando TMDB non li
 elenca.
 
-![Tracciamento](gifs/track.gif)
+<video src="Videos/track.mp4" width="100%" autoplay loop muted playsinline controls></video>
 
 ### Impostazioni e «Guarda ora»
 
@@ -67,7 +67,7 @@ un template URL, anche diverso per ogni titolo, con i segnaposto `{id}`,
 `http/https` (magnet/torrent vengono rifiutati); se la sorgente è vuota il
 pulsante resta inattivo.
 
-![Impostazioni](gifs/settings.gif)
+<video src="Videos/settings.mp4" width="100%" autoplay loop muted playsinline controls></video>
 
 ### Libreria, notifiche di rilascio e backup
 
