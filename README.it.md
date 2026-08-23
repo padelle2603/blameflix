@@ -4,7 +4,7 @@
 
 [![Scarica BlameFlix su GitHub](https://img.shields.io/badge/Scarica%20BlameFlix%20su%20GitHub-e04334?style=for-the-badge&logo=github&logoColor=white)](https://github.com/padelle2603/blameflix/releases/latest)
 
-> ⬇ Scarica l'**APK (Android)**, l'**AppImage (Linux)** o l'**exe portatile (Windows)** dall'[ultima release](https://github.com/padelle2603/blameflix/releases/latest). 
+> ⬇ Scarica l'**APK (Android)**, l'**AppImage (Linux)** o l'**exe portatile (Windows)** dall'[ultima release](https://github.com/padelle2603/blameflix/releases/latest).
 
 BlameFlix è il tuo **catalogo personale** per film e serie TV: un unico posto dove
 cercare un titolo, salvarlo nella tua libreria, ricordare quali puntate hai visto
@@ -26,69 +26,58 @@ una serie, a che stagione sei, quando esce la puntata successiva.
 
 BlameFlix nasce per riunire ciò che è disperso: uno strato personale e privato,
 interamente sul tuo dispositivo, che ti restituisce un'immagine unica della tua
-visione. Tutto senza account, senza server, senza tracciamento. Per la missione
-completa e i principi guida (privacy by design, neutralità, legalità, libertà
-dell'utente) vedi il [manifesto](Legal%20Notes/MANIFEST.md).
+visione.
 
-## Come funziona
+- **Manifesto** — la missione e i principi guida: privacy by design, neutralità,
+  legalità e libertà dell'utente. Vedi [MANIFEST.md](Legal%20Notes/MANIFEST.md).
+- **Legalità** — BlameFlix è uno strumento neutro, come un browser: non ospita,
+  non fornisce e non suggerisce alcuna fonte di contenuti, non mantiene elenchi
+  di siti e apre solo l'URL che digiti. Il blocco di magnet e torrent riguarda
+  una categoria di protocollo, non singoli siti. Al primo avvio è obbligatorio
+  accettare un disclaimer. Vedi [LEGAL.md](Legal%20Notes/LEGAL.md).
+- **Privacy** — tutto è memorizzato sul tuo dispositivo e non c'è alcun server:
+  nessun account, nessun cloud, nessun tracciamento. Le uniche richieste in uscita
+  sono quelle che avvii tu (TMDB, GitHub per gli aggiornamenti, Google Fonts e
+  l'URL della sorgente che configuri). Vedi [PRIVACY.md](Legal%20Notes/PRIVACY.md).
 
-L'app è una single-page application in JavaScript puro (nessun framework). I
-sorgenti vivono in `src/` — template HTML, CSS diviso per sezioni e JS
-organizzato in moduli ES — e vengono bundled da
-[esbuild](https://esbuild.github.io/) dentro `www/`, la cartella impacchettata
-da Capacitor (Android) ed Electron (Linux).
+## Screenshots
 
-- **Ricerca**: scrivi un titolo e BlameFlix lo cerca nell'API pubblica di
-  The Movie Database (TMDB). Ti basta inserire una chiave personale gratuita
-  nelle Impostazioni.
-- **Libreria**: salvi i titoli (solo i loro identificativi: i dettagli stanno in
-  memoria e vengono riscaricati da TMDB quando servono). Tutto resta in
-  `localStorage` sul dispositivo.
-- **Tracciamento**: segni puntate viste (compresse in intervalli per occupare
-  poco spazio), riprendi da dove eri rimasto, salvi stagioni/episodi anche quando
-  TMDB non li elenca.
-- **Notifiche di rilascio**: all'avvio, a intervalli regolari e al ritorno in
-  primo piano, l'app confronta lo stato TMDB dei tuoi titoli salvati e ti avvisa
-  quando esce una puntata nuova. Tutto locale, nessun server.
-- **«Guarda ora»**: da ogni scheda puoi aprire il servizio che scegli tu tramite
-  una **sorgente** configurata nelle Impostazioni (un template URL, anche diverso
-  per ogni titolo). L'app apre l'URL che configuri, sostituendo i segnaposto
-  `{id}`, `{type}`, `{season}`, `{episode}` con i valori del titolo (senza
-  segnaposto, l'URL viene aperto così com'è) e lo apre nel browser o nel lettore
-  del sistema.
-  Sono accettati **solo collegamenti http/https**: magnet, torrent e altri
-  protocolli di file-sharing vengono rifiutati al salvataggio. Se la sorgente è
-  vuota, il pulsante resta inattivo.
-- **Backup**: puoi esportare e ripristinare tutto in un singolo file JSON.
-- **Aggiornamenti**: l'app controlla le release su GitHub e ti avvisa quando c'è
-  una versione nuova. Su Android l'APK si installa sopra il precedente senza
-  perdere dati.
+Una rapida occhiata alle funzionalità core.
 
-## Privacy
+### Ricerca
 
-BlameFlix memorizza **tutto sul tuo dispositivo** e non ha alcun server: nessuna
-macchina in ascolto, nessun cloud, nessun account. Le uniche richieste in uscita
-sono quelle che avvii tu (TMDB per cercare e scaricare i metadati, GitHub per il
-controllo aggiornamenti, Google Fonts per i caratteri, e l'URL della sorgente che
-hai configurato). L'app non legge, non intercetta e non registra nulla: si limita
-a fare da ponte tra te e i servizi che usi. I permessi Android sono chiesti solo
-al bisogno (notifiche e backup), mai all'avvio. Dettagli nel documento
-[informativa sulla privacy](Legal%20Notes/PRIVACY.md).
+Scrivi un titolo e BlameFlix lo cerca nell'API pubblica di The Movie Database
+(TMDB). Ti basta inserire una chiave personale gratuita nelle Impostazioni.
 
-## Legalità
+![Ricerca](gifs/search.gif)
 
-BlameFlix è uno **strumento neutro**, come un browser o un lettore generico: non
-ospita, non fornisce e non suggerisce alcuna fonte di contenuti. Non include
-elenchi di siti, né di default né in nessun altro modo, e **non mantiene liste di
-siti "sicuri" o "non sicuri"**: non conosce le sorgenti, e per questo resta
-neutro. L'unico URL mai aperto è quello che digiti tu, e la responsabilità della
-legalità dei contenuti a cui accedi è interamente tua, secondo le leggi del tuo
-Paese. Il blocco di magnet e torrent riguarda una *categoria di protocollo*, non
-singoli siti: non è un giudizio su nessun servizio. Per l'analisi completa del
-quadro normativo (Berna, TRIPS, WCT, direttive UE, legge italiana 633/1941 e
-L. 93/2023) vedi la [nota sulla legalità](Legal%20Notes/LEGAL.md). Al primo avvio
-l'app mostra inoltre un **disclaimer** obbligatorio che l'utente deve accettare
-prima di poterla usare.
+### Tracciamento
+
+Segna le puntate viste (compresse in intervalli per occupare poco spazio),
+riprendi da dove eri rimasto e salva stagioni/episodi anche quando TMDB non li
+elenca.
+
+![Tracciamento](gifs/track.gif)
+
+### Impostazioni e «Guarda ora»
+
+Configura la tua chiave TMDB e la **sorgente** che vuoi aprire da ogni scheda:
+un template URL, anche diverso per ogni titolo, con i segnaposto `{id}`,
+`{type}`, `{season}`, `{episode}`. Sono accettati solo collegamenti
+`http/https` (magnet/torrent vengono rifiutati); se la sorgente è vuota il
+pulsante resta inattivo.
+
+![Impostazioni](gifs/settings.gif)
+
+### Libreria, notifiche di rilascio e backup
+
+- **Libreria**: salvi i titoli solo per identificativo; i dettagli vengono
+  riscaricati da TMDB quando servono e tutto resta in `localStorage` sul
+  dispositivo.
+- **Notifiche di rilascio**: all'avvio, a intervalli e al ritorno in primo
+  piano, l'app confronta lo stato TMDB dei tuoi titoli salvati e ti avvisa
+  quando esce una puntata nuova — tutto locale, nessun server.
+- **Backup**: esporta e ripristina tutto in un singolo file JSON.
 
 ## Piattaforme
 
@@ -98,6 +87,14 @@ prima di poterla usare.
 | Linux desktop | Electron | `BlameFlix-<versione>.AppImage` |
 | Windows desktop | Electron | `BlameFlix-<versione>.exe` |
 | Web | HTML/CSS/JS statico | `www/` |
+
+## Aggiornamenti
+
+Le release vengono create automaticamente dalla pipeline a ogni `push` sul ramo
+`main`, con tag `v<versione>`. Su Android l'aggiornamento è **in-place**: ogni
+release ha un `versionCode` crescente e firma con la stessa chiave, quindi il
+nuovo APK si installa sopra il precedente e i tuoi dati restano intatti. Il
+[changelog](CHANGELOG.md) elenca le modifiche di ogni release.
 
 ## Sviluppo
 
@@ -116,14 +113,6 @@ npm run sync       # build + cap sync (Android)
 
 `www/index.backup.html` è un'istantanea congelata del monolite precedente alla
 modularizzazione, tenuta solo come riserva.
-
-## Aggiornamenti
-
-Le release vengono create automaticamente dalla pipeline a ogni `push` sul ramo
-`main`, con tag `v<versione>`. Su Android l'aggiornamento è **in-place**: ogni
-release ha un `versionCode` crescente e firma con la stessa chiave, quindi il
-nuovo APK si installa sopra il precedente e i tuoi dati restano intatti. Il
-[changelog](CHANGELOG.md) elenca le modifiche di ogni release.
 
 ## Ringraziamenti
 

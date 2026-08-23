@@ -27,68 +27,56 @@ are on, when the next episode airs.
 
 BlameFlix was born to reunite what is scattered: a personal, private layer,
 entirely on your device, that gives you back a single picture of your viewing.
-All without accounts, without servers, without tracking. For the full mission
-and the guiding principles (privacy by design, neutrality, legality, user
-freedom) see the [manifesto](Legal%20Notes/MANIFEST_EN.md).
 
-## How it works
+- **Manifesto** — the mission and the guiding principles: privacy by design,
+  neutrality, legality and user freedom. See
+  [MANIFEST_EN.md](Legal%20Notes/MANIFEST_EN.md).
+- **Legality** — BlameFlix is a neutral tool, like a browser: it does not host,
+  provide or suggest any source of content, keeps no list of sites, and only
+  ever opens the URL you type. The magnet/torrent block concerns a protocol
+  category, not single sites. A mandatory disclaimer must be accepted on first
+  launch. See [LEGAL_EN.md](Legal%20Notes/LEGAL_EN.md).
+- **Privacy** — everything is stored on your device and there is no server: no
+  account, no cloud, no tracking. The only outgoing requests are the ones you
+  start (TMDB, GitHub for updates, Google Fonts, and the source URL you
+  configure). See [PRIVACY_EN.md](Legal%20Notes/PRIVACY_EN.md).
 
-The app is a single-page web application in pure JavaScript (no framework).
-The sources live in `src/` — HTML template, CSS split by section and JS
-organized in ES modules — and are bundled by [esbuild](https://esbuild.github.io/)
-into `www/`, which is what Capacitor (Android) and Electron (Linux) package.
+## Screenshots
 
-- **Search**: type a title and BlameFlix searches it in the public API of The
-  Movie Database (TMDB). You just need to enter a free personal key in the
-  Settings.
-- **Library**: you save titles (only their identifiers: the details live in
-  memory and are re-fetched from TMDB when needed). Everything stays in
-  `localStorage` on the device.
-- **Tracking**: you mark watched episodes (compressed into ranges to take little
-  space), resume where you left off, and save seasons/episodes even when TMDB
-  does not list them.
-- **Release notifications**: on startup, at regular intervals and when returning
-  to the foreground, the app compares the TMDB state of your saved titles and
-  notifies you when a new episode airs. All local, no server.
-- **«Watch now»**: from any page you can open the service you choose through a
-  **source** configured in the Settings (a URL template, even different per
-  title). The app opens the URL you configure, replacing the placeholders
-  `{id}`, `{type}`, `{season}`, `{episode}` with the title's values (without
-  placeholders, the URL is opened as-is) and opens it in the browser or the
-  system player.
-  Only **http/https links** are accepted: magnet, torrent and other
-  file-sharing protocols are rejected on save. If the source is empty, the
-  button stays inactive.
-- **Backup**: you can export and restore everything in a single JSON file.
-- **Updates**: the app checks the releases on GitHub and notifies you when a new
-  version is out. On Android the APK installs over the previous one without
-  losing data.
+A quick look at the core features.
 
-## Privacy
+### Search
 
-BlameFlix stores **everything on your device** and has no server: no machine
-listening, no cloud, no account. The only outgoing requests are the ones you
-start (TMDB to search and download metadata, GitHub for the update check,
-Google Fonts for the typefaces, and the URL of the source you configured). The
-app does not read, intercept or log anything: it only acts as a bridge between
-you and the services you use. Android permissions are requested only when
-needed (notifications and backup), never at startup. Details in the [privacy
-policy](Legal%20Notes/PRIVACY_EN.md).
+Type a title and BlameFlix searches it in the public API of The Movie Database
+(TMDB). You just need to enter a free personal key in the Settings.
 
-## Legality
+![Search](gifs/search.gif)
 
-BlameFlix is a **neutral tool**, like a browser or a generic player: it does not
-host, provide or suggest any source of content. It includes no site lists, not
-by default nor in any other way, and it **does not keep lists of "safe" or
-"unsafe" sites**: it does not know the sources, and therefore stays neutral. The
-only URL ever opened is the one you type, and the responsibility for the
-legality of the content you access is entirely yours, according to the laws of
-your country. The magnet/torrent block concerns a *protocol category*, not
-single sites: it is not a judgment on any service. For the full analysis of the
-legal framework (Berne, TRIPS, WCT, EU directives, Italian law 633/1941 and
-L. 93/2023) see the [note on legality](Legal%20Notes/LEGAL_EN.md). On first
-launch the app also shows a mandatory **disclaimer** that the user must accept
-before using it.
+### Tracking
+
+Mark watched episodes (compressed into ranges to take little space), resume
+where you left off, and save seasons/episodes even when TMDB does not list
+them.
+
+![Tracking](gifs/track.gif)
+
+### Settings & "Watch now"
+
+Configure your TMDB key and the **source** you want to open from any page: a URL
+template, even different per title, with `{id}`, `{type}`, `{season}`,
+`{episode}` placeholders. Only `http/https` links are accepted (magnet/torrent
+are rejected); if the source is empty the button stays inactive.
+
+![Settings](gifs/settings.gif)
+
+### Library, release notifications & backup
+
+- **Library**: you save titles by identifier only; details are re-fetched from
+  TMDB when needed and everything stays in `localStorage` on the device.
+- **Release notifications**: on startup, at intervals and when returning to the
+  foreground, the app compares the TMDB state of your saved titles and notifies
+  you when a new episode airs — all local, no server.
+- **Backup**: export and restore everything in a single JSON file.
 
 ## Platforms
 
@@ -99,10 +87,18 @@ before using it.
 | Windows desktop | Electron | `BlameFlix-<version>.exe` |
 | Web | Static HTML/CSS/JS | `www/` |
 
+## Updates
+
+Releases are created automatically by the pipeline on every `push` to the `main`
+branch, tagged `v<version>`. On Android the update is **in-place**: every
+release has an increasing `versionCode` and is signed with the same key, so the
+new APK installs over the previous one and your data stays intact. The
+[changelog](CHANGELOG.md) lists the changes of every release.
+
 ## Development
 
-The web sources are in `src/` (`index.html`, `css/`, `js/` as ES modules);
-the build bundles them into `www/`, the folder packaged by Capacitor and
+The web sources are in `src/` (`index.html`, `css/`, `js/` as ES modules); the
+build bundles them into `www/`, the folder packaged by Capacitor and
 Electron. The app version is injected at build time from `package.json`.
 `www/` is generated and **not tracked in git**: after cloning, run
 `npm install` and `npm run build` before opening or packaging the app.
@@ -116,14 +112,6 @@ npm run sync       # build + cap sync (Android)
 
 `www/index.backup.html` is a frozen snapshot of the pre-modular monolith,
 kept only as a fallback.
-
-## Updates
-
-Releases are created automatically by the pipeline on every `push` to the `main`
-branch, tagged `v<version>`. On Android the update is **in-place**: every
-release has an increasing `versionCode` and is signed with the same key, so the
-new APK installs over the previous one and your data stays intact. The
-[changelog](CHANGELOG.md) lists the changes of every release.
 
 ## Acknowledgements
 
