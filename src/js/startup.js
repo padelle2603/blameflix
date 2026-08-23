@@ -1,6 +1,5 @@
 import { state } from './state.js';
 import { syncApiKeyNotice, syncResolverNotice } from './settings.js';
-import { updateCount } from './watchlist.js';
 import { syncTools, showHome } from './catalog.js';
 import { hydrateWatchlistGrid } from './backup.js';
 import { checkReleases, startAutoSyncTimer, shouldAutoSync } from './releases.js';
@@ -19,7 +18,6 @@ import { showToast } from './toast.js';
 function startApp() {
     syncApiKeyNotice();
     syncResolverNotice();
-    updateCount();
     syncTools();
     showHome();
     hydrateWatchlistGrid().then(() => checkReleases(false));

@@ -8,7 +8,6 @@ export const emptyState = document.getElementById('empty-state');
 export const sectionEyebrow = document.getElementById('section-eyebrow');
 export const sectionTitle = document.getElementById('section-title');
 export const sectionCount = document.getElementById('section-count');
-export const countTag = document.getElementById('count-tag');
 export const toastEl = document.getElementById('toast');
 export const btnSync = document.getElementById('btn-sync');
 export const catalogMenuBtn = document.getElementById('btn-catalog-menu');

@@ -14,11 +14,6 @@
     .episode-row__toggle { width: 34px; height: 34px; font-size: 1rem; }
 }
 
-@media (max-width: 480px) {
-    /* Drop the "SAVED" wording, keep the red number so one row still fits */
-    .count-tag__label { display: none; }
-}
-
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
         animation: none !important;

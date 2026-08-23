@@ -14,7 +14,6 @@ import { detailView, updatePopup } from './dom.js';
 const I18N = {
     it: {
         'nav.home': 'Torna alla tua homepage',
-        'nav.saved': 'SALVATI',
         'nav.settings': 'Impostazioni',
         'notice.nokey': '⚠ Nessuna chiave TMDB · impossibile cercare',
         'notice.setkey': 'Imposta la chiave',
@@ -259,7 +258,6 @@ const I18N = {
     },
     en: {
         'nav.home': 'Back to your homepage',
-        'nav.saved': 'SAVED',
         'nav.settings': 'Settings',
         'notice.nokey': '⚠ No TMDB key · cannot search',
         'notice.setkey': 'Set the key',

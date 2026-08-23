@@ -81,23 +81,6 @@
     background: var(--paper);
 }
 
-.count-tag {
-    font-family: var(--font-mono);
-    font-size: 0.66rem;
-    font-weight: 600;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--meta);
-    white-space: nowrap;
-    margin-right: 0.45rem;
-}
-
-.count-tag em {
-    font-style: normal;
-    font-weight: 700;
-    color: var(--lago);
-}
-
 .btn-sync.is-busy {
     animation: ptr-spin 0.9s linear infinite;
 }
@@ -162,12 +145,16 @@
 .key-notice + .key-notice { margin-top: 0.6rem; }
 
 /* ===== PULL TO REFRESH ===== */
+/* Hidden by default on every device: it only slides in while the gesture
+   is engaged (native Android app only) and goes back out on release. */
 .ptr-indicator {
     position: fixed;
     top: 3.4rem;
     left: 50%;
     transform: translate(-50%, -200%);
-    transition: transform 0.25s ease;
+    opacity: 0;
+    visibility: hidden;
+    transition: transform 0.25s ease, opacity 0.2s ease, visibility 0s linear 0.2s;
     z-index: 40;
     display: inline-flex;
     align-items: center;
@@ -182,6 +169,12 @@
     border-radius: var(--radius-pill);
     padding: 0.45rem 0.95rem;
     pointer-events: none;
+}
+
+.ptr-indicator.is-visible {
+    opacity: 1;
+    visibility: visible;
+    transition: transform 0.25s ease, opacity 0.2s ease;
 }
 
 .ptr-indicator__arrow {

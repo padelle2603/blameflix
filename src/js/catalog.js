@@ -77,16 +77,15 @@ function renderGrid(items) {
     const movies = filtered.filter(item => item.media_type === 'movie');
     const series = filtered.filter(item => item.media_type === 'tv');
 
-    // When both kinds coexist the rows get their labels and follow the
-    // persisted ⇅ order; a single kind renders as one unlabeled row.
-    const both = movies.length > 0 && series.length > 0;
+    // Rows are always labeled with their item count and follow the
+    // persisted ⇅ order.
     const ordered = state.kindOrder === 'tv'
         ? [['tv', series], ['movie', movies]]
         : [['movie', movies], ['tv', series]];
 
     const frag = document.createDocumentFragment();
     ordered.forEach(([kind, list]) => {
-        if (list.length) frag.appendChild(buildKindRow(kind, list, both));
+        if (list.length) frag.appendChild(buildKindRow(kind, list));
     });
     grid.appendChild(frag);
     requestAnimationFrame(refreshRailArrows);
@@ -193,20 +192,19 @@ grid.addEventListener('keydown', e => {
     }
 });
 
-// One horizontal row: optional kind label, edge arrows and the scrolling
-// track of cards. Overflowing titles slide out of the screen instead of
-// wrapping to a second line.
-function buildKindRow(kind, items, labeled) {
+// One horizontal row: kind label with the row count, edge arrows and the
+// scrolling track of cards. Overflowing titles slide out of the screen
+// instead of wrapping to a second line.
+function buildKindRow(kind, items) {
     const section = document.createElement('section');
     section.className = 'kind-row';
     section.dataset.kind = kind;
 
-    if (labeled) {
-        const head = document.createElement('h3');
-        head.className = 'kind-row__head';
-        head.innerText = kind === 'movie' ? t('home.kindMovies') : t('home.kindSeries');
-        section.appendChild(head);
-    }
+    const label = `${kind === 'movie' ? t('home.kindMovies') : t('home.kindSeries')} - ${items.length}`;
+    const head = document.createElement('h3');
+    head.className = 'kind-row__head';
+    head.innerText = label;
+    section.appendChild(head);
 
     const wrap = document.createElement('div');
     wrap.className = 'rail-wrap';
@@ -214,7 +212,7 @@ function buildKindRow(kind, items, labeled) {
     const rail = document.createElement('div');
     rail.className = state.viewMode === 'list' ? 'rail rail--list' : 'rail';
     rail.setAttribute('role', 'group');
-    rail.setAttribute('aria-label', kind === 'movie' ? t('home.kindMovies') : t('home.kindSeries'));
+    rail.setAttribute('aria-label', label);
 
     const frag = document.createDocumentFragment();
     items.forEach(item => frag.appendChild(makeCard(item)));

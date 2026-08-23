@@ -1,5 +1,4 @@
 import { state, persistWatchlist } from './state.js';
-import { countTag } from './dom.js';
 import { t } from './i18n.js';
 import { syncCardSavedStamp } from './catalog.js';
 
@@ -31,13 +30,8 @@ function toggleWatchlist() {
     }
 
     persistWatchlist();
-    updateCount();
     updateWatchlistBtn();
     syncCardSavedStamp(state.currentMedia.id, state.currentMedia.media_type);
-}
-
-function updateCount() {
-    countTag.innerText = state.watchlist.length;
 }
 
 function updateWatchlistBtn() {
@@ -47,4 +41,4 @@ function updateWatchlistBtn() {
     btn.classList.toggle('btn--saved', saved);
 }
 
-export { isSaved, watchlistKey, detailFor, toggleWatchlist, updateCount, updateWatchlistBtn };
+export { isSaved, watchlistKey, detailFor, toggleWatchlist, updateWatchlistBtn };

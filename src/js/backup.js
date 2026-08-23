@@ -7,7 +7,6 @@ import { getDetails } from './tmdb.js';
 import { sanitizeMediaType, toIntOr } from './utils.js';
 import { setLanguage, t } from './i18n.js';
 import { persistResolverOverrides } from './resolver.js';
-import { updateCount } from './watchlist.js';
 import { syncApiKeyNotice, syncNotifySettingsInputs, syncResolverNotice } from './settings.js';
 import { startAutoSyncTimer } from './releases.js';
 import { sourceTemplateError } from './resolver.js';
@@ -405,7 +404,6 @@ backupFile.addEventListener('change', e => {
             }
 
             settingsKeyInput.value = state.apiKey;
-            updateCount();
             syncTools();
             showHome();
             showBackupStatus(t('msg.backupRestored'));
