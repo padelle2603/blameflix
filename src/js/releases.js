@@ -13,44 +13,75 @@ import { btnSync } from './dom.js';
 let releasesSyncRunning = false;
 
 // Judges one saved movie against the release state. ctx carries
-// { state.releaseState, isBaseline, prevSync, notifyMovies }; state.releaseState.movies
-// is mutated to mark the title as handled. Returns the news entry or null.
-// A movie is announced only when its release happens after the previous
-// successful check: titles already out when first seen are recorded
-// silently, so saving an old movie never triggers a stale alert.
+// { releaseState, isBaseline, prevSync, notifyMovies }; the maps inside
+// releaseState are mutated to mark the title as handled. Returns the
+// news entry or null.
+// A movie seen while still unreleased is remembered in
+// releaseState.moviesPending: when it later comes out it is genuine news,
+// whatever time the previous sync ran at (a plain lastSync window would
+// drop it whenever a check happened after local midnight of the release
+// day). Movies first seen already released follow that window rule
+// instead, so saving an old movie never triggers a stale alert.
 function judgeMovieRelease(item, data, ctx) {
+    const pending = ctx.releaseState.moviesPending;
     const date = String((data && data.release_date) || '');
-    if (!(date && isAired(date))) return null; // still unreleased: judged when it comes out
+    if (!(date && isAired(date))) {
+        // Still unreleased: remember it so its future release gets noticed.
+        if (date && ctx.releaseState.movies[item.id] === undefined) pending[item.id] = true;
+        return null;
+    }
+    const wasPending = !!pending[item.id];
+    delete pending[item.id];
     if (ctx.releaseState.movies[item.id] !== undefined) return null; // handled before
     ctx.releaseState.movies[item.id] = date;
     if (ctx.isBaseline || !ctx.notifyMovies) return null;
-    const ts = airDateTs(date);
-    if (!ctx.prevSync || ts === null || ts <= ctx.prevSync) return null;
+    if (!wasPending) {
+        const ts = airDateTs(date);
+        if (!ctx.prevSync || ts === null || ts <= ctx.prevSync) return null;
+    }
     const title = data.title || data.name || t('common.noTitle');
     return { media_type: 'movie', id: item.id, title };
 }
 
-// Judges one saved series with the same window rule: a show added to the
-// state.watchlist long after its episodes aired does not alert on them.
+// Judges one saved series against the release state. ctx carries
+// { releaseState, isBaseline, prevSync, notifyTv }; state.releaseState.shows
+// is mutated to mark the show as handled. Returns the news entry or null.
+// The remembered episode also stores its own air timestamp (ts): an
+// episode is news when TMDB reports one strictly newer than the stored
+// one, whatever time previous checks ran at. Comparing against the
+// lastSync instant instead silently dropped episodes whenever a check
+// happened after local midnight of their (US) air date.
 function judgeShowRelease(item, data, ctx) {
     const last = data && data.last_episode_to_air;
     if (!(last && last.air_date && isAired(last.air_date))) return null;
-    const cur = { season: last.season_number, episode: last.episode_number };
+    const ts = airDateTs(last.air_date);
+    const cur = { season: last.season_number, episode: last.episode_number, ts };
     const stored = ctx.releaseState.shows[item.id];
-    const isNew = !stored || stored.season !== cur.season || stored.episode !== cur.episode;
+    const isNew = isNewerThanStored(stored, cur, ctx.prevSync);
     ctx.releaseState.shows[item.id] = cur; // handled from now on
     if (!isNew || ctx.isBaseline || !ctx.notifyTv) return null;
     if (ctx.isWatched(item.id, cur.season, cur.episode)) return null; // already watched: not news
-    const ts = airDateTs(last.air_date);
-    if (!ctx.prevSync || ts === null || ts <= ctx.prevSync) return null;
     const title = data.name || data.title || t('common.noTitle');
     return { media_type: 'tv', id: item.id, title, season: cur.season, episode: cur.episode };
 }
 
-// Checks the TMDB state of the saved titles against the last check and
-// reports new releases (movies released or episodes aired). The first
-// *successful* sync only acts as a "baseline": it records the current
-// state without notifying, to avoid a burst of stale alerts.
+// True when the freshly reported episode differs from the stored one and
+// is genuinely newer than it. Entries saved by older versions carry no ts:
+// those fall back to the old lastSync window rule. Without a usable
+// timestamp nothing is reported (matching the previous behaviour).
+function isNewerThanStored(stored, cur, prevSync) {
+    if (!stored) return false; // never seen before: baseline material
+    if (stored.season === cur.season && stored.episode === cur.episode) return false;
+    if (cur.ts === null) return false;
+    if (typeof stored.ts === 'number') return cur.ts > stored.ts;
+    return !!prevSync && cur.ts > prevSync;
+}
+
+// Checks the TMDB state of the saved titles against what previous syncs
+// already saw and reports new releases (movies released or episodes
+// aired). The first *successful* sync only acts as a "baseline": it
+// records the current state without notifying, to avoid a burst of stale
+// alerts.
 async function checkReleases(manual = false) {
     if (!state.apiKey) {
         if (manual) showToast('Sync', t('msg.needKey'));
@@ -70,9 +101,10 @@ async function checkReleases(manual = false) {
         const isBaseline = !state.releaseState.baseline;
         let fetched = 0; // titles downloaded successfully in this run
 
-        // The previous successful sync time: releases older than this were
-        // already out at the last check and are not news. lastSync is read
-        // here and updated only after both pools below have completed.
+        // The judge helpers only compare against what previous syncs
+        // recorded; lastSync is read here and updated only after both
+        // pools below have completed (it still backs the auto-sync timer
+        // and the legacy fallback for entries saved without ts).
         const judgeCtx = {
             releaseState: state.releaseState,
             isBaseline,

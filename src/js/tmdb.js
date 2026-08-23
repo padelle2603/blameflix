@@ -12,8 +12,10 @@ async function fetchJson(url, opts) {
 // Unified in-memory LRU cache for TMDB detail requests ('movie:id' /
 // 'tv:id'), shared by the details view, the release sync and the home
 // counter. Cleared on language change so titles re-download with the
-// right locale.
-const detailsCache = new LruCache(120);
+// right locale. Entries expire after 30 minutes: the release check runs
+// at every foreground and must not keep serving stale data within the
+// same session.
+const detailsCache = new LruCache(120, 30 * 60 * 1000);
 
 function getDetails(type, id) {
     const key = `${type}:${id}`;

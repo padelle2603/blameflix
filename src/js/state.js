@@ -25,6 +25,7 @@ function loadReleaseState() {
     if (!s || typeof s !== 'object') s = {};
     if (!s.shows || typeof s.shows !== 'object') s.shows = {};
     if (!s.movies || typeof s.movies !== 'object') s.movies = {}; // movieId -> release date "YYYY-MM-DD"
+    if (!s.moviesPending || typeof s.moviesPending !== 'object') s.moviesPending = {}; // movieId -> true while unreleased
     return s;
 }
 

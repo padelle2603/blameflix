@@ -310,7 +310,7 @@ function sanitizeResolverOverrides(raw) {
 }
 
 function sanitizeReleaseState(raw) {
-    const clean = { baseline: raw && raw.baseline === true, lastSync: null, shows: {}, movies: {} };
+    const clean = { baseline: raw && raw.baseline === true, lastSync: null, shows: {}, movies: {}, moviesPending: {} };
     const lastSync = Number(raw && raw.lastSync);
     if (Number.isFinite(lastSync)) clean.lastSync = lastSync;
     const shows = raw && raw.shows;
@@ -320,7 +320,9 @@ function sanitizeReleaseState(raw) {
             const season = toIntOr(value.season, -1);
             const episode = toIntOr(value.episode, -1);
             if (season < 0 || episode < 1) continue;
-            clean.shows[key] = { season, episode };
+            clean.shows[key] = Number.isFinite(value.ts)
+                ? { season, episode, ts: Number(value.ts) }
+                : { season, episode };
         }
     }
     const movies = raw && raw.movies;
@@ -328,6 +330,12 @@ function sanitizeReleaseState(raw) {
         for (const [key, value] of Object.entries(movies).slice(0, 5000)) {
             if (!/^\d{1,12}$/.test(key) || typeof value !== 'string') continue;
             clean.movies[key] = value.slice(0, 10); // stored release date "YYYY-MM-DD"
+        }
+    }
+    const pending = raw && raw.moviesPending;
+    if (pending && typeof pending === 'object' && !Array.isArray(pending)) {
+        for (const key of Object.keys(pending).slice(0, 5000)) {
+            if (/^\d{1,12}$/.test(key) && pending[key] === true) clean.moviesPending[key] = true;
         }
     }
     return clean;

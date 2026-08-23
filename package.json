@@ -1,6 +1,6 @@
 {
   "name": "blameflix",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "BlameFlix - your screening room",
   "private": true,
   "scripts": {

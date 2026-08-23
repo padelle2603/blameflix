@@ -31,22 +31,35 @@ function sanitizeMediaType(value, fallback) {
 
 // Small Map-based LRU cache. Keeps the TMDB caches bounded during long
 // sessions without changing their Map-like API (has/get/set/delete/clear).
+// An optional maxAgeMs (0 = never expires) drops entries older than the
+// given age on access, so repeated checks can still see fresh data.
 class LruCache {
-    constructor(maxEntries = 150) {
+    constructor(maxEntries = 150, maxAgeMs = 0) {
         this.maxEntries = maxEntries;
-        this.map = new Map();
+        this.maxAgeMs = maxAgeMs;
+        this.map = new Map(); // key -> { value, at }
     }
-    has(key) { return this.map.has(key); }
+    // Returns the live entry for a key, or null when missing or expired.
+    entry(key) {
+        const e = this.map.get(key);
+        if (!e) return null;
+        if (this.maxAgeMs > 0 && Date.now() - e.at > this.maxAgeMs) {
+            this.map.delete(key); // expired
+            return null;
+        }
+        return e;
+    }
+    has(key) { return !!this.entry(key); }
     get(key) {
-        if (!this.map.has(key)) return undefined;
-        const value = this.map.get(key);
+        const e = this.entry(key);
+        if (!e) return undefined;
         this.map.delete(key); // refresh recency
-        this.map.set(key, value);
-        return value;
+        this.map.set(key, e);
+        return e.value;
     }
     set(key, value) {
         if (this.map.has(key)) this.map.delete(key);
-        this.map.set(key, value);
+        this.map.set(key, { value, at: Date.now() });
         if (this.map.size > this.maxEntries) {
             const oldest = this.map.keys().next().value;
             this.map.delete(oldest);

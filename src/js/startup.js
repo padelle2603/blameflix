@@ -2,7 +2,7 @@ import { state } from './state.js';
 import { syncApiKeyNotice, syncResolverNotice } from './settings.js';
 import { syncTools, showHome } from './catalog.js';
 import { hydrateWatchlistGrid } from './backup.js';
-import { checkReleases, startAutoSyncTimer, shouldAutoSync } from './releases.js';
+import { checkReleases, startAutoSyncTimer } from './releases.js';
 import { checkForUpdates } from './updates.js';
 import { resolveAppVersion, isNativeRuntime } from './env.js';
 import { t } from './i18n.js';
@@ -115,10 +115,13 @@ if (window.Capacitor?.Plugins?.LocalNotifications?.addListener) {
     });
 }
 
-// On returning to the foreground, checks whether the auto-sync interval
-// has expired (OSes may suspend timers while the app is in background).
+// Checks releases on every return to the foreground: OSes may suspend
+// timers while the app is in background, and new episodes must be noticed
+// as soon as TMDB publishes them. The details cache expires after 30
+// minutes, so repeated checks still see fresh data without hammering the
+// API; the mutex keeps overlapping checks away.
 document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible' && state.apiKey && shouldAutoSync()) {
+    if (document.visibilityState === 'visible' && state.apiKey) {
         checkReleases(false);
     }
 });
