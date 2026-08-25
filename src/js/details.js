@@ -304,6 +304,14 @@ function syncSeasonMarkButton(eps) {
     markBtn.innerText = allWatched ? t('episode.markAllUnwatched') : t('episode.markAllWatched');
 }
 
+// Syncs the "mark/unmark every season as watched" button from the current
+// watched state of the whole series.
+function syncAllAiredMarkButton(allWatched) {
+    const btn = document.getElementById('btn-mark-all-aired');
+    if (!btn || !state.currentMedia) return;
+    btn.innerText = allWatched ? t('detail.markAllAiredUnwatched') : t('detail.markAllAired');
+}
+
 // Play from a list row: marks as watched and opens the player.
 function playEpisode(season, episode) {
     state.currentSeason = Number(season);
@@ -395,27 +403,64 @@ async function markAllAiredWatched() {
     const btn = document.getElementById('btn-mark-all-aired');
     if (btn) btn.disabled = true;
 
-    const seasons = (state.currentMedia.seasons || []).filter(s => s.season_number >= 0);
-    const results = await mapPool(seasons, 5, async s => ({
-        sn: s.season_number,
-        eps: await getSeasonEpisodes(state.currentMedia.id, s.season_number)
-    }));
-
-    const seasonsStore = state.watchedEpisodes[state.currentMedia.id] || (state.watchedEpisodes[state.currentMedia.id] = {});
-    results.forEach(r => {
-        if (r.status === 'rejected') return;
-        const sn = r.value.sn;
-        const nums = r.value.eps
-            .filter(ep => !(ep.air_date && !isAired(ep.air_date)))
-            .map(ep => ep.episode_number);
-        if (!nums.length) return;
-        const existing = seasonsStore[sn] || [];
-        seasonsStore[sn] = [...new Set([...existing, ...nums])].sort((a, b) => a - b);
+    const seasons = (state.currentMedia.seasons || []).filter(s => s.season_number >= 1);
+    const results = await mapPool(seasons, 5, async s => {
+        try {
+            return { sn: s.season_number, eps: await getSeasonEpisodes(state.currentMedia.id, s.season_number) };
+        } catch (err) {
+            return { sn: s.season_number, eps: null };
+        }
     });
-    if (!Object.keys(seasonsStore).length) delete state.watchedEpisodes[state.currentMedia.id];
+
+    // Detect whether every already-aired episode of every season is already
+    // watched: if so the button toggles the mark OFF for the whole series.
+    let anyAired = false;
+    let allWatched = true;
+    results.forEach(r => {
+        if (!r.eps) { allWatched = false; return; }
+        r.eps.forEach(ep => {
+            if (ep.air_date && !isAired(ep.air_date)) return; // future: ignored
+            anyAired = true;
+            if (!isEpisodeWatched(state.currentMedia.id, r.sn, ep.episode_number)) allWatched = false;
+        });
+    });
+
+    const showId = state.currentMedia.id;
+    if (allWatched && anyAired) {
+        // Toggle off: remove only the already-aired marks from every season
+        // (mirrors markSeasonWatched, keeping any other state intact).
+        const seasonsStore = state.watchedEpisodes[showId] || {};
+        results.forEach(r => {
+            if (!r.eps) return;
+            const airedNums = new Set(r.eps
+                .filter(ep => !(ep.air_date && !isAired(ep.air_date)))
+                .map(ep => ep.episode_number));
+            if (!airedNums.size) return;
+            const sn = r.sn;
+            const existing = seasonsStore[sn] || [];
+            const remaining = existing.filter(n => !airedNums.has(n));
+            if (remaining.length) seasonsStore[sn] = remaining;
+            else delete seasonsStore[sn];
+        });
+        if (!Object.keys(seasonsStore).length) delete state.watchedEpisodes[showId];
+    } else {
+        const seasonsStore = state.watchedEpisodes[showId] || (state.watchedEpisodes[showId] = {});
+        results.forEach(r => {
+            const sn = r.sn;
+            const eps = r.eps;
+            if (!eps || !eps.length) return;
+            const nums = eps
+                .filter(ep => !(ep.air_date && !isAired(ep.air_date)))
+                .map(ep => ep.episode_number);
+            if (!nums.length) return;
+            const existing = seasonsStore[sn] || [];
+            seasonsStore[sn] = [...new Set([...existing, ...nums])].sort((a, b) => a - b);
+        });
+        if (!Object.keys(seasonsStore).length) delete state.watchedEpisodes[showId];
+    }
     persistWatchedEpisodes();
 
-    const cached = seasonEpisodesCache.get(`${state.currentMedia.id}:${state.currentSeason}`);
+    const cached = seasonEpisodesCache.get(`${showId}:${state.currentSeason}`);
     if (cached) renderEpisodeList(cached, null);
     refreshUnwatchedCount();
     refreshHomeUnwatchedCount();
@@ -465,7 +510,7 @@ async function refreshUnwatchedCount() {
         return;
     }
     const media = state.currentMedia; // the view can change while seasons download
-    const seasons = (media.seasons || []).filter(s => s.season_number >= 0);
+    const seasons = (media.seasons || []).filter(s => s.season_number >= 1);
     const results = await mapPool(seasons, 5, s => getSeasonEpisodes(media.id, s.season_number).then(
         value => ({ ok: true, value }),
         () => ({ ok: false })
@@ -474,8 +519,12 @@ async function refreshUnwatchedCount() {
     const loaded = results.filter(r => r.ok).map(r => r.value);
     const total = countUnwatchedEps(media.id, loaded);
 
-    unwatchedEl.classList.toggle('is-all-clear', total === 0);
-    unwatchedEl.innerText = total === 0
+    let anyAired = false;
+    loaded.forEach(eps => eps.forEach(ep => { if (isAired(ep.air_date)) anyAired = true; }));
+    syncAllAiredMarkButton(total === 0 && anyAired);
+
+    unwatchedEl.classList.toggle('is-all-clear', total === 0 && anyAired);
+    unwatchedEl.innerText = (total === 0 && anyAired)
         ? t('msg.allWatched')
         : tp('msg.unwatchedCount', total);
     unwatchedEl.hidden = false;

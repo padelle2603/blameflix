@@ -28,9 +28,11 @@ async function countUnwatchedForShow(showId) {
         () => ({ ok: false })
     ));
     const loaded = results.filter(r => r.ok).map(r => r.value);
+    let anyAired = false;
+    loaded.forEach(eps => eps.forEach(ep => { if (isAired(ep.air_date)) anyAired = true; }));
     const total = countUnwatchedEps(showId, loaded);
     showUnwatchedCache.set(showId, total);
-    return total;
+    return { total, anyAired };
 }
 
 // Updates in place the "N to watch" badges on the series posters in home.
@@ -53,10 +55,11 @@ function updateGridUnwatchedBadges() {
 }
 
 // Renders totals and badges from a { showId -> count } mapping.
-function applyHomeCounts(counts, total) {
+function applyHomeCounts(counts, total, anyAiredShows) {
     Object.entries(counts).forEach(([id, n]) => showUnwatchedCache.set(Number(id), Number(n)));
-    homeUnwatchedEl.classList.toggle('is-all-clear', total === 0);
-    homeUnwatchedEl.innerText = total === 0
+    const allClear = total === 0 && anyAiredShows > 0;
+    homeUnwatchedEl.classList.toggle('is-all-clear', allClear);
+    homeUnwatchedEl.innerText = allClear
         ? t('msg.allWatched')
         : tp('msg.unwatchedCount', total);
     updateGridUnwatchedBadges();
@@ -77,7 +80,7 @@ async function refreshHomeUnwatchedCount() {
         // otherwise the transient "counting…" placeholder.
         const snap = readUnwatchedSnapshot();
         if (snap) {
-            applyHomeCounts(snap.counts, snap.total);
+            applyHomeCounts(snap.counts, snap.total, snap.anyAired);
         } else {
             homeUnwatchedEl.innerText = t('msg.countingEpisodes');
         }
@@ -89,14 +92,16 @@ async function refreshHomeUnwatchedCount() {
         ));
         const counts = {};
         let total = 0;
+        let anyAiredShows = 0;
         results.forEach((r, i) => {
             if (!r.ok) return; // failed shows keep their previous badge
             const id = tvShows[i].id;
-            counts[id] = r.value;
-            total += r.value;
+            counts[id] = r.value.total;
+            total += r.value.total;
+            if (r.value.anyAired) anyAiredShows++;
         });
-        applyHomeCounts(counts, total);
-        persistUnwatchedSnapshot(counts, total);
+        applyHomeCounts(counts, total, anyAiredShows);
+        persistUnwatchedSnapshot(counts, total, anyAiredShows);
     } finally {
         homeCountBusy = false;
     }

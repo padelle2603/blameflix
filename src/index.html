@@ -292,6 +292,14 @@
                 </div>
                 <span class="settings-status" id="backup-status" hidden></span>
             </div>
+            <div class="settings-field">
+                <label data-i18n="settings.dataDelete">Elimina dati</label>
+                <p class="settings-hint" data-i18n="settings.dataDeleteHint">Cancella in modo irreversibile watchlist, puntate viste, ultime riproduzioni, stagioni personalizzate, novità e preferenze. La chiave API, la lingua e il consenso legale vengono conservati.</p>
+                <div class="settings-actions">
+                    <button type="button" class="btn btn--rosso" onclick="deleteAllData()" data-i18n="settings.dataDeleteBtn">🗑 Elimina dati</button>
+                </div>
+                <span class="settings-status" id="data-delete-status" hidden></span>
+            </div>
         </section>
 
         <section class="settings-tabpage" id="settings-tab-updates" role="tabpanel" hidden>

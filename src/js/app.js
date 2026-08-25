@@ -152,6 +152,11 @@ async function restoreBackup() {
     return m.restoreBackup();
 }
 
+async function deleteAllData() {
+    const m = await loadBackupModule();
+    return m.deleteAllData();
+}
+
 async function toggleResolverOverride() {
     const m = await loadResolverModule();
     return m.toggleResolverOverride();
@@ -196,6 +201,7 @@ Object.assign(window, {
     closeDocs,
     createBackup,
     restoreBackup,
+    deleteAllData,
     checkForUpdates,
     saveSettings,
     sendTestNotification,

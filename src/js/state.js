@@ -88,12 +88,12 @@ export function readUnwatchedSnapshot() {
     if (!s || typeof s !== 'object' || !Number.isFinite(s.ts)) return null;
     if (Date.now() - s.ts > UNWATCHED_SNAPSHOT_TTL) return null;
     if (!s.counts || typeof s.counts !== 'object' || !Number.isFinite(Number(s.total))) return null;
-    return { ts: s.ts, total: Number(s.total), counts: s.counts };
+    return { ts: s.ts, total: Number(s.total), counts: s.counts, anyAired: Number(s.anyAired) || 0 };
 }
 
-export function persistUnwatchedSnapshot(counts, total) {
+export function persistUnwatchedSnapshot(counts, total, anyAired) {
     try {
-        localStorage.setItem('myUnwatchedSnapshot', JSON.stringify({ ts: Date.now(), total, counts }));
+        localStorage.setItem('myUnwatchedSnapshot', JSON.stringify({ ts: Date.now(), total, counts, anyAired: Number(anyAired) || 0 }));
     } catch (err) { /* storage full: the snapshot is best-effort */ }
 }
 

@@ -1,6 +1,6 @@
 {
   "name": "blameflix-desktop",
-  "version": "2.0.1",
+  "version": "2.2.0",
   "description": "BlameFlix desktop (Electron wrapper)",
   "main": "main.js",
   "private": true,

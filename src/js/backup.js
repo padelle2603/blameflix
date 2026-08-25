@@ -12,7 +12,8 @@ import { startAutoSyncTimer } from './releases.js';
 import { sourceTemplateError } from './resolver.js';
 import { watchlistKey } from './watchlist.js';
 import { renderGrid, syncTools, showHome } from './catalog.js';
-import { backupFile, backupStatus, homeView, settingsKeyInput } from './dom.js';
+import { refreshHomeUnwatchedCount } from './counter.js';
+import { backupFile, backupStatus, homeView, settingsKeyInput, settingsOverlay } from './dom.js';
 
 function backupData() {
     return {
@@ -414,6 +415,7 @@ backupFile.addEventListener('change', e => {
             settingsKeyInput.value = state.apiKey;
             syncTools();
             showHome();
+            refreshHomeUnwatchedCount();
             showBackupStatus(t('msg.backupRestored'));
         } catch (err) {
             showBackupStatus(t('msg.backupInvalid'), true);
@@ -423,4 +425,56 @@ backupFile.addEventListener('change', e => {
     reader.readAsText(file);
 });
 
-export { createBackup, restoreBackup, hydrateWatchlistGrid };
+// Wipes every user data key from localStorage and resets the in-memory state.
+// The API key, language, accepted disclaimer and update-check dismissal are
+// kept so the app stays usable and the consent is preserved. Asks for
+// confirmation first because the operation is irreversible.
+async function deleteAllData() {
+    if (!window.confirm(t('settings.dataDeleteConfirm'))) return;
+
+    const keepKeys = ['myTMDbApiKey', 'myLang', 'myDisclaimerAccepted', 'myUpdateCheck'];
+    const toRemove = [];
+    for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && !keepKeys.includes(k)) toRemove.push(k);
+    }
+    toRemove.forEach(k => localStorage.removeItem(k));
+
+    state.watchlist = [];
+    state.watchlistDetails.clear();
+    state.lastPlayed = [];
+    state.customSelections = {};
+    state.watchedEpisodes = {};
+    state.newsHistory = [];
+    state.resolver = {};
+    state.resolverOverrides = {};
+    state.notifySettings = Object.assign({}, DEFAULT_NOTIFY_SETTINGS);
+    state.releaseState = { shows: {}, movies: {}, moviesPending: {} };
+    state.viewMode = 'grid';
+    state.typeFilter = 'all';
+    state.kindOrder = 'movie';
+    state.currentMedia = null;
+    state.customMode = false;
+    state.currentSeason = 1;
+    state.currentEpisode = 1;
+
+    persistReleaseState();
+    persistResolverOverrides();
+    syncNotifySettingsInputs();
+
+    const status = document.getElementById('data-delete-status');
+    if (status) {
+        status.classList.remove('is-error');
+        status.innerText = t('msg.dataDeleted');
+        status.hidden = false;
+        setTimeout(() => { status.hidden = true; }, 3000);
+    }
+
+    settingsKeyInput.value = state.apiKey;
+    syncTools();
+    showHome();
+    refreshHomeUnwatchedCount();
+    settingsOverlay.hidden = true;
+}
+
+export { createBackup, restoreBackup, deleteAllData, hydrateWatchlistGrid };
