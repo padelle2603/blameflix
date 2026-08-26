@@ -9,6 +9,7 @@ import { showToast } from './toast.js';
 import { openPlayer, getLastPlayed } from './player.js';
 import { updateWatchlistBtn } from './watchlist.js';
 import { syncResolverOverrideBtn, getResolverOverride } from './resolver.js';
+import { syncNetworkSourceBtn } from './networkSchedule.js';
 import { showHome } from './catalog.js';
 import { countUnwatchedEps, refreshHomeUnwatchedCount } from './counter.js';
 
@@ -64,6 +65,14 @@ async function showDetails(id, type, opts) {
 
         updateWatchlistBtn();
         syncResolverOverrideBtn();
+        const networkBlock = document.getElementById('network-block');
+        if (type === 'tv') {
+            networkBlock.hidden = false;
+            populateNetworkSelector(data);
+            syncNetworkSourceBtn();
+        } else {
+            networkBlock.hidden = true;
+        }
         const overridePanel = document.getElementById('resolver-override-panel');
         if (overridePanel) {
             overridePanel.hidden = true;
@@ -95,6 +104,27 @@ function toggleSpoiler(el) {
     el.setAttribute('aria-expanded', String(!collapsed));
     if (collapsed) el.setAttribute('title', t('detail.revealHint'));
     else el.removeAttribute('title');
+}
+
+// Fills the network <select> with the TMDB networks of the series and
+// restores the previously chosen one, so the per-series network source can
+// be labelled and passed as a placeholder to the schedule template.
+function populateNetworkSelector(data) {
+    const sel = document.getElementById('network-select');
+    if (!sel) return;
+    sel.innerHTML = '';
+    const none = document.createElement('option');
+    none.value = '';
+    none.textContent = t('detail.networkNone');
+    sel.appendChild(none);
+    (data.networks || []).forEach(n => {
+        const opt = document.createElement('option');
+        opt.value = n.id;
+        opt.textContent = n.name || String(n.id);
+        sel.appendChild(opt);
+    });
+    const src = state.networkSources[state.currentMedia.id];
+    if (src && src.networkId) sel.value = String(src.networkId);
 }
 
 // Tap/click and keyboard reveal for the spoilered sheet fields.
@@ -317,6 +347,7 @@ function playEpisode(season, episode) {
     state.currentSeason = Number(season);
     state.currentEpisode = Number(episode);
     toggleEpisodeWatched(state.currentMedia.id, state.currentSeason, state.currentEpisode, true);
+    syncEpisodeRow(state.currentSeason, state.currentEpisode);
     openPlayer();
     refreshUnwatchedCount();
     refreshHomeUnwatchedCount();

@@ -1,7 +1,9 @@
 import { state } from './state.js';
 import { inputSeasonCustom, inputEpisodeCustom } from './dom.js';
-import { findNextUnwatched, syncResumeSelection } from './details.js';
+import { findNextUnwatched, syncResumeSelection, refreshUnwatchedCount } from './details.js';
 import { effectiveResolverTemplate, resolveTemplate, sourceTemplateError } from './resolver.js';
+import { toggleEpisodeWatched } from './watched.js';
+import { refreshHomeUnwatchedCount } from './counter.js';
 import { syncResolverNotice } from './settings.js';
 import { showToast } from './toast.js';
 import { t } from './i18n.js';
@@ -64,7 +66,10 @@ async function openPlayer(resume = false) {
             if (next) {
                 season = next.season;
                 episode = next.episode;
+                toggleEpisodeWatched(state.currentMedia.id, season, episode, true);
                 await syncResumeSelection(season, episode);
+                refreshUnwatchedCount();
+                refreshHomeUnwatchedCount();
             } else {
                 season = state.currentSeason || 1;
                 episode = state.currentEpisode || 1;

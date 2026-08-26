@@ -16,6 +16,16 @@ platforms remain what they are — the places where you watch — while BlameFli
 becomes what they are missing — the place where you *remember*. The idea is
 simple: **you choose where to watch, BlameFlix remembers everything else.**
 
+## Contents
+
+- [Why it exists](#why-it-exists)
+- [Core features](#core-features)
+- [Tutorial](#tutorial)
+- [Platforms](#platforms)
+- [Updates](#updates)
+- [Development](#development)
+- [Acknowledgements](#acknowledgements)
+
 ## Why it exists
 
 Watching today is fragmented: a title on one platform, another on a second one,
@@ -83,6 +93,75 @@ are rejected); if the source is empty the button stays inactive.
   foreground, the app compares the TMDB state of your saved titles and notifies
   you when a new episode airs — all local, no server.
 - **Backup**: export and restore everything in a single JSON file.
+
+## Tutorial
+
+A short, no-technical-knowledge guide to using BlameFlix.
+
+### 1. Install BlameFlix
+
+- **Android**: download the `.apk` from the [latest release](https://github.com/padelle2603/blameflix/releases/latest) and install it.
+- **Linux**: run the `.AppImage`.
+- **Windows**: run the portable `.exe`.
+- **Web**: open the online version in your browser.
+- On first launch, read and accept the short legal notice to continue.
+
+### 2. Connect a free movie database (one time)
+
+BlameFlix gets posters and information from a free public database called TMDB.
+
+1. Open Settings (gear icon ⚙) → **API & Sources**.
+2. On the TMDB website, create a free account and copy your personal key (found in your account's API settings).
+3. Paste it into BlameFlix and save.
+4. Done — search now works. If you skip this, the app reminds you later.
+
+### 3. Search for a title
+
+Type the name of a movie or series in the search box. Results appear with covers and descriptions in your chosen language. Tap a result to open its details.
+
+### 4. Save titles and track what you watch
+
+- From any detail page, tap **Save** to add the title to your library.
+- **For series**: open the show and tap the episodes you have already seen. BlameFlix remembers your progress, even for episodes the database does not list.
+- **"Watch now"**: for a series, this button jumps to the next episode you have not watched yet, and marks it as watched the moment you open it.
+
+### 5. Choose where "Watch now" opens
+
+BlameFlix opens a web page *you* choose — it never picks or suggests one.
+
+1. Settings → **API & Sources**.
+2. Enter a web link for movies and/or series. You can use small tags BlameFlix fills in automatically:
+   - `{id}` → the title's ID
+   - `{type}` → movie or series
+   - `{season}` and `{episode}` → the numbers
+   - Example: `https://your-site.example/watch/{type}/{id}/{season}/{episode}`
+3. Only normal web links (`http`/`https`) are allowed; magnet/torrent links are rejected. If you leave it empty, the button stays off.
+4. **Different link per title**: inside any title's page you can set a custom link just for that one title.
+
+### 6. Get notified about new releases
+
+1. Settings → **Notifications** → turn notifications on.
+2. Choose whether to be alerted for **series**, **movies**, or both, and how often the app should check.
+3. BlameFlix checks when you open the app, when you return to it, and on your schedule — then quietly tells you when something new is out. On Android you can mark an episode as watched right from the notification.
+
+### 7. Use the real broadcast schedule (series)
+
+Inside a series page, open the **Network** section: pick the TV channel from the list and paste an external schedule link. This makes release reminders match the real air dates. If that link does not work, BlameFlix falls back to the database dates.
+
+### 8. Back up and restore your data
+
+- Settings → **Data** → **Export** saves your whole library, watch history and settings into a single file you can keep safe.
+- **Import** brings everything back on any device.
+- Here you will also find **Delete data**, which clears your library while keeping your key and language choice.
+
+### 9. Choose your language
+
+Settings → **Preferences** lets you switch between English and Italian. The app tries to pick the right one automatically, but your choice is always remembered (and included in backups).
+
+**Tips**
+
+- The **Sync** button (⟳) checks for new releases on demand. On Android, you can also pull down from the top of your library to do the same.
+- Installed apps update automatically; the web version is always the latest.
 
 ## Platforms
 

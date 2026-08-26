@@ -22,7 +22,9 @@ let homeCountBusy = false;
 // Already-aired, unwatched episodes of a single series: seasons download in
 // parallel with bounded concurrency instead of one request at a time.
 async function countUnwatchedForShow(showId) {
-    const seasons = await fetchSeasons(showId);
+    // Exclude specials (season 0): the detail hero counter and "Watch now"
+    // resume logic already ignore them, so the home badge must agree.
+    const seasons = (await fetchSeasons(showId)).filter(s => s.season_number >= 1);
     const results = await mapPool(seasons, 5, s => getSeasonEpisodes(showId, s.season_number).then(
         value => ({ ok: true, value }),
         () => ({ ok: false })

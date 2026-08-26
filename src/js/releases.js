@@ -4,6 +4,8 @@ import { getDetails } from './tmdb.js';
 import { ensureNotifyPermission, notify } from './notifications.js';
 import { addNewsEntry, renderNewsSection } from './news.js';
 import { isEpisodeWatched } from './watched.js';
+import { fetchSchedule, judgeNetworkRelease } from './networkSchedule.js';
+import { detailFor } from './watchlist.js';
 import { t } from './i18n.js';
 import { showToast } from './toast.js';
 import { btnSync } from './dom.js';
@@ -121,6 +123,19 @@ async function checkReleases(manual = false) {
         // shared details cache; a failed title is simply skipped.
         const tvReleases = await mapPool(tvItems, 5, async item => {
             try {
+                const src = state.networkSources[item.id];
+                if (src && src.template) {
+                    const entries = await fetchSchedule(item.id);
+                    if (entries) {
+                        fetched++;
+                        const d = detailFor(item);
+                        const title = d.name || d.title || t('common.noTitle');
+                        return judgeNetworkRelease(item, entries, judgeCtx, title);
+                    }
+                    // Network source configured but unavailable (CORS/offline/
+                    // bad JSON): degrade to the normal TMDB release detection
+                    // so the show keeps getting episode notifications.
+                }
                 const data = await getDetails('tv', item.id);
                 fetched++;
                 return judgeShowRelease(item, data, judgeCtx);
@@ -151,6 +166,9 @@ async function checkReleases(manual = false) {
         persistReleaseState();
 
         function releaseBody(r) {
+            if (r.network) {
+                return t('msg.releaseBodyNetwork', { title: r.title, season: r.season, episode: r.episode, network: r.network });
+            }
             return r.media_type === 'movie'
                 ? t('msg.movieReleased', { title: r.title })
                 : t('msg.releaseBody', { title: r.title, season: r.season, episode: r.episode });

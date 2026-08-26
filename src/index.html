@@ -177,6 +177,22 @@
                     </div>
                 </div>
 
+                <div class="resolver-override" id="network-block" hidden>
+                    <button type="button" class="btn btn--ghost" id="btn-network" onclick="toggleNetworkSource()">Rete: —</button>
+                    <div class="resolver-override__panel" id="network-panel" hidden>
+                        <label for="network-select" data-i18n="detail.networkSelectLabel">Editore / Rete</label>
+                        <select id="network-select"></select>
+                        <label for="network-schedule-input" data-i18n="detail.networkForTitle">Programmazione di rete per questo titolo</label>
+                        <input type="url" id="network-schedule-input" autocomplete="off"
+                               placeholder="https://esempio.com/schedule/{id}" data-i18n-placeholder="detail.networkPlaceholder">
+                        <p class="settings-hint" data-i18n="detail.networkOverrideHint">Incolla l'URL di una fonte esterna che restituisce la programmazione della rete in JSON (usa i segnaposto {id}, {networkId}, {networkName}). L'endpoint deve essere raggiungibile dal browser: se la fonte blocca il CORS, passala attraverso un proxy a tuo carico. Solo collegamenti http/https.</p>
+                        <div class="settings-actions">
+                            <button type="button" class="btn btn--rosso" onclick="saveNetworkSource()" data-i18n="detail.useForTitle">Usa per questo titolo</button>
+                            <button type="button" class="btn" onclick="clearNetworkSource()" data-i18n="detail.useGlobal">Usa quello globale</button>
+                        </div>
+                    </div>
+                </div>
+
                 <div id="tv-controls" class="season-controls" hidden>
                     <label for="input-season" data-i18n="detail.season">Stagione</label>
                     <select id="input-season" onchange="onSeasonChange(value)"></select>

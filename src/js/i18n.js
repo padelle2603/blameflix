@@ -1,6 +1,7 @@
 import { state, LANG_STORAGE } from './state.js';
 import { detailsCache, seasonEpisodesCache, tvSeasonsCache } from './tmdb.js';
 import { syncTools, renderHome } from './catalog.js';
+import { hydrateWatchlistGrid } from './backup.js';
 import { searchCache } from './search.js';
 import { syncNotifySettingsInputs } from './settings.js';
 import { renderNewsSection } from './news.js';
@@ -79,6 +80,13 @@ const I18N = {
         'detail.episodes': 'Episodi',
         'detail.sourceGlobal': 'Sorgente: globale',
         'detail.sourceCustom': 'Sorgente: personale',
+        'detail.networkGlobal': 'Rete: —',
+        'detail.networkCustom': 'Rete: {name}',
+        'detail.networkNone': '— Nessuna —',
+        'detail.networkSelectLabel': 'Editore / Rete',
+        'detail.networkForTitle': 'Programmazione di rete per questo titolo',
+        'detail.networkPlaceholder': 'https://esempio.com/schedule/{id}',
+        'detail.networkOverrideHint': 'Incolla l\'URL di una fonte esterna che restituisce la programmazione della rete in JSON (segnaposto {id}, {networkId}, {networkName}). L\'endpoint deve essere raggiungibile dal browser: se la fonte blocca il CORS, passala attraverso un proxy a tuo carico. Solo http/https.',
         'detail.savedRemove': '✓ Salvato · rimuovi',
         'detail.addSaved': '+ Aggiungi ai salvati',
         'detail.noOverview': 'Nessuna descrizione disponibile.',
@@ -212,6 +220,7 @@ const I18N = {
         'msg.unwatchedCount': { one: '1 puntata da vedere', other: '{n} puntate da vedere' },
         'msg.countingEpisodes': 'Conto puntate…',
         'msg.releaseBody': '«{title}» · nuova puntata S{season}E{episode} in catalogo',
+        'msg.releaseBodyNetwork': '«{title}» · S{season}E{episode} su {network}',
         'msg.movieReleased': '«{title}» · il film è ora in catalogo',
         'msg.syncAlreadyRunning': 'Sincronizzazione già in corso',
         'msg.markedWatchedFromNotification': 'Puntata segnata come vista',
@@ -329,6 +338,13 @@ const I18N = {
         'detail.episodes': 'Episodes',
         'detail.sourceGlobal': 'Source: global',
         'detail.sourceCustom': 'Source: custom',
+        'detail.networkGlobal': 'Network: —',
+        'detail.networkCustom': 'Network: {name}',
+        'detail.networkNone': '— None —',
+        'detail.networkSelectLabel': 'Broadcaster / Network',
+        'detail.networkForTitle': 'Network schedule for this title',
+        'detail.networkPlaceholder': 'https://example.com/schedule/{id}',
+        'detail.networkOverrideHint': 'Paste the URL of an external source that returns the network schedule as JSON (placeholders {id}, {networkId}, {networkName}). The endpoint must be reachable from the browser: if the source blocks CORS, route it through a proxy you control. http/https only.',
         'detail.savedRemove': '✓ Saved · remove',
         'detail.addSaved': '+ Add to saved',
         'detail.noOverview': 'No description available.',
@@ -462,6 +478,7 @@ const I18N = {
         'msg.unwatchedCount': { one: '1 episode to watch', other: '{n} episodes to watch' },
         'msg.countingEpisodes': 'Counting episodes…',
         'msg.releaseBody': '«{title}» · new episode S{season}E{episode} in catalog',
+        'msg.releaseBodyNetwork': '«{title}» · S{season}E{episode} on {network}',
         'msg.movieReleased': '«{title}» · the movie is now available',
         'msg.syncAlreadyRunning': 'Sync already running',
         'msg.markedWatchedFromNotification': 'Episode marked as watched',
@@ -577,6 +594,11 @@ function setLanguage(newLang, persist) {
     seasonEpisodesCache.clear();
     tvSeasonsCache.clear();
     searchCache.clear();
+    // The in-memory watchlist details also hold localized titles/overviews:
+    // drop them and re-fetch so the home grid switches language consistently
+    // (otherwise cards would keep showing the previous language).
+    state.watchlistDetails.clear();
+    hydrateWatchlistGrid();
     applyLanguage();
 }
 

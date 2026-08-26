@@ -60,6 +60,14 @@ async function loadResolverModule() {
     return _resolverModule;
 }
 
+let _networkModule = null;
+async function loadNetworkModule() {
+    if (!_networkModule) {
+        _networkModule = await import('./networkSchedule.js');
+    }
+    return _networkModule;
+}
+
 // --- Public handlers with lazy loading ---
 
 async function markAllAiredWatched() {
@@ -172,6 +180,21 @@ async function clearResolverOverride() {
     return m.clearResolverOverride();
 }
 
+async function toggleNetworkSource() {
+    const m = await loadNetworkModule();
+    return m.toggleNetworkSource();
+}
+
+async function saveNetworkSource() {
+    const m = await loadNetworkModule();
+    return m.saveNetworkSource();
+}
+
+async function clearNetworkSource() {
+    const m = await loadNetworkModule();
+    return m.clearNetworkSource();
+}
+
 Object.assign(window, {
     showHome,
     openSettings,
@@ -194,6 +217,9 @@ Object.assign(window, {
     toggleResolverOverride,
     saveResolverOverride,
     clearResolverOverride,
+    toggleNetworkSource,
+    saveNetworkSource,
+    clearNetworkSource,
     onSeasonChange,
     markSeasonWatched,
     closeSettings,

@@ -53,6 +53,7 @@ export const state = {
     kindOrder: localStorage.getItem('myKindOrder') === 'tv' ? 'tv' : 'movie', // which block sits on the top row of the "all" view
     resolver: readStoredJson('myResolver', {}), // user-chosen URL templates { movie, tv }
     resolverOverrides: readStoredJson('myResolverOverrides', {}), // per-title source overrides
+    networkSources: readStoredJson('myNetworkSources', {}), // per-series network schedule: showId -> { networkId?, networkName?, template? }
     latestRelease: null, // { tag, html_url, assets } of the latest GitHub release
     notifySettings: Object.assign({}, DEFAULT_NOTIFY_SETTINGS, readStoredJson('myNotifySettings', {})),
     releaseState: loadReleaseState()
@@ -70,6 +71,10 @@ export function persistNotifySettings() {
 
 export function persistReleaseState() {
     localStorage.setItem('myReleaseState', JSON.stringify(state.releaseState));
+}
+
+export function persistNetworkSources() {
+    localStorage.setItem('myNetworkSources', JSON.stringify(state.networkSources));
 }
 
 export const NEWS_HISTORY_MAX = 30;

@@ -15,6 +15,16 @@ restano ciò che sono — i luoghi dove si guarda — mentre BlameFlix diventa c
 a loro manca — il luogo dove si *ricorda*. L'idea è semplice: **tu scegli dove
 guardare, BlameFlix ricorda tutto il resto.**
 
+## Indice
+
+- [Perché esiste](#perché-esiste)
+- [Core features](#core-features)
+- [Tutorial](#tutorial)
+- [Piattaforme](#piattaforme)
+- [Aggiornamenti](#aggiornamenti)
+- [Sviluppo](#sviluppo)
+- [Ringraziamenti](#ringraziamenti)
+
 ## Perché esiste
 
 La visione oggi è frammentata: un titolo su una piattaforma, un altro su una
@@ -84,6 +94,75 @@ pulsante resta inattivo.
   piano, l'app confronta lo stato TMDB dei tuoi titoli salvati e ti avvisa
   quando esce una puntata nuova — tutto locale, nessun server.
 - **Backup**: esporta e ripristina tutto in un singolo file JSON.
+
+## Tutorial
+
+Una breve guida, senza termini tecnici, per usare BlameFlix.
+
+### 1. Installa BlameFlix
+
+- **Android**: scarica l'`.apk` dall'[ultima release](https://github.com/padelle2603/blameflix/releases/latest) e installalo.
+- **Linux**: esegui l'`.AppImage`.
+- **Windows**: esegui l'`.exe` portatile.
+- **Web**: apri la versione online nel browser.
+- Al primo avvio, leggi e accetta il breve disclaimer per continuare.
+
+### 2. Collega un database di film gratuito (una tantum)
+
+BlameFlix prende locandine e informazioni da un database pubblico gratuito chiamato TMDB.
+
+1. Apri Impostazioni (icona a ingranaggio ⚙) → **API e Sorgenti**.
+2. Nel sito TMDB, crea un account gratuito e copia la tua chiave personale (nelle impostazioni API del tuo account).
+3. Incolla la chiave in BlameFlix e salva.
+4. Fatto — la ricerca ora funziona. Se salti questo passaggio, l'app te lo ricorderà.
+
+### 3. Cerca un titolo
+
+Scrivi il nome di un film o di una serie nella barra di ricerca. I risultati compaiono con locandine e descrizioni nella lingua scelta. Tocca un risultato per aprirne i dettagli.
+
+### 4. Salva i titoli e tieni traccia di ciò che guardi
+
+- In ogni pagina di dettaglio, tocca **Salva** per aggiungere il titolo alla tua libreria.
+- **Per le serie**: apri la serie e tocca le puntate che hai già visto. BlameFlix ricorda i tuoi progressi, anche per puntate non presenti nel database.
+- **"Guarda ora"**: per una serie, questo pulsante salta alla prossima puntata non vista e la segna come vista non appena la apri.
+
+### 5. Scegli dove si apre "Guarda ora"
+
+BlameFlix apre una pagina web *che scegli tu* — non ne propone né suggerisce nessuna.
+
+1. Impostazioni → **API e Sorgenti**.
+2. Inserisci un link web per i film e/o le serie. Puoi usare piccoli segnaposto che BlameFlix compila in automatico:
+   - `{id}` → l'ID del titolo
+   - `{type}` → film o serie
+   - `{season}` e `{episode}` → i numeri
+   - Esempio: `https://tuo-sito.example/watch/{type}/{id}/{season}/{episode}`
+3. Sono ammessi solo link web normali (`http`/`https`); i link magnet/torrent sono rifiutati. Se lo lasci vuoto, il pulsante resta disattivato.
+4. **Link diverso per titolo**: nella pagina di un titolo puoi impostare un link personalizzato solo per quello.
+
+### 6. Ricevi notifiche sulle nuove uscite
+
+1. Impostazioni → **Notifiche** → attiva le notifiche.
+2. Scegli se essere avvisato per **serie**, **film** o entrambi, e con quale frequenza l'app deve controllare.
+3. BlameFlix verifica all'apertura dell'app, al ritorno in primo piano e secondo la tua cadenza — poi ti avvisa quando esce qualcosa di nuovo. Su Android puoi segnare una puntata come vista direttamente dalla notifica.
+
+### 7. Usa la programmazione reale (serie)
+
+Nella pagina di una serie, apri la sezione **Rete**: scegli il canale TV dall'elenco e incolla un link a una programmazione esterna. Così i promemoria seguono le date di messa in onda reali. Se il link non funziona, BlameFlix torna alle date del database.
+
+### 8. Salva e ripristina i tuoi dati
+
+- Impostazioni → **Dati** → **Esporta** salva l'intera libreria, la cronologia e le impostazioni in un unico file da conservare.
+- **Importa** riporta tutto su qualsiasi dispositivo.
+- Qui trovi anche **Elimina dati**, che cancella la libreria mantenendo chiave e lingua.
+
+### 9. Scegli la lingua
+
+Impostazioni → **Preferenze** ti lascia passare tra italiano e inglese. L'app prova a scegliere da sola, ma la tua preferenza vince sempre (ed è inclusa nei backup).
+
+**Consigli**
+
+- Il pulsante **Sync** (⟳) verifica le nuove uscite su richiesta. Su Android puoi anche trascinare dall'alto della libreria per fare lo stesso.
+- Le app installate si aggiornano automaticamente; la versione web è sempre l'ultima.
 
 ## Piattaforme
 

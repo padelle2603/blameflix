@@ -1,6 +1,6 @@
 import {
     state, DEFAULT_NOTIFY_SETTINGS, sanitizeAutoSyncHours, NEWS_HISTORY_MAX,
-    persistWatchlist, persistNotifySettings, persistReleaseState, persistNewsHistory
+    persistWatchlist, persistNotifySettings, persistReleaseState, persistNewsHistory, persistNetworkSources
 } from './state.js';
 import { compressWatched, normalizeWatched, persistWatchedEpisodes } from './watched.js';
 import { getDetails } from './tmdb.js';
@@ -29,6 +29,7 @@ function backupData() {
             myTMDbApiKey: state.apiKey,
             myResolver: state.resolver,
             myResolverOverrides: state.resolverOverrides,
+            myNetworkSources: state.networkSources,
             myViewMode: state.viewMode,
             myTypeFilter: state.typeFilter,
             myNotifySettings: state.notifySettings,
@@ -310,6 +311,31 @@ function sanitizeResolverOverrides(raw) {
     return out;
 }
 
+// Per-series network schedule sources: showId -> { networkId?, networkName?,
+// template? }. Only http/https templates are kept (the network label is
+// free text, capped for safety).
+function sanitizeNetworkSources(raw) {
+    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return {};
+    const out = {};
+    for (const [key, value] of Object.entries(raw).slice(0, 5000)) {
+        if (!/^\d{1,12}$/.test(key) || !value || typeof value !== 'object' || Array.isArray(value)) continue;
+        if (key === '__proto__' || key === 'constructor' || key === 'prototype') continue;
+        const template = value.template;
+        if (template !== undefined && template !== null && template !== '') {
+            if (typeof template !== 'string' || sourceTemplateError(template.slice(0, 1000))) continue;
+            out[key] = { template: String(template).slice(0, 1000) };
+        } else {
+            out[key] = {};
+        }
+        if (value.networkId !== undefined) {
+            const nid = Number(value.networkId);
+            if (Number.isFinite(nid)) out[key].networkId = nid;
+        }
+        if (typeof value.networkName === 'string') out[key].networkName = value.networkName.slice(0, 200);
+    }
+    return out;
+}
+
 function sanitizeReleaseState(raw) {
     const clean = { baseline: raw && raw.baseline === true, lastSync: null, shows: {}, movies: {}, moviesPending: {} };
     const lastSync = Number(raw && raw.lastSync);
@@ -321,9 +347,20 @@ function sanitizeReleaseState(raw) {
             const season = toIntOr(value.season, -1);
             const episode = toIntOr(value.episode, -1);
             if (season < 0 || episode < 1) continue;
-            clean.shows[key] = Number.isFinite(value.ts)
+            const base = Number.isFinite(value.ts)
                 ? { season, episode, ts: Number(value.ts) }
                 : { season, episode };
+            // Preserve the network schedule baseline (set by the per-series
+            // network source) so restored shows keep their "last seen" state.
+            const net = value.net && typeof value.net === 'object' && value.net.season !== undefined
+                ? {
+                    season: toIntOr(value.net.season, -1),
+                    episode: toIntOr(value.net.episode, -1),
+                    ts: Number.isFinite(Number(value.net.ts)) ? Number(value.net.ts) : undefined
+                }
+                : null;
+            if (net) base.net = net;
+            clean.shows[key] = base;
         }
     }
     const movies = raw && raw.movies;
@@ -363,6 +400,7 @@ backupFile.addEventListener('change', e => {
                 ? { movie: safeString(data.myResolver.movie, 1000), tv: safeString(data.myResolver.tv, 1000) }
                 : { movie: '', tv: '' };
             const ro = sanitizeResolverOverrides(data.myResolverOverrides);
+            const nws = sanitizeNetworkSources(data.myNetworkSources);
             const ns = data.myNotifySettings && typeof data.myNotifySettings === 'object'
                 ? Object.assign({}, DEFAULT_NOTIFY_SETTINGS, data.myNotifySettings)
                 : Object.assign({}, DEFAULT_NOTIFY_SETTINGS);
@@ -384,6 +422,7 @@ backupFile.addEventListener('change', e => {
             state.newsHistory = nh.slice(0, NEWS_HISTORY_MAX);
             state.resolver = rs;
             state.resolverOverrides = ro;
+            state.networkSources = nws;
             state.notifySettings = ns;
             state.releaseState = rl;
             persistWatchlist();
@@ -395,6 +434,7 @@ backupFile.addEventListener('change', e => {
             localStorage.setItem('myResolver', JSON.stringify(state.resolver));
             persistResolverOverrides();
             persistNotifySettings();
+            persistNetworkSources();
             persistReleaseState();
             syncNotifySettingsInputs();
             startAutoSyncTimer();
@@ -448,6 +488,7 @@ async function deleteAllData() {
     state.newsHistory = [];
     state.resolver = {};
     state.resolverOverrides = {};
+    state.networkSources = {};
     state.notifySettings = Object.assign({}, DEFAULT_NOTIFY_SETTINGS);
     state.releaseState = { shows: {}, movies: {}, moviesPending: {} };
     state.viewMode = 'grid';
@@ -460,6 +501,7 @@ async function deleteAllData() {
 
     persistReleaseState();
     persistResolverOverrides();
+    persistNetworkSources();
     syncNotifySettingsInputs();
 
     const status = document.getElementById('data-delete-status');

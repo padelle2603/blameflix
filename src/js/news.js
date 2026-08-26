@@ -46,7 +46,8 @@ function renderNewsSection() {
         btn.dataset.id = String(n.id);
         btn.dataset.mediaType = sanitizeMediaType(n.media_type, 'movie');
         btn.textContent = (n.title || t('common.noTitle'))
-            + (n.media_type === 'tv' && n.season ? ` · S${toIntOr(n.season, 0)}E${toIntOr(n.episode, 0)}` : '');
+            + (n.media_type === 'tv' && n.season ? ` · S${toIntOr(n.season, 0)}E${toIntOr(n.episode, 0)}` : '')
+            + (n.network ? ` · ${n.network}` : '');
 
         const date = document.createElement('time');
         date.className = 'news-item__date';
