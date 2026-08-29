@@ -22,6 +22,7 @@ async function showDetails(id, type, opts) {
     window.scrollTo(0, 0);
     homeView.hidden = true;
     detailView.hidden = false;
+    resetDetailView();
 
     try {
         const data = await getDetails(type, id);
@@ -84,6 +85,24 @@ async function showDetails(id, type, opts) {
         showToast(t('toast.errorTitle'), t('msg.detailLoadError'));
         showHome();
     }
+}
+
+// Blanks the hero before a new title loads so the previous title's content
+// never flashes on screen for the duration of the (possibly network) fetch.
+function resetDetailView() {
+    document.getElementById('detail-title').innerText = '';
+    document.getElementById('detail-overview').innerText = '';
+    document.getElementById('detail-date').innerText = '';
+    document.getElementById('detail-vote').innerText = '';
+    document.getElementById('detail-kind').innerText = '';
+    document.getElementById('detail-poster').src = PLACEHOLDER;
+    document.getElementById('detail-backdrop').hidden = true;
+    if (unwatchedEl) unwatchedEl.hidden = true;
+    episodeList.innerHTML = '';
+    episodeSection.hidden = true;
+    document.getElementById('tv-controls').hidden = true;
+    document.getElementById('btn-mark-all-aired').hidden = true;
+    resetDetailSpoilers();
 }
 
 // Collapsible meta block: every sheet opens with the synopsis clamped and

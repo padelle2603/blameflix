@@ -261,9 +261,9 @@ function syncCardSavedStamp(id, mediaType) {
 // --- CATALOG FILTERS AND VIEW ---
 
 function filterLabel(type) {
-    if (type === 'movie') return state.lang === 'en' ? 'movies' : 'film';
-    if (type === 'tv') return state.lang === 'en' ? 'series' : 'serie';
-    return state.lang === 'en' ? 'titles' : 'titoli';
+    if (type === 'movie') return t('filter.movie');
+    if (type === 'tv') return t('filter.tv');
+    return t('filter.all');
 }
 
 function syncTools() {

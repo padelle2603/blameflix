@@ -12,6 +12,7 @@ import { toIntOr, sanitizeMediaType } from './utils.js';
 import { showDetails, refreshUnwatchedCount } from './details.js';
 import { refreshHomeUnwatchedCount } from './counter.js';
 import { showToast } from './toast.js';
+import { maybeStartTutorial } from './tutorial.js';
 
 // Real app startup: executed only after the disclaimer is accepted on the
 // very first use.
@@ -22,6 +23,7 @@ function startApp() {
     showHome();
     hydrateWatchlistGrid().then(() => checkReleases(false));
     startAutoSyncTimer();
+    maybeStartTutorial();
 }
 
 // Runs the version check once per session, a moment after launch, so it

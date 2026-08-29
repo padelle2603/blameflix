@@ -11,6 +11,8 @@ import { sourceTemplateError } from './resolver.js';
 import { ensureNotifyPermission, notify } from './notifications.js';
 import { isNativeRuntime } from './env.js';
 import { syncLastUpdateCheck } from './updates.js';
+import { LANGS } from './langs.js';
+import { startTutorial } from './tutorial.js';
 
 function syncNotifySettingsInputs() {
     settingsNotifyEnabled.checked = state.notifySettings.enabled;
@@ -18,6 +20,23 @@ function syncNotifySettingsInputs() {
     settingsNotifyMovies.checked = state.notifySettings.movies !== false;
     settingsNotifyInterval.value = sanitizeAutoSyncHours(state.notifySettings.autoSyncHours);
 }
+
+// Builds the language selector from the supported language registry.
+function buildLangSelect() {
+    settingsLangInput.innerHTML = '';
+    for (const l of LANGS) {
+        const opt = document.createElement('option');
+        opt.value = l.code;
+        opt.textContent = l.label;
+        if (l.code === state.lang) opt.selected = true;
+        settingsLangInput.appendChild(opt);
+    }
+}
+buildLangSelect();
+
+// "Replay tutorial" button in the Preferences tab re-opens the guided tour.
+const replayTutorialBtn = document.getElementById('btn-tutorial-replay');
+if (replayTutorialBtn) replayTutorialBtn.addEventListener('click', startTutorial);
 
 // Shows the in-app notice when the TMDB key is missing.
 function syncApiKeyNotice() {

@@ -3,8 +3,31 @@ import { BASE_URL } from './env.js';
 import { locale } from './i18n.js';
 import { LruCache } from './utils.js';
 
-async function fetchJson(url, opts) {
-    const res = await fetch(url, opts);
+// TMDB ships two kinds of credentials:
+//  - a v3 API key (32 hex chars) passed as the `api_key` query parameter;
+//  - a v4 Read Access Token (a JWT: three base64url segments) passed as the
+//    `Authorization: Bearer <token>` header. Both are accepted in the same
+//    settings field, so we detect the shape and adapt the request.
+const TMDB_HOST = 'api.themoviedb.org';
+
+function isV4Token(key) {
+    return /^eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/.test(key.trim());
+}
+
+async function fetchJson(url, opts = {}) {
+    const key = (state.apiKey || '').trim();
+    const headers = Object.assign({}, opts.headers);
+    let finalUrl = url;
+    if (key && isV4Token(key) && finalUrl.includes(TMDB_HOST)) {
+        // v4: drop the v3 api_key param and authenticate via the bearer header.
+        try {
+            const u = new URL(finalUrl);
+            u.searchParams.delete('api_key');
+            finalUrl = u.toString();
+        } catch (err) { /* leave the URL untouched if it is not parseable */ }
+        headers.Authorization = `Bearer ${key}`;
+    }
+    const res = await fetch(finalUrl, Object.assign({}, opts, { headers }));
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return res.json();
 }

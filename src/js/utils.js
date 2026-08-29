@@ -1,4 +1,5 @@
 import { state } from './state.js';
+import { decimalIsComma } from './langs.js';
 
 function escapeHtml(str) {
     return String(str).replace(/[&<>"']/g, c => ({
@@ -85,10 +86,10 @@ async function mapPool(items, limit, worker) {
     return results;
 }
 
-// Localized vote number, e.g. "7,2" in Italian ("7.2" in English).
+// Localized vote number, e.g. "7,2" where the decimal separator is a comma.
 function formatVoteNumber(vote) {
     const n = Number(vote).toFixed(1);
-    return state.lang === 'it' ? n.replace('.', ',') : n;
+    return decimalIsComma(state.lang) ? n.replace('.', ',') : n;
 }
 
 function formatVote(vote) {

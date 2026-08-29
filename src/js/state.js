@@ -1,6 +1,7 @@
 /* global __BLAMEFLIX_VERSION__ */
 import { readStoredJson } from './storage.js';
 import { normalizeWatched } from './watched.js';
+import { LANG_CODES } from './langs.js';
 
 // Version injected at build time from package.json; resolved against the
 // native wrapper at startup (see env.resolveAppVersion).
@@ -9,6 +10,14 @@ export const BUILD_APP_VERSION = __BLAMEFLIX_VERSION__;
 export const LANG_STORAGE = 'myLang';
 const storedLangValue = localStorage.getItem(LANG_STORAGE);
 const browserLang = (navigator.language || 'en').toLowerCase().split('-')[0];
+
+// The saved preference always wins; otherwise we match the system language if
+// BlameFlix is translated into it, falling back to English.
+function detectLang() {
+    if (LANG_CODES.includes(storedLangValue)) return storedLangValue;
+    if (LANG_CODES.includes(browserLang)) return browserLang;
+    return 'en';
+}
 
 // Release notifications
 export const DEFAULT_NOTIFY_SETTINGS = { enabled: true, tv: true, movies: true, autoSyncHours: 24 };
@@ -33,9 +42,9 @@ function loadReleaseState() {
 export const state = {
     appVersion: BUILD_APP_VERSION,
     apiKey: localStorage.getItem('myTMDbApiKey') || '',
-    // Default language is English for everyone, except when the system
-    // language is Italian (a saved preference always wins).
-    lang: (storedLangValue === 'it' || storedLangValue === 'en') ? storedLangValue : (browserLang === 'it' ? 'it' : 'en'),
+    // Default language is auto-detected from the system (a saved preference
+    // always wins), falling back to English when not translated.
+    lang: detectLang(),
     currentMedia: null, // The media currently shown in the details view
     watchlist: readStoredJson('myWatchlist', []),
     watchlistDetails: new Map(), // in-memory cache: key 'media_type:id' -> full object (never persisted)

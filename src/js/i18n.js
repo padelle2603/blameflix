@@ -1,4 +1,6 @@
 import { state, LANG_STORAGE } from './state.js';
+import { EXTRA_LANGS } from './i18n-langs.js';
+import { LANG_CODES, langMeta } from './langs.js';
 import { detailsCache, seasonEpisodesCache, tvSeasonsCache } from './tmdb.js';
 import { syncTools, renderHome } from './catalog.js';
 import { hydrateWatchlistGrid } from './backup.js';
@@ -47,6 +49,9 @@ const I18N = {
         'home.noResults': 'Nessun risultato',
         'home.noResultsDesc': 'Non abbiamo trovato nulla con questa ricerca. Prova un altro titolo.',
         'tools.filterBy': 'Filtra per tipo',
+        'filter.movie': 'film',
+        'filter.tv': 'serie',
+        'filter.all': 'titoli',
         'tools.all': 'Tutti',
         'tools.movie': 'Film',
         'tools.tv': 'Serie',
@@ -269,6 +274,27 @@ const I18N = {
         'msg.acceptToStart': 'Accetta per avviare BlameFlix',
         'toast.newReleases': 'Nuove uscite in sala',
         'toast.noSource': 'Sorgente non disponibile',
+        'tutorial.kicker': 'Guida rapida',
+        'tutorial.skip': 'Salta',
+        'tutorial.prev': 'Indietro',
+        'tutorial.next': 'Avanti',
+        'tutorial.done': 'Fine',
+        'tutorial.step1Title': 'Benvenuto in BlameFlix',
+        'tutorial.step1Body': 'La tua sala personale per film e serie TV. Questo giro veloce mostra l\'essenziale — puoi saltarlo quando vuoi.',
+        'tutorial.step2Title': 'Chiave TMDB e sorgente',
+        'tutorial.step2Body': 'Imposta la tua chiave TMDB gratuita e un URL sorgente (dove guardare). Senza di essi non puoi cercare né usare «Guarda ora». Li trovi nelle Impostazioni.',
+        'tutorial.step3Title': 'Ricerca',
+        'tutorial.step3Body': 'Cerca qui un film o una serie. Apri il risultato per aggiungerlo alla tua sala.',
+        'tutorial.step4Title': 'La tua sala',
+        'tutorial.step4Body': 'I titoli salvati vivono qui. Il contatore mostra quante puntate mancano da vedere.',
+        'tutorial.step5Title': 'Menu libreria',
+        'tutorial.step5Body': 'Filtra per film/serie, passa da griglia a lista e riordina le righe dal menu ⋮.',
+        'tutorial.step6Title': 'Sincronizza le uscite',
+        'tutorial.step6Body': 'Tocca ⟳ per controllare nuove puntate e film nella tua sala, o lascia che lo faccia in automatico.',
+        'tutorial.step7Title': 'La scheda titolo',
+        'tutorial.step7Body': 'Apri un titolo: «Guarda ora» apre la tua sorgente e, per le serie, puoi segnare le puntate come viste stagione per stagione.',
+        'settings.replayTutorial': 'Rivedi il tutorial',
+        'settings.replayTutorialHint': 'Mostra di nuovo il tour guidato del primo avvio.',
         'notify.releases': 'BlameFlix · Rilasci'
     },
     en: {
@@ -305,6 +331,9 @@ const I18N = {
         'home.noResults': 'No results',
         'home.noResultsDesc': 'We found nothing for this search. Try another title.',
         'tools.filterBy': 'Filter by type',
+        'filter.movie': 'movies',
+        'filter.tv': 'series',
+        'filter.all': 'titles',
         'tools.all': 'All',
         'tools.movie': 'Movies',
         'tools.tv': 'Series',
@@ -527,9 +556,34 @@ const I18N = {
         'msg.acceptToStart': 'Accept to start BlameFlix',
         'toast.newReleases': 'New releases in your room',
         'toast.noSource': 'Source not available',
+        'tutorial.kicker': 'Quick tour',
+        'tutorial.skip': 'Skip',
+        'tutorial.prev': 'Back',
+        'tutorial.next': 'Next',
+        'tutorial.done': 'Done',
+        'tutorial.step1Title': 'Welcome to BlameFlix',
+        'tutorial.step1Body': 'Your personal screening room for movies and series. This quick tour shows the essentials — you can skip it anytime.',
+        'tutorial.step2Title': 'Your TMDB key & source',
+        'tutorial.step2Body': 'Set your free TMDB API key and a source URL (where to watch). Without them you cannot search or use "Watch now". Both are in Settings.',
+        'tutorial.step3Title': 'Search',
+        'tutorial.step3Body': 'Look up any movie or series here. Open the result to add it to your room.',
+        'tutorial.step4Title': 'Your room',
+        'tutorial.step4Body': 'Saved titles live here. The counter shows how many episodes are left to watch.',
+        'tutorial.step5Title': 'Library menu',
+        'tutorial.step5Body': 'Filter by movies/series, switch grid/list view and reorder the rows from the ⋮ menu.',
+        'tutorial.step6Title': 'Sync new releases',
+        'tutorial.step6Body': 'Tap ⟳ to check for new episodes and movies in your room, or let it run automatically.',
+        'tutorial.step7Title': 'The title sheet',
+        'tutorial.step7Body': 'Open any title: "Watch now" opens your source, and for series you can mark episodes as watched season by season.',
+        'settings.replayTutorial': 'Replay tutorial',
+        'settings.replayTutorialHint': 'Show the first-launch guided tour again.',
         'notify.releases': 'BlameFlix · Releases'
     }
 };
+
+// Additional language packs (es, fr, de, ru, zh, hi) kept in their own module
+// to keep this file readable; merged into the main I18N table below.
+Object.assign(I18N, EXTRA_LANGS);
 
 // Translation lookup: current language, fallback to Italian.
 function t(key, vars) {
@@ -555,7 +609,7 @@ function tp(key, n) {
 
 // Locale used for dates and TMDB requests.
 function locale() {
-    return state.lang === 'en' ? 'en-US' : 'it-IT';
+    return langMeta(state.lang).locale;
 }
 
 // Applies the current language to every static and dynamic element.
@@ -585,7 +639,7 @@ function applyLanguage() {
 
 // Switches the language (and optionally persists the choice).
 function setLanguage(newLang, persist) {
-    if (newLang !== 'it' && newLang !== 'en') return;
+    if (!LANG_CODES.includes(newLang)) return;
     state.lang = newLang;
     if (persist) localStorage.setItem(LANG_STORAGE, state.lang);
     // All the TMDB caches hold localized text: everything is dropped so

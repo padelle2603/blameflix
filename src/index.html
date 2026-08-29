@@ -289,11 +289,12 @@
         <section class="settings-tabpage" id="settings-tab-prefs" role="tabpanel" hidden>
             <div class="settings-field">
                 <label for="settings-lang" data-i18n="settings.language">Lingua</label>
-                <select id="settings-lang">
-                    <option value="it">Italiano</option>
-                    <option value="en">English</option>
-                </select>
+                <select id="settings-lang"></select>
                 <p class="settings-hint" data-i18n="settings.langHint">Lingua dell'interfaccia. Al primo avvio viene rilevata automaticamente.</p>
+            </div>
+            <div class="settings-field">
+                <button type="button" class="btn" id="btn-tutorial-replay" data-i18n="settings.replayTutorial">Rivedi il tutorial</button>
+                <p class="settings-hint" data-i18n="settings.replayTutorialHint">Mostra di nuovo il tour guidato del primo avvio.</p>
             </div>
         </section>
 
@@ -437,6 +438,22 @@
         <div class="settings-actions">
             <button type="button" class="btn btn--rosso" id="disclaimer-accept" onclick="acceptDisclaimer()" disabled data-i18n="disclaimer.accept">Accetta</button>
             <span class="disclaimer-status" id="disclaimer-status">Accettabile tra 10s</span>
+        </div>
+    </div>
+</div>
+
+<div id="tutorial-overlay" class="tutorial-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="tutorial-title">
+    <div class="tutorial-shades" id="tutorial-shades" aria-hidden="true"></div>
+    <div class="tutorial-tooltip" id="tutorial-tooltip" role="document">
+        <span class="eyebrow" data-i18n="tutorial.kicker">Quick tour</span>
+        <h2 class="tutorial-title" id="tutorial-title"></h2>
+        <p class="tutorial-body" id="tutorial-body"></p>
+        <div class="tutorial-progress" id="tutorial-progress" aria-hidden="true"></div>
+        <div class="tutorial-actions">
+            <button type="button" class="btn btn--ghost" id="tutorial-skip" data-i18n="tutorial.skip">Skip</button>
+            <span class="tutorial-spacer"></span>
+            <button type="button" class="btn" id="tutorial-prev" data-i18n="tutorial.prev">Back</button>
+            <button type="button" class="btn btn--rosso" id="tutorial-next" data-i18n="tutorial.next">Next</button>
         </div>
     </div>
 </div>
