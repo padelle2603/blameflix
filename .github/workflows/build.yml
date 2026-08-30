@@ -28,6 +28,9 @@ jobs:
           distribution: temurin
           java-version: 21
 
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -64,10 +67,16 @@ jobs:
           EOF
 
       - name: Build APK
+        working-directory: android
         run: |
-          cd android
-          chmod +x gradlew
-          ./gradlew assembleRelease -PappVersion=$APP_VERSION
+          for i in 1 2 3 4 5; do
+            if ./gradlew assembleRelease -PappVersion=$APP_VERSION; then
+              exit 0
+            fi
+            echo "Attempt $i failed (transient download), retrying in 15s..."
+            sleep 15
+          done
+          exit 1
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
