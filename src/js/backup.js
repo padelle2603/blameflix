@@ -14,8 +14,15 @@ import { watchlistKey } from './watchlist.js';
 import { renderGrid, syncTools, showHome } from './catalog.js';
 import { refreshHomeUnwatchedCount } from './counter.js';
 import { backupFile, backupStatus, homeView, settingsKeyInput, settingsOverlay } from './dom.js';
+import { encryptAPIKey, decryptAPIKey, isEncryptedKey } from './crypto.js';
 
-function backupData() {
+async function backupData() {
+    let apiKeyPackage = state.apiKey;
+    if (state.apiKey) {
+        try {
+            apiKeyPackage = await encryptAPIKey(state.apiKey);
+        } catch { /* keep plaintext as fallback */ }
+    }
     return {
         app: 'BlameFlix',
         version: 8,
@@ -26,7 +33,7 @@ function backupData() {
             myCustomSelections: state.customSelections,
             myWatchedEpisodes: compressWatched(state.watchedEpisodes),
             myNewsHistory: state.newsHistory,
-            myTMDbApiKey: state.apiKey,
+            myTMDbApiKey: apiKeyPackage,
             myResolver: state.resolver,
             myResolverOverrides: state.resolverOverrides,
             myNetworkSources: state.networkSources,
@@ -57,7 +64,7 @@ function backupFileName() {
 // Desktop browser: opens the system save dialog (if supported).
 // Fallback: downloads the file to the Downloads folder.
 async function createBackup() {
-    const json = JSON.stringify(backupData(), null, 2);
+    const json = JSON.stringify(await backupData(), null, 2);
 
     // Android (Capacitor Filesystem)
     if (window.Capacitor?.isNativePlatform?.() && window.Capacitor?.Plugins?.Filesystem) {
@@ -395,7 +402,15 @@ backupFile.addEventListener('change', e => {
             const cs = sanitizeCustomSelections(data.myCustomSelections);
             const we = data.myWatchedEpisodes && typeof data.myWatchedEpisodes === 'object' ? data.myWatchedEpisodes : {};
             const nh = sanitizeNewsEntries(data.myNewsHistory);
-            const key = safeString(data.myTMDbApiKey, 120).trim() || localStorage.getItem('myTMDbApiKey') || '';
+            let key = safeString(data.myTMDbApiKey, 500).trim() || localStorage.getItem('myTMDbApiKey') || '';
+            if (isEncryptedKey(key)) {
+                try {
+                    key = await decryptAPIKey(key);
+                } catch {
+                    showBackupStatus(t('msg.backupDecryptError'), true);
+                    return;
+                }
+            }
             const rs = data.myResolver && typeof data.myResolver === 'object'
                 ? { movie: safeString(data.myResolver.movie, 1000), tv: safeString(data.myResolver.tv, 1000) }
                 : { movie: '', tv: '' };
@@ -472,7 +487,7 @@ backupFile.addEventListener('change', e => {
 async function deleteAllData() {
     if (!window.confirm(t('settings.dataDeleteConfirm'))) return;
 
-    const keepKeys = ['myTMDbApiKey', 'myLang', 'myDisclaimerAccepted', 'myUpdateCheck'];
+    const keepKeys = ['myTMDbApiKey', 'myCryptoKey', 'myLang', 'myDisclaimerAccepted', 'myUpdateCheck'];
     const toRemove = [];
     for (let i = 0; i < localStorage.length; i++) {
         const k = localStorage.key(i);

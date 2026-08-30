@@ -13,11 +13,23 @@ import { showDetails, refreshUnwatchedCount } from './details.js';
 import { refreshHomeUnwatchedCount } from './counter.js';
 import { showToast } from './toast.js';
 import { maybeStartTutorial } from './tutorial.js';
+import { decryptAPIKey, isEncryptedKey } from './crypto.js';
 
 // Real app startup: executed only after the disclaimer is accepted on the
 // very first use.
 function startApp() {
-    syncApiKeyNotice();
+    if (isEncryptedKey(state.apiKey)) {
+        decryptAPIKey(state.apiKey).then(plain => {
+            state.apiKey = plain;
+            localStorage.setItem('myTMDbApiKey', plain);
+            syncApiKeyNotice();
+        }).catch(() => {
+            state.apiKey = '';
+            syncApiKeyNotice();
+        });
+    } else {
+        syncApiKeyNotice();
+    }
     syncResolverNotice();
     syncTools();
     showHome();

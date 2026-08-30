@@ -240,9 +240,9 @@
         <section class="settings-tabpage" id="settings-tab-api" role="tabpanel">
             <div class="settings-field">
                 <label for="settings-api-key" data-i18n="settings.apiKey">Chiave API TMDB</label>
-                <input type="text" id="settings-api-key" inputmode="text" autocomplete="off"
+                <input type="password" id="settings-api-key" inputmode="text" autocomplete="off"
                        placeholder="Inserisci la tua chiave personale" data-i18n-placeholder="settings.apiKeyPlaceholder">
-                <p class="settings-hint" data-i18n="settings.apiKeyHint">La chiave personale si ottiene gratuitamente su themoviedb.org → Settings → API. Senza chiave non puoi cercare titoli.</p>
+                <p class="settings-hint" data-i18n="settings.apiKeyHint">La chiave personale si ottiene gratuitamente su themoviedb.org → Impostazioni → API. Senza chiave non puoi cercare titoli.</p>
             </div>
 
             <div class="settings-field settings-field--divider">
@@ -253,6 +253,14 @@
                 <input type="url" id="settings-resolver-tv" autocomplete="off"
                        placeholder="https://esempio.com/tv/{id}/{season}/{episode}/" data-i18n-placeholder="settings.sourceTvPlaceholder">
                 <p class="settings-hint" data-i18n="settings.sourceHint">L'app apre l'URL della sorgente che tu configuri, sostituendo i segnaposto {id}, {type}, {season}, {episode} con i valori del titolo. Senza segnaposto l'URL viene aperto esattamente com'è. Solo collegamenti http/https: magnet, torrent e altri protocolli non sono supportati. Se lasci vuoto, «Guarda ora» non è attivo.</p>
+            </div>
+            <div class="settings-field">
+                <label for="settings-browser" data-i18n="settings.browser">Apertura link</label>
+                <select id="settings-browser">
+                    <option value="default" data-i18n="settings.browserDefault">Predefinito</option>
+                    <option value="ask" data-i18n="settings.browserAsk">Chiedi ogni volta</option>
+                </select>
+                <p class="settings-hint" data-i18n="settings.browserHint">Come aprire i link dei contenuti: con il browser predefinito (Chrome Custom Tabs) o scegliendo ogni volta.</p>
             </div>
         </section>
 
@@ -291,10 +299,6 @@
                 <label for="settings-lang" data-i18n="settings.language">Lingua</label>
                 <select id="settings-lang"></select>
                 <p class="settings-hint" data-i18n="settings.langHint">Lingua dell'interfaccia. Al primo avvio viene rilevata automaticamente.</p>
-            </div>
-            <div class="settings-field">
-                <button type="button" class="btn" id="btn-tutorial-replay" data-i18n="settings.replayTutorial">Rivedi il tutorial</button>
-                <p class="settings-hint" data-i18n="settings.replayTutorialHint">Mostra di nuovo il tour guidato del primo avvio.</p>
             </div>
         </section>
 
@@ -340,7 +344,9 @@
                 <p class="settings-hint" data-i18n="settings.helpHint">Hai domande su come usare BlameFlix? Trovi tutto spiegato nella guida.</p>
                 <div class="settings-actions">
                     <button type="button" class="btn" onclick="openDocs()" data-i18n="settings.docs">❓ Documentazione</button>
+                    <button type="button" class="btn" id="btn-tutorial-replay" data-i18n="settings.replayTutorial">Rivedi il tutorial</button>
                 </div>
+                <p class="settings-hint" data-i18n="settings.replayTutorialHint">Mostra di nuovo il tour guidato del primo avvio.</p>
             </div>
         </section>
 

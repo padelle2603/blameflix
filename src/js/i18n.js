@@ -22,7 +22,7 @@ const I18N = {
         'notice.setkey': 'Imposta la chiave',
         'notice.noresolver': '⚠ Nessuna sorgente configurata · «Guarda ora» non attivo',
         'notice.configsource': 'Configura la sorgente',
-        'notice.downloadGitHub': 'Scarica dal GitHub',
+        'notice.downloadGitHub': 'Scarica da GitHub',
         'notice.downloadApk': 'Scarica APK',
         'notice.dismiss': 'Ignora questo aggiornamento',
         'notice.updateAvailable': '⚠ Nuova versione {tag} disponibile su GitHub',
@@ -88,10 +88,10 @@ const I18N = {
         'detail.networkGlobal': 'Rete: —',
         'detail.networkCustom': 'Rete: {name}',
         'detail.networkNone': '— Nessuna —',
-        'detail.networkSelectLabel': 'Editore / Rete',
+        'detail.networkSelectLabel': 'Emittente / Rete',
         'detail.networkForTitle': 'Programmazione di rete per questo titolo',
         'detail.networkPlaceholder': 'https://esempio.com/schedule/{id}',
-        'detail.networkOverrideHint': 'Incolla l\'URL di una fonte esterna che restituisce la programmazione della rete in JSON (segnaposto {id}, {networkId}, {networkName}). L\'endpoint deve essere raggiungibile dal browser: se la fonte blocca il CORS, passala attraverso un proxy a tuo carico. Solo http/https.',
+        'detail.networkOverrideHint': 'Incolla l\'URL di una sorgente esterna che restituisce la programmazione della rete in JSON (segnaposto {id}, {networkId}, {networkName}). L\'endpoint deve essere raggiungibile dal browser: se la sorgente blocca il CORS, passala attraverso un proxy a tuo carico. Solo http/https.',
         'detail.savedRemove': '✓ Salvato · rimuovi',
         'detail.addSaved': '+ Aggiungi ai salvati',
         'detail.noOverview': 'Nessuna descrizione disponibile.',
@@ -106,14 +106,18 @@ const I18N = {
         'settings.close': '× Chiudi',
         'settings.apiKey': 'Chiave API TMDB',
         'settings.apiKeyPlaceholder': 'Inserisci la tua chiave personale',
-        'settings.apiKeyHint': 'La chiave personale si ottiene gratuitamente su themoviedb.org → Settings → API. Senza chiave non puoi cercare titoli.',
+        'settings.apiKeyHint': 'La chiave personale si ottiene gratuitamente su themoviedb.org → Impostazioni → API. Senza chiave non puoi cercare titoli.',
         'settings.sourceMovie': 'Sorgente film',
         'settings.sourceMoviePlaceholder': 'https://esempio.com/movie/{id}/',
         'settings.sourceTv': 'Sorgente serie',
         'settings.sourceTvPlaceholder': 'https://esempio.com/tv/{id}/{season}/{episode}/',
         'settings.sourceHint': 'L\'app apre l\'URL della sorgente che tu configuri, sostituendo i segnaposto {id}, {type}, {season}, {episode} con i valori del titolo. Senza segnaposto l\'URL viene aperto esattamente com\'è. Solo collegamenti http/https: magnet, torrent e altri protocolli non sono supportati. Se lasci vuoto, «Guarda ora» non è attivo.',
+        'settings.browser': 'Apertura link',
+        'settings.browserDefault': 'Predefinito',
+        'settings.browserAsk': 'Chiedi ogni volta',
+        'settings.browserHint': 'Come aprire i link dei contenuti: con il browser predefinito (Chrome Custom Tabs) o scegliendo ogni volta.',
         'settings.notify': 'Notifiche di rilascio',
-        'settings.notifyHint': 'Ti avvisiamo quando esce una nuova puntata di una serie o esce un film della tua sala. Le novità restano anche nella cronologia «Novità» in home. Il controllo avviene all\'apertura dell\'app, automaticamente a intervalli regolari e con il tasto «⟳ Sync» nella sala. Su Android serve il permesso di notifica di sistema.',
+        'settings.notifyHint': 'Ti avvisiamo quando esce una nuova puntata di una serie o esce un film della tua sala. Le novità restano anche nella cronologia «Novità» in home. Il controllo avviene all\'apertura dell\'app, automaticamente a intervalli regolari e con il tasto «⟳ Sincronizzazione» nella sala. Su Android serve il permesso di notifica di sistema.',
         'settings.notifyMovies': 'Notifiche per le uscite dei film',
         'settings.notifyEnable': 'Abilita notifiche',
         'settings.notifyTv': 'Notifiche per le nuove puntate',
@@ -174,12 +178,12 @@ const I18N = {
 <p>Al primo utilizzo BlameFlix mostra un avviso legale sull'uso dell'app: l'avvio è sbloccato solo dopo l'accettazione (attivabile dopo 10 secondi). L'accettazione è ricordata e non viene più richiesta alle aperture successive.</p>
 
 <h3>Notifiche di rilascio</h3>
-<p>BlameFlix può avvisarti quando esce una <strong>nuova puntata</strong> di una serie della tua sala (alla data di messa in onda). Il controllo avviene automaticamente all'apertura dell'app, a intervalli regolari configurabili nelle Impostazioni (ogni 8, 12, 24 o 48 ore) e manualmente con il tasto <strong>«⟳ Sync»</strong> nella sala.</p>
+<p>BlameFlix può avvisarti quando esce una <strong>nuova puntata</strong> di una serie della tua sala (alla data di messa in onda). Il controllo avviene automaticamente all'apertura dell'app, a intervalli regolari configurabili nelle Impostazioni (ogni 8, 12, 24 o 48 ore) e manualmente con il tasto <strong>«⟳ Sincronizzazione»</strong> nella sala.</p>
 <p>Ogni nuova uscita finisce anche nella cronologia <strong>«Novità»</strong> in home: toccando una voce apri la scheda del titolo e con <strong>«Svuota»</strong> puoi azzerarla. Le puntate che hai già segnato come viste non vengono considerate nuove.</p>
 <p>Nelle <strong>Impostazioni</strong> la sezione notifiche è semplice: <strong>«Abilita notifiche»</strong> e <strong>«Notifiche per le nuove puntate»</strong>. Puoi regolare la frequenza della <strong>sincronizzazione automatica</strong> e inviare una <strong>notifica di prova</strong>. Su Android la prima notifica chiede il permesso di sistema e toccando una notifica si apre la scheda della serie. Le date arrivano da TMDB: se mancano o cambiano, gli avvisi arrivano al primo controllo utile.</p>
 
 <h3>Legalità dei contenuti</h3>
-<p>BlameFlix è un lettore generico: le sorgenti di streaming le configuri tu nelle Impostazioni. Sei <strong>responsabile della legalità dei contenuti</strong> a cui accedi tramite la tua sorgente, secondo le leggi del tuo Paese. In Italia l'accesso a streaming non autorizzato può comportare sanzioni amministrative (legge 93/2023) e sono in discussione multe più severe. BlameFlix non fornisce né segnala alcuna fonte di contenuti.</p>
+<p>BlameFlix è un lettore generico: le sorgenti di streaming le configuri tu nelle Impostazioni. Sei <strong>responsabile della legalità dei contenuti</strong> a cui accedi tramite la tua sorgente, secondo le leggi del tuo Paese. In Italia l'accesso a streaming non autorizzato può comportare sanzioni amministrative (legge 93/2023) e sono in discussione multe più severe. BlameFlix non fornisce né segnala alcuna sorgente di contenuti.</p>
 
 <h3>Backup dei dati</h3>
 <p>Con <strong>«Crea backup»</strong> salvi un file con i tuoi dati: i titoli salvati, le puntate viste (stagione ed episodio per ogni serie), gli ultimi film e serie visti, la cronologia «Novità», la tua chiave personale e le preferenze di visualizzazione. Il programma ti chiede dove salvare il file.</p>
@@ -210,10 +214,10 @@ const I18N = {
         'common.movieKindLong': 'FILM',
         'common.saved': 'SALVATO',
         'common.toWatch': 'da vedere',
-        'common.sync': 'Sync',
+        'common.sync': 'Sincronizza',
         'common.syncing': '⟳ …',
         'episode.label': 'Episodio {n}',
-        'episode.watched': '✓ Visto',
+        'episode.watched': '✓ Vista',
         'episode.removeFromWatched': 'Togli da viste',
         'episode.markWatched': 'Segna come vista',
         'episode.watch': '▶ Guarda',
@@ -269,6 +273,7 @@ const I18N = {
         'msg.backupRestored': 'Backup ripristinato ✓',
         'msg.backupInvalid': 'File di backup non valido',
         'msg.backupReadError': 'Impossibile leggere il file',
+        'msg.backupDecryptError': 'Impossibile decrittografare la chiave. Verifica che la chiave TMDB sia corretta.',
         'msg.dataDeleted': 'Dati eliminati ✓',
         'msg.acceptableIn': 'Accettabile tra {n}s',
         'msg.acceptToStart': 'Accetta per avviare BlameFlix',
@@ -394,6 +399,10 @@ const I18N = {
         'settings.sourceTv': 'Series source',
         'settings.sourceTvPlaceholder': 'https://example.com/tv/{id}/{season}/{episode}/',
         'settings.sourceHint': 'The app opens the URL of the source you configure, replacing the {id}, {type}, {season}, {episode} placeholders with the values of the title. Without placeholders the URL is opened exactly as it is. Only http/https links: magnet, torrent and other protocols are not supported. If you leave it empty, «Watch now» is off.',
+        'settings.browser': 'Link opening',
+        'settings.browserDefault': 'Default',
+        'settings.browserAsk': 'Ask every time',
+        'settings.browserHint': 'How to open content links: with the default browser (Chrome Custom Tabs) or choosing each time.',
         'settings.notify': 'Release notifications',
         'settings.notifyHint': 'We warn you when a new episode of a series or a movie from your room is released. The news also stays in the «News» history on the home page. The check happens when the app opens, automatically at regular intervals and with the «⟳ Sync» button in your room. On Android the system notification permission is required.',
         'settings.notifyMovies': 'Notifications for movie releases',
@@ -551,6 +560,7 @@ const I18N = {
         'msg.backupRestored': 'Backup restored ✓',
         'msg.backupInvalid': 'Invalid backup file',
         'msg.backupReadError': 'Unable to read the file',
+        'msg.backupDecryptError': 'Cannot decrypt the key. Verify the TMDB key is correct.',
         'msg.dataDeleted': 'Data deleted ✓',
         'msg.acceptableIn': 'Can be accepted in {n}s',
         'msg.acceptToStart': 'Accept to start BlameFlix',

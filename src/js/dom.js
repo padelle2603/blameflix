@@ -26,6 +26,7 @@ export const settingsKeyInput = document.getElementById('settings-api-key');
 export const settingsResolverMovieInput = document.getElementById('settings-resolver-movie');
 export const settingsResolverTvInput = document.getElementById('settings-resolver-tv');
 export const settingsLangInput = document.getElementById('settings-lang');
+export const settingsBrowserInput = document.getElementById('settings-browser');
 export const settingsStatus = document.getElementById('settings-status');
 export const keyNotice = document.getElementById('key-notice');
 export const resolverNotice = document.getElementById('resolver-notice');

@@ -1,7 +1,7 @@
 import { state, DEFAULT_NOTIFY_SETTINGS, sanitizeAutoSyncHours, persistNotifySettings } from './state.js';
 import {
     settingsOverlay, settingsKeyInput, settingsResolverMovieInput, settingsResolverTvInput,
-    settingsLangInput, settingsStatus, keyNotice, resolverNotice,
+    settingsLangInput, settingsBrowserInput, settingsStatus, keyNotice, resolverNotice,
     settingsNotifyEnabled, settingsNotifyTv, settingsNotifyMovies, settingsNotifyInterval,
     docsOverlay
 } from './dom.js';
@@ -13,6 +13,8 @@ import { isNativeRuntime } from './env.js';
 import { syncLastUpdateCheck } from './updates.js';
 import { LANGS } from './langs.js';
 import { startTutorial } from './tutorial.js';
+import { encryptAPIKey } from './crypto.js';
+import { getBrowserMode, setBrowserMode, BROWSER_MODE } from './browser.js';
 
 function syncNotifySettingsInputs() {
     settingsNotifyEnabled.checked = state.notifySettings.enabled;
@@ -34,7 +36,7 @@ function buildLangSelect() {
 }
 buildLangSelect();
 
-// "Replay tutorial" button in the Preferences tab re-opens the guided tour.
+// "Replay tutorial" button re-opens the guided tour.
 const replayTutorialBtn = document.getElementById('btn-tutorial-replay');
 if (replayTutorialBtn) replayTutorialBtn.addEventListener('click', startTutorial);
 
@@ -75,6 +77,7 @@ function openSettings() {
     settingsResolverMovieInput.value = state.resolver.movie || '';
     settingsResolverTvInput.value = state.resolver.tv || '';
     settingsLangInput.value = state.lang;
+    settingsBrowserInput.value = getBrowserMode();
     settingsStatus.hidden = true;
     settingsStatus.classList.remove('is-error');
     syncNotifySettingsInputs();
@@ -108,7 +111,7 @@ docsOverlay.addEventListener('click', e => {
     if (e.target === docsOverlay) closeDocs();
 });
 
-function saveSettings() {
+async function saveSettings() {
     const key = settingsKeyInput.value.trim();
 
     const movieTemplate = settingsResolverMovieInput.value.trim();
@@ -124,7 +127,12 @@ function saveSettings() {
     }
 
     state.apiKey = key;
-    localStorage.setItem('myTMDbApiKey', key);
+    if (key) {
+        const encrypted = await encryptAPIKey(key);
+        localStorage.setItem('myTMDbApiKey', encrypted);
+    } else {
+        localStorage.removeItem('myTMDbApiKey');
+    }
 
     state.resolver = {
         movie: movieTemplate,
@@ -140,6 +148,7 @@ function saveSettings() {
     };
     persistNotifySettings();
     startAutoSyncTimer();
+    setBrowserMode(settingsBrowserInput.value);
 
     syncApiKeyNotice();
     syncResolverNotice();

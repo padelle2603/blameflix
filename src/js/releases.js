@@ -86,15 +86,15 @@ function isNewerThanStored(stored, cur, prevSync) {
 // alerts.
 async function checkReleases(manual = false) {
     if (!state.apiKey) {
-        if (manual) showToast('Sync', t('msg.needKey'));
+        if (manual) showToast(t('common.sync'), t('msg.needKey'));
         return { newCount: 0, baseline: false };
     }
     if (!state.watchlist.length) {
-        if (manual) showToast('Sync', t('msg.emptyRoomForSync'));
+        if (manual) showToast(t('common.sync'), t('msg.emptyRoomForSync'));
         return { newCount: 0, baseline: false };
     }
     if (releasesSyncRunning) {
-        if (manual) showToast('Sync', t('msg.syncAlreadyRunning'));
+        if (manual) showToast(t('common.sync'), t('msg.syncAlreadyRunning'));
         return { newCount: 0, baseline: false };
     }
     releasesSyncRunning = true;
@@ -191,7 +191,7 @@ async function checkReleases(manual = false) {
             const extra = newReleases.length > 4 ? t('msg.moreReleases', { n: newReleases.length - 4 }) : '';
             showToast(t('toast.newReleases'), list + extra, 8000);
         } else if (manual) {
-            showToast('Sync', isBaseline && fetched > 0
+            showToast(t('common.sync'), isBaseline && fetched > 0
                 ? t('msg.firstSync')
                 : t('msg.noNewReleases'));
         }

@@ -8,6 +8,7 @@ import { syncResolverNotice } from './settings.js';
 import { showToast } from './toast.js';
 import { t } from './i18n.js';
 import { isMobile } from './env.js';
+import { openLink } from './browser.js';
 
 // --- PLAYER LOGIC ---
 
@@ -93,7 +94,7 @@ async function openPlayer(resume = false) {
 
     // From a phone use the external browser, from a PC open a new window
     if (isMobile()) {
-        await openBrowser(streamUrl);
+        await openLink(streamUrl);
     } else {
         openWindow(streamUrl);
     }
