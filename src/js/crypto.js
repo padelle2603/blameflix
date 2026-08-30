@@ -45,6 +45,10 @@ export async function decryptAPIKey(encryptedStr) {
     return decoder.decode(decrypted);
 }
 
+export async function getCryptoKeyString() {
+    return getCryptoKey();
+}
+
 export function isEncryptedKey(str) {
     try {
         const obj = JSON.parse(str);

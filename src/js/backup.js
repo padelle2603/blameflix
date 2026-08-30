@@ -13,8 +13,8 @@ import { sourceTemplateError } from './resolver.js';
 import { watchlistKey } from './watchlist.js';
 import { renderGrid, syncTools, showHome } from './catalog.js';
 import { refreshHomeUnwatchedCount } from './counter.js';
-import { backupFile, backupStatus, homeView, settingsKeyInput, settingsOverlay } from './dom.js';
-import { encryptAPIKey, decryptAPIKey, isEncryptedKey } from './crypto.js';
+import { backupFile, backupStatus, homeView, settingsKeyInput, settingsOverlay, settingsResolverMovieInput, settingsResolverTvInput, settingsLangInput } from './dom.js';
+import { encryptAPIKey, decryptAPIKey, isEncryptedKey, getCryptoKeyString } from './crypto.js';
 
 async function backupData() {
     let apiKeyPackage = state.apiKey;
@@ -23,6 +23,7 @@ async function backupData() {
             apiKeyPackage = await encryptAPIKey(state.apiKey);
         } catch { /* keep plaintext as fallback */ }
     }
+    const cryptoKey = await getCryptoKeyString();
     return {
         app: 'BlameFlix',
         version: 8,
@@ -34,6 +35,7 @@ async function backupData() {
             myWatchedEpisodes: compressWatched(state.watchedEpisodes),
             myNewsHistory: state.newsHistory,
             myTMDbApiKey: apiKeyPackage,
+            myCryptoKey: cryptoKey,
             myResolver: state.resolver,
             myResolverOverrides: state.resolverOverrides,
             myNetworkSources: state.networkSources,
@@ -403,6 +405,8 @@ backupFile.addEventListener('change', e => {
             const we = data.myWatchedEpisodes && typeof data.myWatchedEpisodes === 'object' ? data.myWatchedEpisodes : {};
             const nh = sanitizeNewsEntries(data.myNewsHistory);
             let key = safeString(data.myTMDbApiKey, 500).trim() || localStorage.getItem('myTMDbApiKey') || '';
+            const cryptoKey = safeString(data.myCryptoKey, 200).trim();
+            if (cryptoKey) localStorage.setItem('myCryptoKey', cryptoKey);
             if (isEncryptedKey(key)) {
                 try {
                     key = await decryptAPIKey(key);
@@ -468,6 +472,9 @@ backupFile.addEventListener('change', e => {
             }
 
             settingsKeyInput.value = state.apiKey;
+            settingsResolverMovieInput.value = state.resolver.movie || '';
+            settingsResolverTvInput.value = state.resolver.tv || '';
+            settingsLangInput.value = state.lang;
             syncTools();
             showHome();
             refreshHomeUnwatchedCount();
@@ -481,13 +488,14 @@ backupFile.addEventListener('change', e => {
 });
 
 // Wipes every user data key from localStorage and resets the in-memory state.
-// The API key, language, accepted disclaimer and update-check dismissal are
-// kept so the app stays usable and the consent is preserved. Asks for
-// confirmation first because the operation is irreversible.
+// Language, accepted disclaimer and update-check dismissal are kept so the
+// app stays usable and the consent is preserved. The API key is removed
+// along with the data. Asks for confirmation first because the operation
+// is irreversible.
 async function deleteAllData() {
     if (!window.confirm(t('settings.dataDeleteConfirm'))) return;
 
-    const keepKeys = ['myTMDbApiKey', 'myCryptoKey', 'myLang', 'myDisclaimerAccepted', 'myUpdateCheck'];
+    const keepKeys = ['myCryptoKey', 'myLang', 'myDisclaimerAccepted', 'myUpdateCheck'];
     const toRemove = [];
     for (let i = 0; i < localStorage.length; i++) {
         const k = localStorage.key(i);
@@ -495,6 +503,7 @@ async function deleteAllData() {
     }
     toRemove.forEach(k => localStorage.removeItem(k));
 
+    state.apiKey = '';
     state.watchlist = [];
     state.watchlistDetails.clear();
     state.lastPlayed = [];
@@ -528,6 +537,11 @@ async function deleteAllData() {
     }
 
     settingsKeyInput.value = state.apiKey;
+    settingsResolverMovieInput.value = '';
+    settingsResolverTvInput.value = '';
+    settingsLangInput.value = state.lang;
+    syncApiKeyNotice();
+    syncResolverNotice();
     syncTools();
     showHome();
     refreshHomeUnwatchedCount();
