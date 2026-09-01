@@ -181,8 +181,6 @@
     justify-content: center;
 }
 
-.episode-row__toggle:hover { border-color: var(--lago); color: var(--lago); }
-
 .episode-row.is-watched .episode-row__toggle {
     border-color: var(--lago);
     color: var(--lago);
@@ -201,8 +199,6 @@
     padding: 9px 14px;
     cursor: pointer;
 }
-
-.episode-row__badge:hover { background: var(--lago); color: var(--paper); }
 
 .episode-row.is-watched { opacity: 0.55; }
 .episode-row.is-watched .episode-row__title { text-decoration: line-through; }

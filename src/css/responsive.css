@@ -37,3 +37,38 @@
         transition: none !important;
     }
 }
+
+/* ===== HOVER / ACTIVE — desktop-only (mouse) ===== */
+@media (hover: hover) and (pointer: fine) {
+    /* home.css */
+    .searchbar-clear:hover { color: var(--lago); }
+    .ctl:hover { color: var(--ink); border-color: var(--meta); }
+    .ctl:active { transform: translateY(1px); }
+    .kind-row__heading-toggle:hover { color: var(--ink); }
+    .card:hover { transform: translateY(-3px); border-color: var(--lago); box-shadow: var(--shadow); }
+    .card--skeleton:hover { transform: none; border-color: var(--line); box-shadow: none; }
+    .rail-arrow:hover { background: var(--ink); color: var(--paper); }
+
+    /* detail.css */
+    .detail-mark-all:hover { background: var(--lago); border-color: var(--lago); color: var(--paper); }
+    .detail-mark-all.is-all-clear:hover { background: var(--ok); border-color: var(--ok); color: var(--paper); }
+    .btn:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+    .btn:active { transform: translateY(1px); }
+    .btn--danger:hover { background: var(--lago-hi); border-color: var(--lago-hi); color: var(--paper); }
+    .btn--saved:hover { background: var(--lago); color: var(--paper); }
+    .btn--ghost:hover { background: none; color: var(--lago); }
+
+    /* episodes.css */
+    .episode-row__toggle:hover { border-color: var(--lago); color: var(--lago); }
+    .episode-row__badge:hover { background: var(--lago); color: var(--paper); }
+
+    /* news.css */
+    .news-item__title:hover { color: var(--lago); }
+
+    /* overlays.css */
+    .settings-tab:hover { color: var(--ink-hi); }
+
+    /* chrome.css */
+    .catalog-menu__section .ctl:hover { border-color: var(--line-strong); background: var(--paper); }
+    .btn-settings:hover { background: var(--ink); color: var(--paper); }
+}

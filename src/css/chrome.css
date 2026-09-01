@@ -96,11 +96,6 @@
     border-color: transparent;
 }
 
-.catalog-menu__section .ctl:hover {
-    border-color: var(--line-strong);
-    background: var(--paper);
-}
-
 .btn-sync.is-busy {
     animation: ptr-spin 0.9s linear infinite;
 }
@@ -120,11 +115,6 @@
     align-items: center;
     justify-content: center;
     transition: background 0.15s, color 0.15s;
-}
-
-.btn-settings:hover {
-    background: var(--ink);
-    color: var(--paper);
 }
 
 /* ===== MISSING API KEY ===== */

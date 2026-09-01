@@ -147,6 +147,13 @@ body {
     border-radius: var(--radius-sm);
 }
 
+/* ===== TOUCH: suppress desktop-only click/hover feedback ===== */
+@media (hover: none), (pointer: coarse) {
+    a, button, [role="button"], input, select, textarea {
+        -webkit-tap-highlight-color: transparent;
+    }
+}
+
 * {
     scrollbar-width: thin;
     scrollbar-color: var(--line-strong) transparent;

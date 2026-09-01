@@ -191,21 +191,9 @@
     color: var(--lago);
 }
 
-.detail-mark-all:hover {
-    background: var(--lago);
-    border-color: var(--lago);
-    color: var(--paper);
-}
-
 .detail-mark-all.is-all-clear {
     border-color: var(--ok);
     color: var(--ok);
-}
-
-.detail-mark-all.is-all-clear:hover {
-    background: var(--ok);
-    border-color: var(--ok);
-    color: var(--paper);
 }
 
 .detail-mark-all:disabled {
@@ -232,10 +220,6 @@
     transition: background 0.15s, color 0.15s, border-color 0.15s, transform 0.1s;
 }
 
-.btn:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
-
-.btn:active { transform: translateY(1px); }
-
 .btn:disabled { opacity: 0.55; cursor: not-allowed; }
 
 .btn--danger {
@@ -243,8 +227,6 @@
     border-color: var(--lago);
     color: var(--paper);
 }
-
-.btn--danger:hover { background: var(--lago-hi); border-color: var(--lago-hi); color: var(--paper); }
 
 .btn--stamp { border-style: dashed; }
 
@@ -254,8 +236,6 @@
     border-style: solid;
 }
 
-.btn--saved:hover { background: var(--lago); color: var(--paper); }
-
 .btn--ghost {
     border: none;
     padding-left: 0;
@@ -264,8 +244,6 @@
     letter-spacing: 0.02em;
     font-weight: 600;
 }
-
-.btn--ghost:hover { background: none; color: var(--lago); }
 
 /* ===== SEASON CONTROLS ===== */
 .season-controls {

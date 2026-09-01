@@ -55,8 +55,6 @@
     padding: 0.3rem 0.6rem;
 }
 
-.searchbar-clear:hover { color: var(--lago); }
-
 /* ===== SECTION HEAD ===== */
 /* Suppress the home heading ("La tua sala / BlameFlix / N TITOLI", all
    languages). The same elements double as the search-results header
@@ -133,10 +131,6 @@ body:has(#search-clear[hidden]) #section-count {
     transition: background 0.15s, color 0.15s, border-color 0.15s, transform 0.1s;
 }
 
-.ctl:hover { color: var(--ink); border-color: var(--meta); }
-
-.ctl:active { transform: translateY(1px); }
-
 .ctl.is-busy { opacity: 0.55; cursor: progress; }
 
 .ctl[aria-pressed="true"] {
@@ -197,8 +191,6 @@ body:has(#search-clear[hidden]) #section-count {
     transition: color 0.15s;
 }
 
-.kind-row__heading-toggle:hover { color: var(--ink); }
-
 .rail-wrap { position: relative; }
 
 .rail {
@@ -258,11 +250,6 @@ body:has(#search-clear[hidden]) #section-count {
     pointer-events: auto;
 }
 
-.rail-arrow:hover {
-    background: var(--ink);
-    color: var(--paper);
-}
-
 .rail-arrow:focus-visible {
     opacity: 1;
     outline: 2px solid var(--lago);
@@ -314,12 +301,6 @@ body:has(#search-clear[hidden]) #section-count {
     flex-direction: column;
     overflow: hidden;
     transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
-}
-
-.card:hover {
-    transform: translateY(-3px);
-    border-color: var(--lago);
-    box-shadow: var(--shadow);
 }
 
 .card-poster {
@@ -416,12 +397,6 @@ body:has(#search-clear[hidden]) #section-count {
 .card--skeleton {
     cursor: default;
     pointer-events: none;
-}
-
-.card--skeleton:hover {
-    transform: none;
-    border-color: var(--line);
-    box-shadow: none;
 }
 
 .card-skeleton__poster::after,

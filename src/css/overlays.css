@@ -122,8 +122,6 @@
     cursor: pointer;
 }
 
-.settings-tab:hover { color: var(--ink-hi); }
-
 .settings-tab.is-active {
     color: var(--lago);
     border-bottom-color: var(--lago);

@@ -61,8 +61,6 @@
     font-weight: 600;
 }
 
-.news-item__title:hover { color: var(--lago); }
-
 .news-item__date {
     font-family: var(--font-mono);
     font-size: 0.64rem;
