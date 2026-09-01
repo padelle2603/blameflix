@@ -237,29 +237,6 @@ body:has(#search-clear[hidden]) #section-count {
 
 .rail-arrow[disabled] { opacity: 0 !important; pointer-events: none !important; }
 
-/* Touch affordance: a soft fade at the row edges hints that more titles
-   slide out on swipe (desktop arrows remain the primary cue there). */
-.rail-wrap.is-scrollable::before,
-.rail-wrap.is-scrollable::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 10px;
-    width: 42px;
-    z-index: 2;
-    pointer-events: none;
-}
-
-.rail-wrap.is-scrollable::before {
-    left: 0;
-    background: linear-gradient(to right, var(--paper), transparent);
-}
-
-.rail-wrap.is-scrollable::after {
-    right: 0;
-    background: linear-gradient(to left, var(--paper), transparent);
-}
-
 @media (hover: none), (pointer: coarse) {
     .rail-arrow { display: none; }
 }
