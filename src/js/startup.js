@@ -16,27 +16,35 @@ import { maybeStartTutorial } from './tutorial.js';
 import { decryptAPIKey, isEncryptedKey } from './crypto.js';
 import { trapFocus } from './focusTrap.js';
 
+// Resolves the stored API key. The key is persisted encrypted, so it must
+// be decrypted before any TMDB request can succeed. Always leaves a usable
+// value in state.apiKey (the plain key, or '' on failure) and refreshes the
+// settings notice. Resolves once state.apiKey is ready to be used.
+async function resolveApiKey() {
+    if (isEncryptedKey(state.apiKey)) {
+        try {
+            state.apiKey = await decryptAPIKey(state.apiKey);
+            localStorage.setItem('myTMDbApiKey', state.apiKey);
+        } catch (err) {
+            state.apiKey = '';
+        }
+    }
+    syncApiKeyNotice();
+}
+
 // Real app startup: executed only after the disclaimer is accepted on the
 // very first use.
 function startApp() {
-    if (isEncryptedKey(state.apiKey)) {
-        decryptAPIKey(state.apiKey).then(plain => {
-            state.apiKey = plain;
-            localStorage.setItem('myTMDbApiKey', plain);
-            syncApiKeyNotice();
-        }).catch(() => {
-            state.apiKey = '';
-            syncApiKeyNotice();
-        });
-    } else {
-        syncApiKeyNotice();
-    }
     syncResolverNotice();
     syncTools();
     showHome();
-    hydrateWatchlistGrid().then(() => checkReleases(false));
     startAutoSyncTimer();
     maybeStartTutorial();
+    // The watchlist grid must be hydrated only after the API key is fully
+    // decrypted: otherwise every TMDB request runs with the still-encrypted
+    // value, fails, and caches the placeholder cards (which then never get
+    // retried until a manual re-hydration, e.g. saving settings).
+    resolveApiKey().then(() => hydrateWatchlistGrid().then(() => checkReleases(false)));
 }
 
 // Runs the version check once per session, a moment after launch, so it
