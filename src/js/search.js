@@ -1,5 +1,5 @@
 import { state } from './state.js';
-import { searchClear, homeView, detailView, sectionEyebrow, sectionTitle, sectionCount, homeUnwatchedEl } from './dom.js';
+import { searchClear, homeView, detailView, homeHead, searchHead, searchTitle, homeUnwatchedEl } from './dom.js';
 import { fetchJson } from './tmdb.js';
 import { BASE_URL } from './env.js';
 import { t, locale } from './i18n.js';
@@ -41,7 +41,18 @@ function handleSearch(query) {
 async function performSearch(q) {
     const lang = locale();
     const cacheKey = `${q}:${lang}`;
-    
+
+    state.searching = true;
+    searchClear.hidden = false;
+    homeView.hidden = false;
+    detailView.hidden = true;
+    // The search page keeps only the results heading: the home header and
+    // the unwatched badge are both suppressed while browsing the archive.
+    homeHead.hidden = true;
+    homeUnwatchedEl.hidden = true;
+    searchHead.hidden = false;
+    searchTitle.innerText = t('home.searchResults', { q });
+
     // Check cache first
     const cached = searchCache.get(cacheKey);
     if (cached && Date.now() - cached.timestamp < SEARCH_CACHE_TTL) {
@@ -56,17 +67,6 @@ async function performSearch(q) {
     searchAbort = new AbortController();
     const signal = searchAbort.signal;
 
-    state.searching = true;
-    searchClear.hidden = false;
-    homeView.hidden = false;
-    detailView.hidden = true;
-    // The search page keeps only the results heading: the home eyebrow and
-    // the TMDB archive label are both suppressed. The unwatched badge is a
-    // home concept, so it is hidden while browsing the archive.
-    sectionEyebrow.innerText = '';
-    sectionTitle.innerText = t('home.searchResults', { q });
-    sectionCount.innerText = '';
-    homeUnwatchedEl.hidden = true;
     showGridLoading();
 
     try {

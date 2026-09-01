@@ -1,5 +1,5 @@
 import { state, persistCollapsedRows } from './state.js';
-import { homeView, detailView, searchInput, searchClear, grid, emptyState, sectionEyebrow, sectionTitle, sectionCount, catalogMenuBtn, catalogMenuPanel } from './dom.js';
+import { homeView, detailView, searchInput, searchClear, grid, emptyState, homeHead, searchHead, catalogMenuBtn, catalogMenuPanel } from './dom.js';
 import { escapeHtml, tmdbImagePath } from './utils.js';
 import { IMG_GRID, PLACEHOLDER } from './env.js';
 import { showUnwatchedCache } from './tmdb.js';
@@ -30,9 +30,8 @@ function renderHome() {
     state.searching = false;
     homeView.hidden = false;
     detailView.hidden = true;
-    sectionEyebrow.innerText = t('home.yourroom');
-    sectionTitle.innerText = 'BlameFlix';
-    sectionCount.innerText = state.watchlist.length ? `${state.watchlist.length} ${t('home.titles')}` : '';
+    homeHead.hidden = false;
+    searchHead.hidden = true;
     searchClear.hidden = searchInput.value.length === 0;
     state.currentList = state.watchlist;
     renderGrid(state.currentList);
@@ -162,6 +161,13 @@ function makeCard(item) {
         </div>
     `;
     return card;
+}
+
+// Replaces a single card in place once its details arrive, so hydration
+// populates the library card-by-card without re-rendering the whole grid.
+function patchCard(d) {
+    const card = grid.querySelector(`.card[data-id="${d.id}"][data-type="${d.media_type}"]`);
+    if (card) card.replaceWith(makeCard(d));
 }
 
 const prefersReducedMotion = typeof window.matchMedia === 'function'
@@ -393,4 +399,4 @@ document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closeCatalogMenu();
 });
 
-export { renderHome, showHome, clearSearch, showEmpty, showGridLoading, renderGrid, syncTools, setFilter, setView, toggleKindOrder, toggleKindCollapse, toggleCatalogMenu };
+export { renderHome, showHome, clearSearch, showEmpty, showGridLoading, renderGrid, syncTools, setFilter, setView, toggleKindOrder, toggleKindCollapse, toggleCatalogMenu, closeCatalogMenu, patchCard };

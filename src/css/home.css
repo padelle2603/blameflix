@@ -56,20 +56,18 @@
 }
 
 /* ===== SECTION HEAD ===== */
-/* Suppress the home heading ("La tua sala / BlameFlix / N TITOLI", all
-   languages). The same elements double as the search-results header
-   ("Results for ..."), which stays visible while the clear button is shown. */
-body:has(#search-clear[hidden]) #section-eyebrow,
-body:has(#search-clear[hidden]) #section-title,
-body:has(#search-clear[hidden]) #section-count {
-    display: none;
-}
-
+/* The home header ("La tua sala / BlameFlix / N TITOLI") is gone: the
+   section head only hosts the "N to watch" chip. The search results keep
+   their own dedicated header (.search-head) shown while searching. */
 .section-head {
     display: flex;
     align-items: baseline;
     gap: 0.9rem;
     flex-wrap: wrap;
+    margin-bottom: 1.4rem;
+}
+
+.search-head {
     margin-bottom: 1.4rem;
 }
 
@@ -89,13 +87,6 @@ body:has(#search-clear[hidden]) #section-count {
     font-size: 1.6rem;
     line-height: 1.1;
     margin: 0;
-}
-
-.section-count {
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    color: var(--meta);
-    letter-spacing: 0.08em;
 }
 
 .section-unwatched {

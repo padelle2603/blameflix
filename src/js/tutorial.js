@@ -9,7 +9,7 @@ const STEPS = [
     { target: null, title: 'tutorial.step1Title', body: 'tutorial.step1Body' },
     { targets: ['#settings-api-key', '#settings-resolver-movie', '#settings-resolver-tv'], title: 'tutorial.step2Title', body: 'tutorial.step2Body', openSettings: true },
     { target: '#search-input', title: 'tutorial.step3Title', body: 'tutorial.step3Body' },
-    { target: '#section-title', title: 'tutorial.step4Title', body: 'tutorial.step4Body' },
+    { target: '#home-unwatched', title: 'tutorial.step4Title', body: 'tutorial.step4Body' },
     { target: '#btn-catalog-menu', title: 'tutorial.step5Title', body: 'tutorial.step5Body' },
     { target: '#btn-sync', title: 'tutorial.step6Title', body: 'tutorial.step6Body' },
     { target: null, title: 'tutorial.step7Title', body: 'tutorial.step7Body' },
