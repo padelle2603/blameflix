@@ -11,7 +11,7 @@ import { syncApiKeyNotice, syncNotifySettingsInputs, syncResolverNotice } from '
 import { startAutoSyncTimer } from './releases.js';
 import { sourceTemplateError } from './sourceUtils.js';
 import { watchlistKey } from './watchlist.js';
-import { renderGrid, syncTools, showHome } from './catalog.js';
+import { patchCard, syncTools, showHome } from './catalog.js';
 import { refreshHomeUnwatchedCount } from './counter.js';
 import { backupFile, backupStatus, homeView, settingsKeyInput, settingsOverlay, settingsResolverMovieInput, settingsResolverTvInput, settingsLangInput } from './dom.js';
 import { encryptAPIKey, decryptAPIKey, isEncryptedKey, getCryptoKeyString } from './crypto.js';
@@ -195,23 +195,49 @@ async function hydrateOne(item) {
     }
 }
 
-// All entries are hydrated in parallel instead of one round-trip at a time.
+// Maximum number of TMDB detail requests fired at once while hydrating:
+// a fire-and-forget burst over a big watchlist can trip the provider rate
+// limit (HTTP 429) on a cold start and leave placeholder cards behind.
+const HYDRATE_CONCURRENCY = 6;
+
+// Runs an async worker over every item with limited parallelism.
+async function runPool(items, limit, worker) {
+    const results = new Array(items.length);
+    let cursor = 0;
+    await Promise.all(Array.from({ length: Math.min(limit, items.length) }, async () => {
+        while (cursor < items.length) {
+            const index = cursor++;
+            results[index] = await worker(items[index]);
+        }
+    }));
+    return results;
+}
+
+// All entries are hydrated with limited concurrency instead of one
+// round-trip at a time. hydrateOne never rejects, so a failed detail
+// leaves its minimal card behind (see hydrateOne).
 async function hydrateWatchlist(items) {
-    const settled = await Promise.allSettled(items.map(hydrateOne));
-    return settled
-        .map(r => (r.status === 'fulfilled' ? r.value : null))
-        .filter(Boolean);
+    return runPool(items, HYDRATE_CONCURRENCY, hydrateOne);
 }
 
 // On startup it fetches the missing details of the saved titles into the
-// in-memory cache, so the grid shows posters and info. Offline, the
-// placeholder cards stay and details load when opening a title.
+// in-memory cache, so the grid shows posters and info. Each detail is
+// applied to its card as soon as it arrives, so the library populates
+// card-by-card instead of rendering the whole grid once at the end.
+// Offline, the placeholder cards stay and details load on opening.
 async function hydrateWatchlistGrid() {
     const missing = state.watchlist.filter(item => !state.watchlistDetails.has(watchlistKey(item.id, item.media_type)));
     if (!missing.length) return;
-    const hydrated = await hydrateWatchlist(missing);
-    hydrated.forEach(h => state.watchlistDetails.set(watchlistKey(h.id, h.media_type), h));
-    if (!homeView.hidden) renderGrid(state.currentList);
+    await runPool(missing, HYDRATE_CONCURRENCY, item =>
+        hydrateOne(item).then(h => {
+            if (!h) return;
+            state.watchlistDetails.set(watchlistKey(h.id, h.media_type), h);
+            // Only real details refresh the card in place: a failed fetch
+            // keeps its placeholder (no useless DOM churn).
+            if (homeView.hidden) return;
+            if (h.title || h.name) patchCard(h);
+        })
+    );
 }
 
 // --- RESTORE SANITIZATION ---

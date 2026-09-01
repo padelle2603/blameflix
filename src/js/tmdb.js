@@ -40,10 +40,27 @@ async function fetchJson(url, opts = {}) {
 // same session.
 const detailsCache = new LruCache(120, 30 * 60 * 1000);
 
+// One short backoff answers a transient HTTP 429 instead of failing the
+// card: detail requests burst on startup (watchlist hydration) and on a
+// cold cache. Failures are discarded from the cache, so a retry is safe.
+const DETAIL_RATE_LIMIT_RETRY_MS = 500;
+
+async function fetchDetail(url) {
+    try {
+        return await fetchJson(url);
+    } catch (err) {
+        if (err && err.message === 'HTTP 429') {
+            await new Promise(r => setTimeout(r, DETAIL_RATE_LIMIT_RETRY_MS));
+            return fetchJson(url);
+        }
+        throw err;
+    }
+}
+
 function getDetails(type, id) {
     const key = `${type}:${id}`;
     if (!detailsCache.has(key)) {
-        detailsCache.set(key, fetchJson(`${BASE_URL}/${type}/${id}?api_key=${state.apiKey}&language=${locale()}`).catch(err => {
+        detailsCache.set(key, fetchDetail(`${BASE_URL}/${type}/${id}?api_key=${state.apiKey}&language=${locale()}`).catch(err => {
             detailsCache.delete(key); // failures are not cached: retry is possible
             throw err;
         }));
