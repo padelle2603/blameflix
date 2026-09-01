@@ -318,36 +318,6 @@ body:has(#search-clear[hidden]) #section-count {
     display: block;
 }
 
-.card-kind {
-    position: absolute;
-    top: 8px;
-    left: 8px;
-    font-family: var(--font-mono);
-    font-size: 0.6rem;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    background: var(--chip-bg);
-    color: var(--ink);
-    border: 1px solid var(--line-strong);
-    border-radius: var(--radius-sm);
-    padding: 2px 8px;
-}
-
-.stamp {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    font-family: var(--font-mono);
-    font-size: 0.62rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    color: var(--lago);
-    background: var(--chip-bg);
-    border: 1px solid var(--lago);
-    border-radius: var(--radius-pill);
-    padding: 3px 10px;
-}
-
 .card-unwatched {
     position: absolute;
     bottom: 8px;

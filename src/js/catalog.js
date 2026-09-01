@@ -3,7 +3,7 @@ import { homeView, detailView, searchInput, searchClear, grid, emptyState, secti
 import { escapeHtml, tmdbImagePath } from './utils.js';
 import { IMG_GRID, PLACEHOLDER } from './env.js';
 import { showUnwatchedCache } from './tmdb.js';
-import { isSaved, detailFor } from './watchlist.js';
+import { detailFor } from './watchlist.js';
 import { refreshHomeUnwatchedCount } from './counter.js';
 import { showDetails } from './details.js';
 import { renderNewsSection } from './news.js';
@@ -139,8 +139,7 @@ function makeCard(item) {
     const title = d.title || d.name || t('common.noTitle');
     const date = d.release_date || d.first_air_date || '';
     const year = date ? date.substring(0, 4) : '—';
-    const kind = item.media_type === 'tv' ? t('common.tvKind') : t('common.movieKind');
-    const saved = isSaved(item.id, item.media_type);
+    const genre = Array.isArray(d.genres) && d.genres.length ? ` · ${d.genres[0]}` : '';
     // The "N to watch" badge belongs to the home watchlist only; search
     // results come from the TMDB archive, so the badge is not shown there.
     const unwatched = (item.media_type === 'tv' && !state.searching) ? showUnwatchedCache.get(item.id) : 0;
@@ -155,13 +154,11 @@ function makeCard(item) {
     card.innerHTML = `
         <div class="card-poster">
             <img src="${poster}" alt="${escapeHtml(title)}" loading="lazy" decoding="async">
-            <span class="card-kind">${kind}</span>
-            ${saved ? `<span class="stamp">${t('common.saved')}</span>` : ''}
             ${unwatched > 0 ? `<span class="card-unwatched">${unwatched} ${t('common.toWatch')}</span>` : ''}
         </div>
         <div class="credit-block">
             <h3 class="credit-title">${escapeHtml(title)}</h3>
-            <p class="credit-meta">${year}</p>
+            <p class="credit-meta">${year}${escapeHtml(genre)}</p>
         </div>
     `;
     return card;
@@ -306,25 +303,6 @@ function buildKindRow(kind, items) {
     return section;
 }
 
-// Updates in place the SAVED stamp of a single card, without rebuilding
-// the whole grid.
-function syncCardSavedStamp(id, mediaType) {
-    const card = grid.querySelector(`.card[data-id="${id}"][data-type="${mediaType}"]`);
-    if (!card) return;
-    const poster = card.querySelector('.card-poster');
-    let stamp = poster.querySelector('.stamp');
-    if (isSaved(id, mediaType)) {
-        if (!stamp) {
-            stamp = document.createElement('span');
-            stamp.className = 'stamp';
-            stamp.textContent = t('common.saved');
-            poster.appendChild(stamp);
-        }
-    } else if (stamp) {
-        stamp.remove();
-    }
-}
-
 // --- CATALOG FILTERS AND VIEW ---
 
 function filterLabel(type) {
@@ -415,4 +393,4 @@ document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closeCatalogMenu();
 });
 
-export { renderHome, showHome, clearSearch, showEmpty, showGridLoading, renderGrid, syncCardSavedStamp, syncTools, setFilter, setView, toggleKindOrder, toggleKindCollapse, toggleCatalogMenu };
+export { renderHome, showHome, clearSearch, showEmpty, showGridLoading, renderGrid, syncTools, setFilter, setView, toggleKindOrder, toggleKindCollapse, toggleCatalogMenu };

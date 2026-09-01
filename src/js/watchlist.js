@@ -1,6 +1,5 @@
 import { state, persistWatchlist } from './state.js';
 import { t } from './i18n.js';
-import { syncCardSavedStamp } from './catalog.js';
 
 function isSaved(id, media_type) {
     return state.watchlist.some(w => w.id === id && w.media_type === media_type);
@@ -31,7 +30,6 @@ function toggleWatchlist() {
 
     persistWatchlist();
     updateWatchlistBtn();
-    syncCardSavedStamp(state.currentMedia.id, state.currentMedia.media_type);
 }
 
 function updateWatchlistBtn() {

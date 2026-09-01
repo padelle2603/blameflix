@@ -185,7 +185,8 @@ async function hydrateOne(item) {
             name: d.name,
             poster_path: d.poster_path,
             release_date: d.release_date,
-            first_air_date: d.first_air_date
+            first_air_date: d.first_air_date,
+            genres: (d.genres || []).map(g => g.name).filter(Boolean)
         };
     } catch (err) {
         // Details not downloadable (offline or removed title): the
