@@ -1,14 +1,17 @@
 // Entry point: wires the modules together, routes every user action through
 // a single delegated listener and boots the application.
 // Heavy modules are lazy-loaded via dynamic import().
+import { App } from '@capacitor/app';
 import { applyLanguage } from './i18n.js';
 import { initDisclaimer, acceptDisclaimer } from './startup.js';
-import { showHome, clearSearch, setFilter, setView, toggleKindOrder, toggleKindCollapse, toggleCatalogMenu } from './catalog.js';
+import { showHome, clearSearch, setFilter, setView, toggleKindOrder, toggleKindCollapse, toggleCatalogMenu, closeCatalogMenu } from './catalog.js';
 import { handleSearch } from './search.js';
 import { clearNewsHistory } from './news.js';
 import { syncReleases } from './releases.js';
 import { toggleWatchlist } from './watchlist.js';
-import { searchInput, inputSeason } from './dom.js';
+import { skipTutorial } from './tutorial.js';
+import { searchInput, inputSeason, detailView, settingsOverlay, docsOverlay, catalogMenuPanel } from './dom.js';
+import { state } from './state.js';
 import './ptr.js';
 
 // --- Lazy loaders for heavy modules ---
@@ -170,6 +173,30 @@ async function clearNetworkSource() {
     return m.clearNetworkSource();
 }
 
+// --- ANDROID BACK BUTTON ---
+// On a native shell the default back action would leave the app from any
+// screen, so every press closes the topmost layer instead: dialogs and
+// panels first, then the detail view, then an active search, and finally
+// the app itself (sent to background, like a Home press).
+function registerAndroidBack() {
+    if (!window.Capacitor?.isNativePlatform?.()) return;
+    App.addListener('backButton', async () => {
+        if (!document.getElementById('disclaimer-overlay').hidden) return;
+        if (!document.getElementById('tutorial-overlay').hidden) { skipTutorial(); return; }
+        if (!document.getElementById('update-popup').hidden) { await dismissUpdatePopup(); return; }
+        if (!settingsOverlay.hidden) { await closeSettings(); return; }
+        if (!docsOverlay.hidden) { await closeDocs(); return; }
+        if (!catalogMenuPanel.hidden) { closeCatalogMenu(); return; }
+        const networkPanel = document.getElementById('network-panel');
+        if (!networkPanel.hidden) { networkPanel.hidden = true; return; }
+        const resolverPanel = document.getElementById('resolver-override-panel');
+        if (!resolverPanel.hidden) { resolverPanel.hidden = true; return; }
+        if (!detailView.hidden) { showHome(); return; }
+        if (state.searching || (searchInput.value || '').trim()) { clearSearch(); return; }
+        await App.minimizeApp();
+    });
+}
+
 // --- ACTION DISPATCH ---
 // All user actions that used to live as inline HTML attributes are routed
 // through a single delegated listener: elements carry a data-action name
@@ -234,3 +261,4 @@ document.addEventListener('change', e => {
 
 applyLanguage();
 initDisclaimer();
+registerAndroidBack();
