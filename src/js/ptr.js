@@ -6,9 +6,11 @@ import { syncReleases } from './releases.js';
 import { ptrIndicator } from './dom.js';
 
 // Activation follows the Material 3 reference behavior: the resisted
-// distance (finger drag * RESISTANCE) must cross the 80dp positional
-// threshold, so a firm ~160px pull is required before the sync fires.
-const PULL_THRESHOLD = 80;
+// distance (finger drag * RESISTANCE) must cross the positional threshold,
+// so a firm ~192px pull is required before the sync fires. The engagement
+// slop prevents the indicator from appearing on every casual scroll.
+const ENGAGE_SLOP = 24;
+const PULL_THRESHOLD = 96;
 const MAX_PULL = 110;
 const RESISTANCE = 0.5;
 
@@ -47,7 +49,7 @@ document.addEventListener('touchstart', (e) => {
 document.addEventListener('touchmove', (e) => {
     if (startY === null) return;
     const distance = e.touches[0].clientY - startY;
-    if (!engaged && distance > 8 && window.scrollY <= 0) {
+    if (!engaged && distance > ENGAGE_SLOP && window.scrollY <= 0) {
         engaged = true;
         ptrIndicator.classList.add('is-visible');
         document.body.classList.add('ptr-active');
