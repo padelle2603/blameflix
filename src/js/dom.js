@@ -21,6 +21,7 @@ export const episodeList = document.getElementById('episode-list');
 export const unwatchedEl = document.getElementById('detail-unwatched');
 export const homeUnwatchedEl = document.getElementById('home-unwatched');
 export const settingsOverlay = document.getElementById('settings-overlay');
+export const settingsTitle = document.getElementById('settings-title');
 export const settingsKeyInput = document.getElementById('settings-api-key');
 export const settingsResolverMovieInput = document.getElementById('settings-resolver-movie');
 export const settingsResolverTvInput = document.getElementById('settings-resolver-tv');

@@ -1,6 +1,6 @@
 import { state, sanitizeAutoSyncHours, persistNotifySettings } from './state.js';
 import {
-    settingsOverlay, settingsKeyInput, settingsResolverMovieInput, settingsResolverTvInput,
+    settingsOverlay, settingsTitle, settingsKeyInput, settingsResolverMovieInput, settingsResolverTvInput,
     settingsLangInput, settingsBrowserInput, settingsStatus, keyNotice, resolverNotice,
     settingsNotifyEnabled, settingsNotifyTv, settingsNotifyMovies, settingsNotifyInterval,
     docsOverlay
@@ -91,7 +91,7 @@ function openSettings(trigger = null) {
     settingsOverlay.hidden = false;
     switchSettingsTab('settings-tab-api');
     settingsOverlay._trap = trapFocus(settingsOverlay, { onEsc: closeSettings, restoreFocusTo: trigger });
-    settingsKeyInput.focus();
+    settingsTitle.focus();
 }
 
 function closeSettings() {
