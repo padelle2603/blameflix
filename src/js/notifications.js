@@ -94,4 +94,4 @@ async function notify(title, body, data) {
     return false;
 }
 
-export { ensureNotifyPermission, NOTIFY_ACTION_TYPE, NOTIFY_ACTION_MARK_WATCHED, registerNotificationActions, notify };
+export { ensureNotifyPermission, NOTIFY_ACTION_MARK_WATCHED, registerNotificationActions, notify };

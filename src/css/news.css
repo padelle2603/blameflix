@@ -16,7 +16,7 @@
 }
 
 .news-section__title {
-    font-family: 'Archivo', sans-serif;
+    font-family: var(--font-main);
     font-weight: 700;
     font-size: 1.25rem;
     margin: 0;
@@ -69,49 +69,5 @@
     color: var(--meta);
     margin-left: auto;
     white-space: nowrap;
-}
-
-.settings-field--divider {
-    border-top: 1px solid var(--line);
-    padding-top: 1.2rem;
-}
-
-.settings-tabs {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.2rem;
-    border-bottom: 1px solid var(--line);
-    margin: 0 0 1.2rem;
-}
-
-.settings-tab {
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--meta);
-    background: none;
-    border: none;
-    border-bottom: 2px solid transparent;
-    border-radius: 0;
-    padding: 0.5rem 0.7rem;
-    margin: 0 0 -1px;
-    cursor: pointer;
-}
-
-.settings-tab:hover { color: var(--ink-hi); }
-
-.settings-tab.is-active {
-    color: var(--lago);
-    border-bottom-color: var(--lago);
-}
-
-.settings-tabpage:first-of-type { padding-top: 0.1rem; }
-
-.settings-savebar {
-    border-top: 1px solid var(--line);
-    padding-top: 1.2rem;
-    margin-top: 1.2rem;
 }
 

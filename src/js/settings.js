@@ -1,4 +1,4 @@
-import { state, DEFAULT_NOTIFY_SETTINGS, sanitizeAutoSyncHours, persistNotifySettings } from './state.js';
+import { state, sanitizeAutoSyncHours, persistNotifySettings } from './state.js';
 import {
     settingsOverlay, settingsKeyInput, settingsResolverMovieInput, settingsResolverTvInput,
     settingsLangInput, settingsBrowserInput, settingsStatus, keyNotice, resolverNotice,
@@ -7,14 +7,15 @@ import {
 } from './dom.js';
 import { startAutoSyncTimer } from './releases.js';
 import { setLanguage, t } from './i18n.js';
-import { sourceTemplateError } from './resolver.js';
+import { sourceTemplateError } from './sourceUtils.js';
 import { ensureNotifyPermission, notify } from './notifications.js';
 import { isNativeRuntime } from './env.js';
 import { syncLastUpdateCheck } from './updates.js';
 import { LANGS } from './langs.js';
 import { startTutorial } from './tutorial.js';
 import { encryptAPIKey } from './crypto.js';
-import { getBrowserMode, setBrowserMode, BROWSER_MODE } from './browser.js';
+import { getBrowserMode, setBrowserMode } from './browser.js';
+import { trapFocus } from './focusTrap.js';
 
 function syncNotifySettingsInputs() {
     settingsNotifyEnabled.checked = state.notifySettings.enabled;
@@ -72,7 +73,7 @@ document.querySelectorAll('.settings-tab').forEach(btn => {
     btn.addEventListener('click', () => switchSettingsTab(btn.dataset.tab));
 });
 
-function openSettings() {
+function openSettings(trigger = null) {
     settingsKeyInput.value = state.apiKey;
     settingsResolverMovieInput.value = state.resolver.movie || '';
     settingsResolverTvInput.value = state.resolver.tv || '';
@@ -89,22 +90,38 @@ function openSettings() {
     if (checkBtn) checkBtn.hidden = !isNativeRuntime();
     settingsOverlay.hidden = false;
     switchSettingsTab('settings-tab-api');
+    settingsOverlay._trap = trapFocus(settingsOverlay, { onEsc: closeSettings, restoreFocusTo: trigger });
     settingsKeyInput.focus();
 }
 
 function closeSettings() {
     settingsOverlay.hidden = true;
+    if (settingsOverlay._trap) {
+        settingsOverlay._trap.close();
+        settingsOverlay._trap = null;
+    }
 }
 
 // --- DOCUMENTATION ---
 
-function openDocs() {
+function openDocs(trigger = null) {
+    if (settingsOverlay._trap) {
+        settingsOverlay._trap.close();
+        settingsOverlay._trap = null;
+    }
     settingsOverlay.hidden = true;
     docsOverlay.hidden = false;
+    const firstFocusable = docsOverlay.querySelector('button, a, input');
+    docsOverlay._trap = trapFocus(docsOverlay, { onEsc: closeDocs, restoreFocusTo: trigger });
+    if (firstFocusable) firstFocusable.focus();
 }
 
 function closeDocs() {
     docsOverlay.hidden = true;
+    if (docsOverlay._trap) {
+        docsOverlay._trap.close();
+        docsOverlay._trap = null;
+    }
 }
 
 docsOverlay.addEventListener('click', e => {

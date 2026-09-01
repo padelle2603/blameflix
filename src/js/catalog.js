@@ -1,6 +1,6 @@
 import { state } from './state.js';
 import { homeView, detailView, searchInput, searchClear, grid, emptyState, sectionEyebrow, sectionTitle, sectionCount, catalogMenuBtn, catalogMenuPanel } from './dom.js';
-import { escapeHtml, tmdbImagePath, formatVote } from './utils.js';
+import { escapeHtml, tmdbImagePath } from './utils.js';
 import { IMG_GRID, PLACEHOLDER } from './env.js';
 import { showUnwatchedCache } from './tmdb.js';
 import { isSaved, detailFor } from './watchlist.js';
@@ -9,6 +9,7 @@ import { showDetails } from './details.js';
 import { renderNewsSection } from './news.js';
 import { t } from './i18n.js';
 import { cancelSearch } from './search.js';
+import { trapFocus } from './focusTrap.js';
 
 // Event delegation on the grid: cards open the detail view without
 // attaching a click and keydown listener per card at every re-render.
@@ -56,6 +57,31 @@ function showEmpty(kicker, text) {
     emptyState.hidden = false;
 }
 
+// Builds one skeleton card, matching the poster/credit-block shape of a real
+// card so the loading state does not shift the layout.
+function skeletonCardHtml() {
+    return `
+        <div class="card card--skeleton" aria-hidden="true">
+            <div class="skeleton-block card-skeleton__poster"></div>
+            <div class="credit-block">
+                <div class="skeleton-block sk-title"></div>
+                <div class="skeleton-block sk-meta"></div>
+            </div>
+        </div>`;
+}
+
+// Shows skeleton cards while a search (or a first load) is in flight. The
+// next renderGrid()/showEmpty()/showHome() replaces them.
+function showGridLoading() {
+    emptyState.hidden = true;
+    grid.style.display = '';
+    grid.innerHTML = '';
+    const count = state.viewMode === 'list' ? 6 : 8;
+    for (let i = 0; i < count; i++) {
+        grid.insertAdjacentHTML('beforeend', skeletonCardHtml());
+    }
+}
+
 function renderGrid(items) {
     const filtered = state.typeFilter === 'all' ? items : items.filter(item => item.media_type === state.typeFilter);
     grid.innerHTML = '';
@@ -98,7 +124,6 @@ function makeCard(item) {
     const title = d.title || d.name || t('common.noTitle');
     const date = d.release_date || d.first_air_date || '';
     const year = date ? date.substring(0, 4) : '—';
-    const vote = formatVote(d.vote_average);
     const kind = item.media_type === 'tv' ? t('common.tvKind') : t('common.movieKind');
     const saved = isSaved(item.id, item.media_type);
     const unwatched = item.media_type === 'tv' ? showUnwatchedCache.get(item.id) : 0;
@@ -112,14 +137,14 @@ function makeCard(item) {
 
     card.innerHTML = `
         <div class="card-poster">
-            <img src="${poster}" alt="${escapeHtml(title)}" loading="lazy">
+            <img src="${poster}" alt="${escapeHtml(title)}" loading="lazy" decoding="async">
             <span class="card-kind">${kind}</span>
             ${saved ? `<span class="stamp">${t('common.saved')}</span>` : ''}
             ${unwatched > 0 ? `<span class="card-unwatched">${unwatched} ${t('common.toWatch')}</span>` : ''}
         </div>
         <div class="credit-block">
             <h3 class="credit-title">${escapeHtml(title)}</h3>
-            <p class="credit-meta">${year} · <span class="star">★</span> ${vote}</p>
+            <p class="credit-meta">${year}</p>
         </div>
     `;
     return card;
@@ -317,6 +342,10 @@ function closeCatalogMenu() {
     if (!catalogMenuPanel.hidden) {
         catalogMenuPanel.hidden = true;
         catalogMenuBtn.setAttribute('aria-expanded', 'false');
+        if (catalogMenuPanel._trap) {
+            catalogMenuPanel._trap.close();
+            catalogMenuPanel._trap = null;
+        }
     }
 }
 
@@ -326,6 +355,14 @@ function toggleCatalogMenu() {
     const willOpen = catalogMenuPanel.hidden;
     catalogMenuPanel.hidden = !willOpen;
     catalogMenuBtn.setAttribute('aria-expanded', String(willOpen));
+    if (willOpen) {
+        catalogMenuPanel._trap = trapFocus(catalogMenuPanel, { onEsc: closeCatalogMenu, restoreFocusTo: catalogMenuBtn });
+        const first = catalogMenuPanel.querySelector('button:not(:disabled), [href]');
+        if (first) first.focus();
+    } else if (catalogMenuPanel._trap) {
+        catalogMenuPanel._trap.close();
+        catalogMenuPanel._trap = null;
+    }
 }
 
 document.addEventListener('click', (e) => {
@@ -336,4 +373,4 @@ document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closeCatalogMenu();
 });
 
-export { renderHome, showHome, clearSearch, showEmpty, renderGrid, syncCardSavedStamp, syncTools, setFilter, setView, toggleKindOrder, toggleCatalogMenu };
+export { renderHome, showHome, clearSearch, showEmpty, showGridLoading, renderGrid, syncCardSavedStamp, syncTools, setFilter, setView, toggleKindOrder, toggleCatalogMenu };

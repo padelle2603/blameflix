@@ -233,4 +233,4 @@ function startAutoSyncTimer() {
     }, autoSyncIntervalMs());
 }
 
-export { checkReleases, syncReleases, shouldAutoSync, startAutoSyncTimer };
+export { checkReleases, syncReleases, startAutoSyncTimer };

@@ -2,10 +2,11 @@ import { state } from './state.js';
 import { homeView, detailView, episodeSection, episodeList, customControls, inputSeason, inputSeasonCustom, inputEpisodeCustom, unwatchedEl } from './dom.js';
 import { getDetails, getSeasonEpisodes, seasonEpisodesCache, fetchSeasons } from './tmdb.js';
 import { toggleEpisodeWatched, isEpisodeWatched, persistWatchedEpisodes } from './watched.js';
-import { escapeHtml, tmdbImagePath, isAired, mapPool, formatVote, formatVoteNumber } from './utils.js';
+import { escapeHtml, tmdbImagePath, isAired, mapPool } from './utils.js';
 import { IMG_BASE, IMG_STILL, IMG_BACKDROP, PLACEHOLDER, EPISODE_PLACEHOLDER } from './env.js';
 import { t, tp, locale } from './i18n.js';
 import { showToast } from './toast.js';
+import { openLink } from './browser.js';
 import { openPlayer, getLastPlayed } from './player.js';
 import { updateWatchlistBtn } from './watchlist.js';
 import { syncResolverOverrideBtn, getResolverOverride } from './resolver.js';
@@ -34,7 +35,6 @@ async function showDetails(id, type, opts) {
         document.getElementById('detail-title').innerText = data.title || data.name || t('common.noTitle');
         document.getElementById('detail-overview').innerText = data.overview || t('detail.noOverview');
         document.getElementById('detail-date').innerText = data.release_date || data.first_air_date || '—';
-        document.getElementById('detail-vote').innerText = formatVote(data.vote_average);
         resetDetailSpoilers();
         document.getElementById('detail-poster').src = tmdbImagePath(data.poster_path) ? `${IMG_BASE}${data.poster_path}` : PLACEHOLDER;
         document.getElementById('detail-kind').innerText = type === 'tv' ? t('common.tvKindLong') : t('common.movieKindLong');
@@ -50,7 +50,6 @@ async function showDetails(id, type, opts) {
 
         // Manage TV vs movie controls
         const tvControls = document.getElementById('tv-controls');
-        const episodeSection = document.getElementById('episode-section');
         if (type === 'tv') {
             tvControls.hidden = false;
             episodeSection.hidden = false;
@@ -93,7 +92,6 @@ function resetDetailView() {
     document.getElementById('detail-title').innerText = '';
     document.getElementById('detail-overview').innerText = '';
     document.getElementById('detail-date').innerText = '';
-    document.getElementById('detail-vote').innerText = '';
     document.getElementById('detail-kind').innerText = '';
     document.getElementById('detail-poster').src = PLACEHOLDER;
     document.getElementById('detail-backdrop').hidden = true;
@@ -310,11 +308,10 @@ function renderEpisodeList(eps, highlightEpisode) {
         const meta = [];
         if (ep.runtime) meta.push(`${ep.runtime} min`);
         if (ep.air_date) meta.push(formatAirDateTime(ep.air_date));
-        if (ep.vote_average) meta.push(`★ ${formatVoteNumber(ep.vote_average)}`);
 
         row.innerHTML = `
             <div class="episode-row__thumb">
-                <img src="${still}" alt="${escapeHtml(title)}" loading="lazy">
+                <img src="${still}" alt="${escapeHtml(title)}" loading="lazy" decoding="async">
                 <span class="episode-row__num">${state.currentSeason === 0 ? t('common.special') : state.currentSeason}-${epNum}</span>
             </div>
             <div class="episode-row__body">
@@ -627,4 +624,59 @@ async function syncResumeSelection(season, episode) {
     }
 }
 
-export { showDetails, markSeasonWatched, markAllAiredWatched, onSeasonChange, refreshUnwatchedCount, findNextUnwatched, syncResumeSelection, loadEpisodes };
+// Public TMDB page of the title currently open in the sheet.
+function tmdbPageUrl() {
+    const m = state.currentMedia;
+    if (!m || !Number.isFinite(Number(m.id))) return '';
+    const kind = m.media_type === 'tv' ? 'tv' : 'movie';
+    return `https://www.themoviedb.org/${kind}/${m.id}`;
+}
+
+// Falls back to the legacy textarea trick: navigator.clipboard needs a
+// secure context and may be missing in embedded webviews.
+function copyViaTextarea(text) {
+    try {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        ta.remove();
+    } catch { /* clipboard unavailable: nothing else to do */ }
+}
+
+function copyToClipboard(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).catch(() => copyViaTextarea(text));
+    } else {
+        copyViaTextarea(text);
+    }
+}
+
+// Android: native share sheet. Desktop/web/AppImage: copies the TMDB link.
+async function shareTitle() {
+    const url = tmdbPageUrl();
+    if (!url) return;
+    if (window.Capacitor?.Plugins?.Share) {
+        try {
+            await window.Capacitor.Plugins.Share.share({
+                dialogTitle: t('detail.share'),
+                title: state.currentMedia.title || state.currentMedia.name || t('common.noTitle'),
+                url
+            });
+        } catch { /* share sheet dismissed by the user */ }
+        return;
+    }
+    copyToClipboard(url);
+    showToast(t('msg.linkCopied'));
+}
+
+// Opens the title's TMDB page with the configured browser preference.
+async function openTmdbPage() {
+    const url = tmdbPageUrl();
+    if (url) await openLink(url);
+}
+
+export { showDetails, markSeasonWatched, markAllAiredWatched, onSeasonChange, refreshUnwatchedCount, findNextUnwatched, syncResumeSelection, loadEpisodes, shareTitle, openTmdbPage };

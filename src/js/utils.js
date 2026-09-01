@@ -1,6 +1,3 @@
-import { state } from './state.js';
-import { decimalIsComma } from './langs.js';
-
 function escapeHtml(str) {
     return String(str).replace(/[&<>"']/g, c => ({
         '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
@@ -12,11 +9,6 @@ function escapeHtml(str) {
 // backups cannot smuggle markup or URL breakouts through poster fields.
 function tmdbImagePath(path) {
     return typeof path === 'string' && /^\/[A-Za-z0-9._-]+\.(jpg|jpeg|png|webp)$/i.test(path) ? path : '';
-}
-
-// True for a positive integer (ids coming from backups must be plain ids).
-function isPositiveInt(value) {
-    return Number.isInteger(value) && value > 0;
 }
 
 // Coerces to a non-negative integer when possible, otherwise the fallback.
@@ -86,17 +78,6 @@ async function mapPool(items, limit, worker) {
     return results;
 }
 
-// Localized vote number, e.g. "7,2" where the decimal separator is a comma.
-function formatVoteNumber(vote) {
-    const n = Number(vote).toFixed(1);
-    return decimalIsComma(state.lang) ? n.replace('.', ',') : n;
-}
-
-function formatVote(vote) {
-    if (!vote) return '—';
-    return `${formatVoteNumber(vote)} / 10`;
-}
-
 // Air timestamp of an episode. TMDB normally provides only the date
 // (YYYY-MM-DD): in that case midnight of that day is used. If the string
 // also contains the time (e.g. "2026-08-16T21:00:00Z") it is used.
@@ -118,4 +99,4 @@ function isAired(airDate) {
     return ts <= Date.now();
 }
 
-export { escapeHtml, tmdbImagePath, isPositiveInt, toIntOr, sanitizeMediaType, LruCache, mapPool, airDateTs, isAired, formatVoteNumber, formatVote };
+export { escapeHtml, tmdbImagePath, toIntOr, sanitizeMediaType, LruCache, mapPool, airDateTs, isAired };

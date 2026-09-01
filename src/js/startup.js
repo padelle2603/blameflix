@@ -14,6 +14,7 @@ import { refreshHomeUnwatchedCount } from './counter.js';
 import { showToast } from './toast.js';
 import { maybeStartTutorial } from './tutorial.js';
 import { decryptAPIKey, isEncryptedKey } from './crypto.js';
+import { trapFocus } from './focusTrap.js';
 
 // Real app startup: executed only after the disclaimer is accepted on the
 // very first use.
@@ -80,6 +81,7 @@ function initDisclaimer() {
     const acceptBtn = document.getElementById('disclaimer-accept');
     const statusEl = document.getElementById('disclaimer-status');
     overlay.hidden = false;
+    overlay._trap = trapFocus(overlay, {});
 
     let remaining = 10;
     statusEl.innerText = t('msg.acceptableIn', { n: remaining });
@@ -100,7 +102,12 @@ function initDisclaimer() {
 function acceptDisclaimer() {
     localStorage.setItem('myDisclaimerAccepted', '1');
     tryPersistStorage();
-    document.getElementById('disclaimer-overlay').hidden = true;
+    const overlay = document.getElementById('disclaimer-overlay');
+    overlay.hidden = true;
+    if (overlay._trap) {
+        overlay._trap.close();
+        overlay._trap = null;
+    }
     startApp();
 }
 

@@ -3,41 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="BlameFlix — la tua sala personale: cerca film e serie TV, tienili nei salvati e guardali quando vuoi.">
+    <meta name="theme-color" content="#0A0C0E">
+    <link rel="preconnect" href="https://image.tmdb.org" crossorigin>
     <title>BlameFlix</title>
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
+<noscript class="noscript-block">
+    <strong>BlameFlix richiede JavaScript per funzionare.</strong>
+    <span>BlameFlix requires JavaScript to run.</span>
+</noscript>
+
+<a class="skip-link" href="#home-view" data-i18n="nav.skip">Salta al contenuto</a>
+
 <header class="topbar">
-    <button class="brand" onclick="showHome()" data-i18n-aria="nav.home">
+    <button class="brand" data-action="show-home" aria-label="BlameFlix - Homepage" data-i18n-aria="nav.home">
         <span class="brand__mark" aria-hidden="true"></span>BLAMEFLIX
     </button>
 
     <!-- Right-hand action cluster: library options, sync, settings -->
     <div class="topbar__actions">
         <div class="catalog-menu">
-            <button type="button" class="btn-settings" id="btn-catalog-menu" onclick="toggleCatalogMenu()" aria-expanded="false" aria-controls="catalog-menu-panel" data-i18n-aria="tools.menu" data-i18n-title="tools.menu">⋮</button>
+            <button type="button" class="btn-settings" id="btn-catalog-menu" data-action="toggle-catalog-menu" aria-expanded="false" aria-controls="catalog-menu-panel" data-i18n-aria="tools.menu" data-i18n-title="tools.menu">⋮</button>
             <div class="catalog-menu__panel" id="catalog-menu-panel" hidden>
                 <p class="catalog-menu__label" data-i18n="tools.filterBy">Filtra per tipo</p>
                 <div class="catalog-menu__section" role="group" aria-label="Filtra per tipo" data-i18n-aria="tools.filterBy">
-                    <button type="button" class="ctl" data-type="all" aria-pressed="true" onclick="setFilter('all')" data-i18n="tools.all">Tutti</button>
-                    <button type="button" class="ctl" data-type="movie" aria-pressed="false" onclick="setFilter('movie')" data-i18n="tools.movie">Film</button>
-                    <button type="button" class="ctl" data-type="tv" aria-pressed="false" onclick="setFilter('tv')" data-i18n="tools.tv">Serie</button>
+                    <button type="button" class="ctl" data-type="all" aria-pressed="true" data-action="set-filter" data-i18n="tools.all">Tutti</button>
+                    <button type="button" class="ctl" data-type="movie" aria-pressed="false" data-action="set-filter" data-i18n="tools.movie">Film</button>
+                    <button type="button" class="ctl" data-type="tv" aria-pressed="false" data-action="set-filter" data-i18n="tools.tv">Serie</button>
                 </div>
                 <p class="catalog-menu__label" data-i18n="tools.viewMode">Cambia visualizzazione</p>
                 <div class="catalog-menu__section" role="group" aria-label="Cambia visualizzazione" data-i18n-aria="tools.viewMode">
-                    <button type="button" class="ctl ctl--icon" data-view="grid" aria-pressed="true" onclick="setView('grid')" title="Griglia" data-i18n="tools.grid" data-i18n-title="tools.grid">▦ Griglia</button>
-                    <button type="button" class="ctl ctl--icon" data-view="list" aria-pressed="false" onclick="setView('list')" title="Lista" data-i18n="tools.list" data-i18n-title="tools.list">☰ Lista</button>
+                    <button type="button" class="ctl ctl--icon" data-view="grid" aria-pressed="true" data-action="set-view" title="Griglia" data-i18n="tools.grid" data-i18n-title="tools.grid">▦ Griglia</button>
+                    <button type="button" class="ctl ctl--icon" data-view="list" aria-pressed="false" data-action="set-view" title="Lista" data-i18n="tools.list" data-i18n-title="tools.list">☰ Lista</button>
                 </div>
                 <p class="catalog-menu__label" data-i18n="tools.orderSection">Ordine righe film/serie</p>
                 <div class="catalog-menu__section" role="group">
-                    <button type="button" class="ctl ctl--icon" id="btn-swap" onclick="toggleKindOrder()" aria-pressed="false" title="Inverti ordine film e serie" data-i18n="tools.swap" data-i18n-title="tools.swap">⇅ Inverti</button>
+                    <button type="button" class="ctl ctl--icon" id="btn-swap" data-action="toggle-kind-order" aria-pressed="false" title="Inverti ordine film e serie" data-i18n="tools.swap" data-i18n-title="tools.swap">⇅ Inverti</button>
                 </div>
             </div>
         </div>
-        <button type="button" class="btn-settings btn-sync" id="btn-sync" onclick="syncReleases()" title="Verifica nuove uscite" data-i18n-title="tools.sync" data-i18n-aria="common.sync">⟳</button>
-        <button type="button" class="btn-settings" onclick="openSettings()" data-i18n-aria="nav.settings" data-i18n-title="nav.settings">⚙</button>
+        <button type="button" class="btn-settings btn-sync" id="btn-sync" data-action="sync-releases" title="Verifica nuove uscite" data-i18n-title="tools.sync" data-i18n-aria="common.sync">⟳</button>
+        <button type="button" class="btn-settings" data-action="open-settings" data-i18n-aria="nav.settings" data-i18n-title="nav.settings">⚙</button>
     </div>
 </header>
 
@@ -46,14 +56,14 @@
 <div class="key-notice" id="key-notice" hidden>
     <div class="key-notice__inner">
         <p data-i18n="notice.nokey">⚠ Nessuna chiave TMDB · impossibile cercare</p>
-        <button type="button" class="btn" onclick="openSettings()" data-i18n="notice.setkey">Imposta la chiave</button>
+        <button type="button" class="btn" data-action="open-settings" data-i18n="notice.setkey">Imposta la chiave</button>
     </div>
 </div>
 
 <div class="key-notice" id="resolver-notice" hidden>
     <div class="key-notice__inner">
         <p data-i18n="notice.noresolver">⚠ Nessuna sorgente configurata · «Guarda ora» non attivo</p>
-        <button type="button" class="btn" onclick="openSettings()" data-i18n="notice.configsource">Configura la sorgente</button>
+        <button type="button" class="btn" data-action="open-settings" data-i18n="notice.configsource">Configura la sorgente</button>
     </div>
 </div>
 
@@ -61,9 +71,9 @@
     <div class="key-notice__inner">
         <p id="update-notice-text">⚠ Nuova versione disponibile</p>
         <div class="update-notice__actions">
-            <button type="button" class="btn" onclick="openLatestRelease()" data-i18n="notice.downloadGitHub">Scarica dal GitHub</button>
-            <button type="button" class="btn" id="update-notice-apk" onclick="downloadLatestApk()" hidden data-i18n="notice.downloadApk">Scarica APK</button>
-            <button type="button" class="btn btn--ghost" onclick="dismissUpdate()" data-i18n-aria="notice.dismiss" data-i18n-title="notice.dismiss">✕</button>
+            <button type="button" class="btn" data-action="open-latest-release" data-i18n="notice.downloadGitHub">Scarica dal GitHub</button>
+            <button type="button" class="btn" id="update-notice-apk" data-action="download-latest-apk" hidden data-i18n="notice.downloadApk">Scarica APK</button>
+            <button type="button" class="btn btn--ghost" data-action="dismiss-update" data-i18n-aria="notice.dismiss" data-i18n-title="notice.dismiss">✕</button>
         </div>
     </div>
 </div>
@@ -78,20 +88,20 @@
         </div>
         <p class="settings-hint" id="update-popup-text"></p>
         <div class="settings-actions">
-            <button type="button" class="btn btn--rosso" id="update-popup-download" onclick="updatePopupDownload()"></button>
-            <button type="button" class="btn" onclick="dismissUpdatePopup()" data-i18n="update.later">Più tardi</button>
+            <button type="button" class="btn btn--danger" id="update-popup-download" data-action="update-popup-download"></button>
+            <button type="button" class="btn" data-action="dismiss-update-popup" data-i18n="update.later">Più tardi</button>
         </div>
     </div>
 </div>
 
 <div class="container">
 
-    <div class="searchbar">
+    <div class="searchbar" role="search">
         <label class="searchbar-label" for="search-input" data-i18n="search.label">Cerca un titolo</label>
         <div class="searchbar-row">
             <input type="text" id="search-input" placeholder="Cerca film o serie TV…" autocomplete="off"
-                   onkeyup="handleSearch(this.value)" data-i18n-placeholder="search.placeholder">
-            <button type="button" class="searchbar-clear" id="search-clear" onclick="clearSearch()"
+                   data-i18n-placeholder="search.placeholder">
+            <button type="button" class="searchbar-clear" id="search-clear" data-action="clear-search"
                     aria-label="Torna alla tua homepage" hidden data-i18n-aria="search.clearAria">&times;</button>
         </div>
     </div>
@@ -108,27 +118,29 @@
         <section class="news-section" id="news-section" hidden>
             <div class="news-section__head">
                 <h3 class="news-section__title" data-i18n="home.news">Novità</h3>
-                <button type="button" class="btn btn--ghost news-section__clear" onclick="clearNewsHistory()" data-i18n="home.clearNews">Svuota</button>
+                <button type="button" class="btn btn--ghost news-section__clear" data-action="clear-news-history" data-i18n="home.clearNews">Svuota</button>
             </div>
             <ul class="news-list" id="news-list"></ul>
         </section>
 
-        <div id="results-grid" class="grid"></div>
+        <div id="results-grid"></div>
 
         <div id="empty-state" class="empty-state" hidden>
-            <p class="empty-kicker">Nessun titolo in sala</p>
-            <p>La tua sala è vuota. Cerca il primo film o la prima serie qui sopra per iniziare.</p>
+            <p class="empty-kicker" data-i18n="home.noTitles">Nessun titolo in sala</p>
+            <p data-i18n="home.emptyRoom">La tua sala è vuota. Cerca il primo film o la prima serie qui sopra per iniziare.</p>
         </div>
     </main>
 
-    <!-- DETAIL (overlay, nessuna pagina nuova) -->
-    <main id="detail-view" hidden>
-        <button class="btn btn--ghost" onclick="showHome()" data-i18n="detail.back">&larr; BlameFlix</button>
+    <!-- DETAIL (overlay, no new page) -->
+    <div id="detail-view" hidden>
+        <button class="btn btn--ghost" data-action="show-home" data-i18n="detail.back">&larr; Indietro</button>
 
         <div class="detail-actionbar">
-            <button type="button" class="btn btn-icon btn--rosso" id="btn-watch" onclick="openPlayer(true)" data-i18n-title="detail.watchNow" aria-label="Apri nel browser" data-i18n-aria="detail.watchNow">&#9654;</button>
-            <button type="button" class="btn btn-icon btn--stamp" id="btn-watchlist" onclick="toggleWatchlist()" aria-label="Aggiungi ai salvati" data-i18n-aria="detail.addSaved">&#9825;</button>
-            <button type="button" class="btn btn-icon detail-mark-all" id="btn-mark-all-aired" onclick="markAllAiredWatched()" hidden aria-label="Segna tutte le uscite come viste" data-i18n-aria="detail.markAllAired">&#10003;</button>
+            <button type="button" class="btn btn-icon btn--danger" id="btn-watch" data-action="open-player" data-resume="true" data-i18n-title="detail.watchNow" aria-label="Apri nel browser" data-i18n-aria="detail.watchNow">&#9654;</button>
+            <button type="button" class="btn btn-icon btn--stamp" id="btn-watchlist" data-action="toggle-watchlist" aria-label="Aggiungi ai salvati" data-i18n-aria="detail.addSaved">&#9825;</button>
+            <button type="button" class="btn btn-icon" id="btn-share" data-action="share-title" aria-label="Condividi" data-i18n-aria="detail.share" data-i18n-title="detail.share">&#x2934;</button>
+            <button type="button" class="btn btn-icon btn-icon--brand" id="btn-tmdb" data-action="open-tmdb-page" aria-label="Apri su TMDB" data-i18n-aria="detail.tmdb" data-i18n-title="detail.tmdb">TMDB</button>
+            <button type="button" class="btn btn-icon detail-mark-all" id="btn-mark-all-aired" data-action="mark-all-aired-watched" hidden aria-label="Segna tutte le uscite come viste" data-i18n-aria="detail.markAllAired">&#10003;</button>
         </div>
 
         <div class="detail-backdrop" id="detail-backdrop" hidden aria-hidden="true"></div>
@@ -152,29 +164,25 @@
                             <dt data-i18n="detail.year">Anno</dt>
                             <dd id="detail-date"></dd>
                         </div>
-                        <div>
-                            <dt data-i18n="detail.vote">Voto</dt>
-                            <dd id="detail-vote"></dd>
-                        </div>
                     </dl>
                 </div>
 
                 <div class="resolver-override">
-<button type="button" class="btn btn--ghost" id="btn-resolver-override" onclick="toggleResolverOverride()">Sorgente: globale</button>
+<button type="button" class="btn btn--ghost" id="btn-resolver-override" data-action="toggle-resolver-override">Sorgente: globale</button>
                     <div class="resolver-override__panel" id="resolver-override-panel" hidden>
                         <label for="resolver-override-input" data-i18n="detail.sourceForTitle">Sorgente per questo titolo</label>
                         <input type="url" id="resolver-override-input" autocomplete="off"
                                placeholder="https://esempio.com/title/{id}/" data-i18n-placeholder="detail.sourceOverridePlaceholder">
                         <p class="settings-hint" data-i18n="detail.sourceOverrideHint">Se vuoto, «Guarda ora» usa la sorgente globale delle Impostazioni. Usa i segnaposto {id}, {type}, {season}, {episode} per inserire id, stagione ed episodio nell'URL: senza segnaposto l'URL viene aperto così com'è. Solo collegamenti http/https.</p>
                         <div class="settings-actions">
-                            <button type="button" class="btn btn--rosso" onclick="saveResolverOverride()" data-i18n="detail.useForTitle">Usa per questo titolo</button>
-                            <button type="button" class="btn" onclick="clearResolverOverride()" data-i18n="detail.useGlobal">Usa quello globale</button>
+                            <button type="button" class="btn btn--danger" data-action="save-resolver-override" data-i18n="detail.useForTitle">Usa per questo titolo</button>
+                            <button type="button" class="btn" data-action="clear-resolver-override" data-i18n="detail.useGlobal">Usa quello globale</button>
                         </div>
                     </div>
                 </div>
 
                 <div class="resolver-override" id="network-block" hidden>
-                    <button type="button" class="btn btn--ghost" id="btn-network" onclick="toggleNetworkSource()">Rete: —</button>
+                    <button type="button" class="btn btn--ghost" id="btn-network" data-action="toggle-network-source">Rete: —</button>
                     <div class="resolver-override__panel" id="network-panel" hidden>
                         <label for="network-select" data-i18n="detail.networkSelectLabel">Editore / Rete</label>
                         <select id="network-select"></select>
@@ -183,15 +191,15 @@
                                placeholder="https://esempio.com/schedule/{id}" data-i18n-placeholder="detail.networkPlaceholder">
                         <p class="settings-hint" data-i18n="detail.networkOverrideHint">Incolla l'URL di una fonte esterna che restituisce la programmazione della rete in JSON (usa i segnaposto {id}, {networkId}, {networkName}). L'endpoint deve essere raggiungibile dal browser: se la fonte blocca il CORS, passala attraverso un proxy a tuo carico. Solo collegamenti http/https.</p>
                         <div class="settings-actions">
-                            <button type="button" class="btn btn--rosso" onclick="saveNetworkSource()" data-i18n="detail.useForTitle">Usa per questo titolo</button>
-                            <button type="button" class="btn" onclick="clearNetworkSource()" data-i18n="detail.useGlobal">Usa quello globale</button>
+                            <button type="button" class="btn btn--danger" data-action="save-network-source" data-i18n="detail.useForTitle">Usa per questo titolo</button>
+                            <button type="button" class="btn" data-action="clear-network-source" data-i18n="detail.useGlobal">Usa quello globale</button>
                         </div>
                     </div>
                 </div>
 
                 <div id="tv-controls" class="season-controls" hidden>
                     <label for="input-season" data-i18n="detail.season">Stagione</label>
-                    <select id="input-season" onchange="onSeasonChange(value)"></select>
+                    <select id="input-season"></select>
 
                     <div id="custom-controls" class="season-controls__custom" hidden>
                         <label for="input-season-custom" data-i18n="detail.season">Stagione</label>
@@ -207,11 +215,11 @@
         <section class="episode-section" id="episode-section" hidden>
             <div class="episode-section__head">
                 <h3 class="episode-section__title" data-i18n="detail.episodes">Episodi</h3>
-                <button type="button" class="btn episode-section__mark" id="btn-mark-season" onclick="markSeasonWatched()">✓ Segna tutte come viste</button>
+                <button type="button" class="btn episode-section__mark" id="btn-mark-season" data-action="mark-season-watched" data-i18n="episode.markAllWatched">✓ Segna tutte come viste</button>
             </div>
             <div id="episode-list" class="episode-list"></div>
         </section>
-    </main>
+    </div>
 </div>
 
 <div id="settings-overlay" class="overlay" hidden>
@@ -221,19 +229,19 @@
                 <span class="eyebrow" data-i18n="settings.preferences">Preferenze</span>
                 <h2 id="settings-title" data-i18n="settings.title">Impostazioni</h2>
             </div>
-            <button type="button" class="btn btn--ghost" onclick="closeSettings()" data-i18n="settings.close">&times; Chiudi</button>
+            <button type="button" class="btn btn--ghost" data-action="close-settings" data-i18n="settings.close">&times; Chiudi</button>
         </div>
 
         <nav class="settings-tabs" role="tablist" aria-label="Impostazioni">
-            <button type="button" class="settings-tab is-active" data-tab="settings-tab-api" role="tab" aria-selected="true" data-i18n="settings.tab.api">API e Sorgenti</button>
-            <button type="button" class="settings-tab" data-tab="settings-tab-notify" role="tab" aria-selected="false" data-i18n="settings.tab.notify">Notifiche</button>
-            <button type="button" class="settings-tab" data-tab="settings-tab-prefs" role="tab" aria-selected="false" data-i18n="settings.tab.preferences">Preferenze</button>
-            <button type="button" class="settings-tab" data-tab="settings-tab-data" role="tab" aria-selected="false" data-i18n="settings.tab.data">Dati</button>
-            <button type="button" class="settings-tab" data-tab="settings-tab-updates" role="tab" aria-selected="false" data-i18n="settings.tab.updates">Aggiornamenti</button>
-            <button type="button" class="settings-tab" data-tab="settings-tab-help" role="tab" aria-selected="false" data-i18n="settings.tab.help">Aiuto</button>
+            <button type="button" class="settings-tab is-active" data-tab="settings-tab-api" role="tab" aria-selected="true" aria-controls="settings-tab-api" data-i18n="settings.tab.api">API e Sorgenti</button>
+            <button type="button" class="settings-tab" data-tab="settings-tab-notify" role="tab" aria-selected="false" aria-controls="settings-tab-notify" data-i18n="settings.tab.notify">Notifiche</button>
+            <button type="button" class="settings-tab" data-tab="settings-tab-prefs" role="tab" aria-selected="false" aria-controls="settings-tab-prefs" data-i18n="settings.tab.preferences">Preferenze</button>
+            <button type="button" class="settings-tab" data-tab="settings-tab-data" role="tab" aria-selected="false" aria-controls="settings-tab-data" data-i18n="settings.tab.data">Dati</button>
+            <button type="button" class="settings-tab" data-tab="settings-tab-updates" role="tab" aria-selected="false" aria-controls="settings-tab-updates" data-i18n="settings.tab.updates">Aggiornamenti</button>
+            <button type="button" class="settings-tab" data-tab="settings-tab-help" role="tab" aria-selected="false" aria-controls="settings-tab-help" data-i18n="settings.tab.help">Aiuto</button>
         </nav>
 
-        <section class="settings-tabpage" id="settings-tab-api" role="tabpanel">
+        <section class="settings-tabpage" id="settings-tab-api" role="tabpanel" aria-labelledby="settings-tab-api">
             <div class="settings-field">
                 <label for="settings-api-key" data-i18n="settings.apiKey">Chiave API TMDB</label>
                 <input type="password" id="settings-api-key" inputmode="text" autocomplete="off"
@@ -260,7 +268,7 @@
             </div>
         </section>
 
-        <section class="settings-tabpage" id="settings-tab-notify" role="tabpanel" hidden>
+        <section class="settings-tabpage" id="settings-tab-notify" role="tabpanel" aria-labelledby="settings-tab-notify" hidden>
             <div class="settings-field">
                 <label data-i18n="settings.notify">Notifiche di rilascio</label>
                 <p class="settings-hint" data-i18n="settings.notifyHint">Ti avvisiamo quando esce una nuova puntata di una serie o esce un film della tua sala. Le novità restano anche nella cronologia «Novità» in home. Il controllo avviene all'apertura dell'app, automaticamente a intervalli regolari e con il tasto «⟳ Sync» nella sala. Su Android serve il permesso di notifica di sistema.</p>
@@ -284,13 +292,13 @@
                     <option value="48" data-i18n="settings.every48">Ogni 48 ore</option>
                 </select>
                 <div class="settings-actions">
-                    <button type="button" class="btn" onclick="sendTestNotification()" data-i18n="settings.testNotify">🔔 Prova notifica</button>
+                    <button type="button" class="btn" data-action="send-test-notification" data-i18n="settings.testNotify">🔔 Prova notifica</button>
                 </div>
                 <span class="settings-status" id="notify-status" hidden></span>
             </div>
         </section>
 
-        <section class="settings-tabpage" id="settings-tab-prefs" role="tabpanel" hidden>
+        <section class="settings-tabpage" id="settings-tab-prefs" role="tabpanel" aria-labelledby="settings-tab-prefs" hidden>
             <div class="settings-field">
                 <label for="settings-lang" data-i18n="settings.language">Lingua</label>
                 <select id="settings-lang"></select>
@@ -298,13 +306,13 @@
             </div>
         </section>
 
-        <section class="settings-tabpage" id="settings-tab-data" role="tabpanel" hidden>
+        <section class="settings-tabpage" id="settings-tab-data" role="tabpanel" aria-labelledby="settings-tab-data" hidden>
             <div class="settings-field">
                 <label for="backup-status" data-i18n="settings.backup">Backup dati</label>
                 <p class="settings-hint" data-i18n="settings.backupHint">Salva i tuoi dati (salvati, puntate viste, ultime riproduzioni, stagioni personalizzate, novità e preferenze) e ripristinali in un secondo momento. Il backup contiene solo gli identificativi dei titoli: al ripristino i dettagli vengono riscaricati da TMDB (serve la connessione).</p>
                 <div class="settings-actions">
-                    <button type="button" class="btn" onclick="createBackup()" data-i18n="settings.backupCreate">⬇ Crea backup</button>
-                    <button type="button" class="btn" onclick="restoreBackup()" data-i18n="settings.backupRestore">⬆ Ripristina</button>
+                    <button type="button" class="btn" data-action="create-backup" data-i18n="settings.backupCreate">⬇ Crea backup</button>
+                    <button type="button" class="btn" data-action="restore-backup" data-i18n="settings.backupRestore">⬆ Ripristina</button>
                     <input type="file" id="backup-file" accept="application/json,.json" hidden>
                 </div>
                 <span class="settings-status" id="backup-status" hidden></span>
@@ -313,33 +321,33 @@
                 <label data-i18n="settings.dataDelete">Elimina dati</label>
                 <p class="settings-hint" data-i18n="settings.dataDeleteHint">Cancella in modo irreversibile watchlist, puntate viste, ultime riproduzioni, stagioni personalizzate, novità e preferenze. La chiave API, la lingua e il consenso legale vengono conservati.</p>
                 <div class="settings-actions">
-                    <button type="button" class="btn btn--rosso" onclick="deleteAllData()" data-i18n="settings.dataDeleteBtn">🗑 Elimina dati</button>
+                    <button type="button" class="btn btn--danger" data-action="delete-all-data" data-i18n="settings.dataDeleteBtn">🗑 Elimina dati</button>
                 </div>
                 <span class="settings-status" id="data-delete-status" hidden></span>
             </div>
         </section>
 
-        <section class="settings-tabpage" id="settings-tab-updates" role="tabpanel" hidden>
+        <section class="settings-tabpage" id="settings-tab-updates" role="tabpanel" aria-labelledby="settings-tab-updates" hidden>
             <div class="settings-field">
                 <label for="update-status" data-i18n="settings.updates">Aggiornamenti</label>
                 <p class="settings-hint" id="settings-version">Versione installata: 1.0.0</p>
                 <p class="settings-hint" id="settings-updates-web-hint" hidden data-i18n="settings.updatesWebOnly"></p>
                 <p class="settings-hint" data-i18n="settings.updatesHint">BlameFlix controlla su GitHub se è disponibile una nuova versione e te la segnala all'avvio. Puoi verificare manualmente quando vuoi.</p>
                 <div class="settings-actions">
-                    <button type="button" class="btn" id="settings-update-check" onclick="checkForUpdates(true)" data-i18n="settings.checkUpdates">⟳ Verifica aggiornamenti</button>
-                    <button type="button" class="btn" id="settings-update-open" onclick="openLatestRelease()" hidden data-i18n="settings.goRelease">Vai alla release</button>
+                    <button type="button" class="btn" id="settings-update-check" data-action="check-for-updates" data-i18n="settings.checkUpdates">⟳ Verifica aggiornamenti</button>
+                    <button type="button" class="btn" id="settings-update-open" data-action="open-latest-release" hidden data-i18n="settings.goRelease">Vai alla release</button>
                 </div>
                 <span class="settings-status" id="update-status" hidden></span>
                 <p class="settings-hint" id="update-last-check" hidden></p>
             </div>
         </section>
 
-        <section class="settings-tabpage" id="settings-tab-help" role="tabpanel" hidden>
+        <section class="settings-tabpage" id="settings-tab-help" role="tabpanel" aria-labelledby="settings-tab-help" hidden>
             <div class="settings-field">
                 <label for="docs-status" data-i18n="settings.help">Aiuto</label>
                 <p class="settings-hint" data-i18n="settings.helpHint">Hai domande su come usare BlameFlix? Trovi tutto spiegato nella guida.</p>
                 <div class="settings-actions">
-                    <button type="button" class="btn" onclick="openDocs()" data-i18n="settings.docs">❓ Documentazione</button>
+                    <button type="button" class="btn" data-action="open-docs" data-i18n="settings.docs">❓ Documentazione</button>
                     <button type="button" class="btn" id="btn-tutorial-replay" data-i18n="settings.replayTutorial">Rivedi il tutorial</button>
                 </div>
                 <p class="settings-hint" data-i18n="settings.replayTutorialHint">Mostra di nuovo il tour guidato del primo avvio.</p>
@@ -347,7 +355,7 @@
         </section>
 
         <div class="settings-actions settings-savebar">
-            <button type="button" class="btn btn--rosso" onclick="saveSettings()" data-i18n="settings.save">Salva</button>
+            <button type="button" class="btn btn--danger" data-action="save-settings" data-i18n="settings.save">Salva</button>
             <span class="settings-status" id="settings-status" hidden></span>
         </div>
     </div>
@@ -360,7 +368,7 @@
                 <span class="eyebrow" data-i18n="docs.guide">Guida</span>
                 <h2 id="docs-title" data-i18n="docs.title">Documentazione</h2>
             </div>
-            <button type="button" class="btn btn--ghost" onclick="closeDocs()" data-i18n="docs.close">&times; Chiudi</button>
+            <button type="button" class="btn btn--ghost" data-action="close-docs" data-i18n="docs.close">&times; Chiudi</button>
         </div>
 
         <div class="docs-body" data-i18n-html="docs.body">
@@ -423,7 +431,6 @@
         This product uses the TMDB API but is not endorsed or certified by TMDB.<br>
         Questo prodotto usa l'API TMDB ma non è approvato né certificato da TMDB. The Movie Database (TMDB) non è affiliato a questa applicazione.
     </p>
-    <span class="colophon__tag" data-i18n="footer.tag">Schermo: la tua sala</span>
 </footer>
 
 <div id="disclaimer-overlay" class="overlay disclaimer-overlay" hidden role="alertdialog" aria-modal="true" aria-labelledby="disclaimer-title">
@@ -438,7 +445,7 @@
             <p>Questa applicazione è di proprietà di <strong>padelle2603</strong> e tutelata dalla legge sul diritto d'autore, va usata nel rispetto delle norme europee ed italiane sulla visione di contenuti soggetti a proprietà intellettuale, il proprietario non assume alcuna responsabilità sull'uso illegale della stessa, e si riserva ogni diritto ragione ed azione a propria tutela compreso il ricorso alle autorità competenti qualora dall'uso illecito che ne fa l'utente, gliene derivi un danno di qualsiasi natura, solo cliccando su accetta queste condizioni, il programma si avvierà.</p>
         </div>
         <div class="settings-actions">
-            <button type="button" class="btn btn--rosso" id="disclaimer-accept" onclick="acceptDisclaimer()" disabled data-i18n="disclaimer.accept">Accetta</button>
+            <button type="button" class="btn btn--danger" id="disclaimer-accept" data-action="accept-disclaimer" disabled data-i18n="disclaimer.accept">Accetta</button>
             <span class="disclaimer-status" id="disclaimer-status">Accettabile tra 10s</span>
         </div>
     </div>
@@ -455,14 +462,9 @@
             <button type="button" class="btn btn--ghost" id="tutorial-skip" data-i18n="tutorial.skip">Skip</button>
             <span class="tutorial-spacer"></span>
             <button type="button" class="btn" id="tutorial-prev" data-i18n="tutorial.prev">Back</button>
-            <button type="button" class="btn btn--rosso" id="tutorial-next" data-i18n="tutorial.next">Next</button>
+            <button type="button" class="btn btn--danger" id="tutorial-next" data-i18n="tutorial.next">Next</button>
         </div>
     </div>
-</div>
-
-<div id="toast" class="toast" role="status" aria-live="polite">
-    <strong class="toast__title" id="toast-title"></strong>
-    <span class="toast__body" id="toast-body"></span>
 </div>
 
 

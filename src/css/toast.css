@@ -1,33 +1,43 @@
 /* ===== TOAST (in-app notices) ===== */
-.toast {
+.toast-container {
     position: fixed;
     left: 50%;
     bottom: 1.4rem;
-    transform: translateX(-50%) translateY(10px);
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    gap: 0.6rem;
+    z-index: 70;
     max-width: min(560px, calc(100vw - 2rem));
     width: max-content;
+    pointer-events: none;
+}
+
+.toast {
+    width: 100%;
     background: var(--paper-hi);
     border: 1px solid var(--line);
     border-radius: var(--radius);
     box-shadow: var(--shadow);
     padding: 0.8rem 1rem 0.8rem 1.1rem;
-    z-index: 70;
     display: flex;
     flex-direction: column;
     gap: 0.3rem;
     opacity: 0;
+    transform: translateY(10px);
     pointer-events: none;
     transition: opacity 0.25s, transform 0.25s;
 }
 
 .toast.is-visible {
     opacity: 1;
-    transform: translateX(-50%) translateY(0);
+    transform: translateY(0);
     pointer-events: auto;
 }
 
 .toast__title {
-    font-family: 'Archivo', sans-serif;
+    font-family: var(--font-main);
     font-weight: 700;
     font-size: 0.92rem;
     line-height: 1.2;
@@ -40,4 +50,3 @@
     white-space: pre-line;
     letter-spacing: 0.02em;
 }
-

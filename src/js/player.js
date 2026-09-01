@@ -1,7 +1,8 @@
 import { state } from './state.js';
 import { inputSeasonCustom, inputEpisodeCustom } from './dom.js';
 import { findNextUnwatched, syncResumeSelection, refreshUnwatchedCount } from './details.js';
-import { effectiveResolverTemplate, resolveTemplate, sourceTemplateError } from './resolver.js';
+import { effectiveResolverTemplate, resolveTemplate } from './resolver.js';
+import { sourceTemplateError } from './sourceUtils.js';
 import { toggleEpisodeWatched } from './watched.js';
 import { refreshHomeUnwatchedCount } from './counter.js';
 import { syncResolverNotice } from './settings.js';
@@ -50,7 +51,7 @@ function getLastPlayed(id, mediaType) {
 async function openPlayer(resume = false) {
     if (!state.currentMedia) return;
 
-    let streamUrl = '';
+    let streamUrl;
 
     if (state.currentMedia.media_type === 'movie') {
         streamUrl = resolveTemplate(effectiveResolverTemplate('movie'), { id: state.currentMedia.id, media_type: state.currentMedia.media_type });

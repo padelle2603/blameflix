@@ -14,14 +14,14 @@
 
 .tutorial-shade {
     position: absolute;
-    background: rgba(5, 7, 9, 0.78);
+    background: var(--overlay-bg);
 }
 
 .tutorial-ring {
     position: absolute;
-    border: 2px solid var(--rosso);
+    border: 2px solid var(--danger);
     border-radius: 14px;
-    box-shadow: 0 0 0 4px rgba(224, 67, 52, 0.25);
+    box-shadow: 0 0 0 4px rgba(var(--lago-rgb), 0.25);
 }
 
 .tutorial-tooltip {
@@ -39,7 +39,7 @@
 .tutorial-tooltip .eyebrow { margin-bottom: 0.35rem; }
 
 .tutorial-title {
-    font-family: 'Archivo', sans-serif;
+    font-family: var(--font-main);
     font-weight: 700;
     font-size: 1.25rem;
     line-height: 1.15;
@@ -68,7 +68,7 @@
     transition: background 0.15s, transform 0.15s;
 }
 
-.tutorial-dot.is-active { background: var(--rosso); transform: scale(1.25); }
+.tutorial-dot.is-active { background: var(--danger); transform: scale(1.25); }
 .tutorial-dot.is-done { background: var(--lago); }
 
 .tutorial-actions {

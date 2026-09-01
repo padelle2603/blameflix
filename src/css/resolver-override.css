@@ -21,31 +21,5 @@
     padding: 0.9rem;
 }
 
-.resolver-override__panel label {
-    font-family: var(--font-mono);
-    font-size: 0.68rem;
-    font-weight: 600;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--lago);
-}
-
-.resolver-override__panel input {
-    font-family: var(--font-mono);
-    font-size: 0.88rem;
-    color: var(--ink);
-    background: var(--paper);
-    border: 1px solid var(--line-strong);
-    border-radius: var(--radius-sm);
-    padding: 0.55rem 0.7rem;
-    outline: none;
-    transition: border-color 0.15s, box-shadow 0.15s;
-}
-
-.resolver-override__panel input:focus-visible {
-    border-color: var(--lago);
-    box-shadow: 0 0 0 2px rgba(224, 67, 52, 0.28);
-}
-
 .resolver-override__panel .settings-hint { margin: 0; }
 

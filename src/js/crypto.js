@@ -34,7 +34,7 @@ export async function encryptAPIKey(plaintext) {
 export async function decryptAPIKey(encryptedStr) {
     const { iv, data } = JSON.parse(encryptedStr);
     const keyStr = localStorage.getItem('myCryptoKey');
-    if (!keyStr) throw new Error('Chiave di crittografia non trovata');
+    if (!keyStr) throw new Error('Encryption key not found');
     const key = await importCryptoKey(keyStr);
     const decrypted = await crypto.subtle.decrypt(
         { name: 'AES-GCM', iv: new Uint8Array(iv) },

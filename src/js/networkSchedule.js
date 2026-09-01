@@ -1,26 +1,13 @@
 import { state, persistNetworkSources } from './state.js';
 import { t } from './i18n.js';
 import { showToast } from './toast.js';
-import { detailFor } from './watchlist.js';
-
-// Protocols that can never be a network schedule source.
-const BANNED_SCHEMES = ['magnet', 'torrent', 'ed2k', 'kademlia', 'dht'];
+import { sourceTemplateError } from './sourceUtils.js';
 
 // Validates the schedule template: empty is allowed (means "no network
 // source"), otherwise it must be an http/https URL. Returns an error
 // message or null.
 function templateError(template) {
-    const tpl = String(template || '').trim();
-    if (!tpl) return null;
-    const scheme = tpl.match(/^([a-zA-Z][a-zA-Z0-9+.-]*):/);
-    if (scheme) {
-        const s = scheme[1].toLowerCase();
-        if (s !== 'http' && s !== 'https') {
-            return BANNED_SCHEMES.includes(s) ? t('msg.errFileSharing') : t('msg.errOnlyHttp');
-        }
-    }
-    if (!/^https?:\/\//i.test(tpl)) return t('msg.errInvalidLink');
-    return null;
+    return sourceTemplateError(template);
 }
 
 // Replaces the network-schedule placeholders ({id}, {networkId},
@@ -205,7 +192,7 @@ function syncNetworkSourceBtn() {
 }
 
 export {
-    templateError, resolveTemplate, parseSchedule, getNetworkSource,
+    resolveTemplate, parseSchedule, getNetworkSource,
     fetchSchedule, judgeNetworkRelease,
     toggleNetworkSource, saveNetworkSource, clearNetworkSource, syncNetworkSourceBtn
 };

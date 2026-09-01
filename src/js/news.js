@@ -2,6 +2,7 @@ import { state, NEWS_HISTORY_MAX, persistNewsHistory } from './state.js';
 import { t, locale } from './i18n.js';
 import { showDetails } from './details.js';
 import { sanitizeMediaType, toIntOr } from './utils.js';
+import { newsSection, newsList } from './dom.js';
 
 // Adds an entry to the history, deduplicating by media/season/episode.
 function addNewsEntry(entry) {
@@ -27,10 +28,10 @@ function formatNewsDate(ts) {
 // through event delegation: they can come from restored backups, so no
 // field is ever interpolated into HTML or inline handlers.
 function renderNewsSection() {
-    const section = document.getElementById('news-section');
+    const section = newsSection;
     if (!section) return;
     section.hidden = state.newsHistory.length === 0;
-    const list = document.getElementById('news-list');
+    const list = newsList;
     list.innerHTML = '';
     state.newsHistory.forEach(n => {
         const li = document.createElement('li');
@@ -59,7 +60,7 @@ function renderNewsSection() {
 }
 
 // One listener handles every news row, including the ones rendered later.
-document.getElementById('news-list').addEventListener('click', e => {
+newsList.addEventListener('click', e => {
     const btn = e.target.closest('.news-item__title[data-id]');
     if (!btn) return;
     showDetails(Number(btn.dataset.id), btn.dataset.mediaType);

@@ -34,17 +34,3 @@
 
 .colophon__note a { color: var(--meta); text-decoration: underline; }
 
-.colophon__tag {
-    display: none;
-}
-
-.docs-tmdb {
-    height: 26px;
-    width: auto;
-    display: block;
-    border: 1px solid var(--line);
-    border-radius: 6px;
-    background: #0d253f;
-    padding: 4px;
-}
-

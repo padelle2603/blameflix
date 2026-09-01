@@ -1,4 +1,0 @@
-
-.btn:active:not(:disabled) { transform: translateY(1px); }
-
-.btn:disabled { opacity: 0.55; cursor: not-allowed; }

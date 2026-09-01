@@ -19,6 +19,14 @@
     line-height: 1;
 }
 
+/* Text brand badge (TMDB page shortcut) in the same icon-button slot. */
+.btn-icon--brand {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 0.72rem;
+    letter-spacing: 0.02em;
+}
+
 .detail-header {
     display: flex;
     gap: 2.2rem;
@@ -52,16 +60,16 @@
     font-size: 0.62rem;
     font-weight: 600;
     letter-spacing: 0.12em;
-    background: rgba(10, 12, 14, 0.82);
+    background: var(--chip-bg);
     border: 1px solid var(--line-strong);
     border-radius: var(--radius-sm);
     padding: 3px 10px;
 }
 
-.detail-content { flex: 1; min-width: 280px; }
+.detail-content { flex: 1; min-width: min(280px, 100%); }
 
 .detail-title {
-    font-family: 'Archivo Black', 'Archivo', sans-serif;
+    font-family: 'Archivo Black', var(--font-main);
     font-weight: 400;
     font-size: 1.9rem;
     line-height: 1.1;
@@ -95,14 +103,14 @@
 }
 
 .detail-facts dd {
-    font-family: 'Archivo', sans-serif;
+    font-family: var(--font-main);
     font-weight: 700;
     font-size: 1.15rem;
     margin: 0;
 }
 
 /* ===== COLLAPSIBLE META ===== */
-/* The synopsis and the year/vote facts start collapsed on every sheet
+/* The synopsis and the year facts start collapsed on every sheet
    open; tapping (or Enter/Space) expands the block in full. */
 .detail-meta.is-collapsed { cursor: pointer; }
 
@@ -189,13 +197,15 @@
 
 .btn:active { transform: translateY(1px); }
 
-.btn--rosso {
+.btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.btn--danger {
     background: var(--lago);
     border-color: var(--lago);
     color: var(--paper);
 }
 
-.btn--rosso:hover { background: #EA5A4C; border-color: #EA5A4C; color: var(--paper); }
+.btn--danger:hover { background: var(--lago-hi); border-color: var(--lago-hi); color: var(--paper); }
 
 .btn--stamp { border-style: dashed; }
 
@@ -239,32 +249,7 @@
 
 .season-controls select {
     min-width: 76px;
-    font-family: var(--font-mono);
     font-size: 1rem;
-    font-weight: 600;
-    color: var(--ink);
-    background: var(--paper);
-    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='none' stroke='%23E6EAEE' stroke-width='2' d='M1 3l4 4 4-4'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 8px center;
-    border: 1px solid var(--line-strong);
-    border-radius: var(--radius-sm);
-    padding: 6px 26px 6px 10px;
-    appearance: none;
-    -webkit-appearance: none;
-    outline: none;
-    cursor: pointer;
-    transition: border-color 0.15s, box-shadow 0.15s;
-}
-
-.season-controls select:focus-visible {
-    border-color: var(--lago);
-    box-shadow: 0 0 0 2px rgba(224, 67, 52, 0.28);
-}
-
-.season-controls select option {
-    background: var(--paper-hi);
-    color: var(--ink);
 }
 
 .season-controls .season-controls__custom {
@@ -292,7 +277,7 @@
 
 .season-controls .season-controls__custom input[type="number"]:focus-visible {
     border-color: var(--lago);
-    box-shadow: 0 0 0 2px rgba(224, 67, 52, 0.28);
+    box-shadow: 0 0 0 2px var(--lago-glow);
 }
 
 .season-controls .season-controls__custom input[type="number"]::-webkit-outer-spin-button,

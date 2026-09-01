@@ -17,7 +17,7 @@
 .docs-body > * + * { margin-top: 1.1rem; }
 
 .docs-body h3 {
-    font-family: 'Archivo', sans-serif;
+    font-family: var(--font-main);
     font-weight: 700;
     font-size: 1.05rem;
     margin: 0;
@@ -69,12 +69,13 @@
 
 .docs-body pre code { border: none; background: none; padding: 0; }
 
-.docs-note {
+.docs-body .docs-tmdb {
+    height: 26px;
+    width: auto;
+    display: block;
     border: 1px solid var(--line);
-    border-radius: var(--radius-sm);
-    padding: 0.5rem 0.8rem;
-    font-size: 0.82rem;
-    color: var(--ink);
-    background: rgba(224, 67, 52, 0.08);
+    border-radius: 6px;
+    background: #0d253f;
+    padding: 4px;
 }
 

@@ -6,6 +6,7 @@ export const EXTRA_LANGS = {
     es: {
         'nav.home': 'Volver a tu pantalla principal',
         'nav.settings': 'Ajustes',
+        'nav.skip': 'Saltar al contenido',
         'notice.nokey': '⚠ Sin clave TMDB · no se puede buscar',
         'notice.setkey': 'Configurar la clave',
         'notice.noresolver': '⚠ Sin fuente configurada · «Ver ahora» desactivado',
@@ -50,12 +51,13 @@ export const EXTRA_LANGS = {
         'tools.menu': 'Opciones de la biblioteca',
         'tools.orderSection': 'Orden de las filas de películas/series',
         'tools.swap': '⇅ Invertir',
-        'detail.back': '← BlameFlix',
+        'detail.back': '← Volver',
         'detail.posterAlt': 'Póster',
         'detail.sheet': 'Ficha del título',
         'detail.year': 'Año',
-        'detail.vote': 'Nota',
         'detail.revealHint': 'Toca para mostrar',
+        'detail.share': 'Compartir',
+        'detail.tmdb': 'Abrir en TMDB',
         'detail.markAllAired': '✓ Marcar todas las temporadas como vistas',
         'detail.markAllAiredUnwatched': 'Quitar vistas de todas las temporadas',
         'detail.watchNow': '↗ Abrir en el navegador',
@@ -172,7 +174,6 @@ export const EXTRA_LANGS = {
 <p><em>This product uses the TMDB API but is not endorsed or certified by TMDB.</em></p>
 <p>Este producto usa la API de TMDB pero no está aprobado ni certificado por TMDB. Los títulos, textos e imágenes proceden de <a href="https://www.themoviedb.org" target="_blank" rel="noopener">The Movie Database (TMDB)</a>, que no está afiliada a esta aplicación. Las imágenes de póster se muestran solo para la consulta del catálogo.</p>`,
         'footer.tmdb': `This product uses the TMDB API but is not endorsed or certified by TMDB.<br>Este producto usa la API de TMDB pero no está aprobado ni certificado por TMDB. The Movie Database (TMDB) no está afiliada a esta aplicación.`,
-        'footer.tag': 'Pantalla: tu sala',
         'disclaimer.legal': 'Aviso legal',
         'disclaimer.title': 'ATENCIÓN',
         'disclaimer.accept': 'Aceptar',
@@ -198,6 +199,7 @@ export const EXTRA_LANGS = {
         'episode.markAllWatched': '✓ Marcar todos como vistos',
         'episode.markAllUnwatched': 'Marcar todos como no vistos',
         'msg.allWatched': '✓ Todo visto',
+        'msg.linkCopied': 'Enlace copiado al portapapeles',
         'msg.unwatchedCount': { one: '1 episodio por ver', other: '{n} episodios por ver' },
         'msg.countingEpisodes': 'Contando episodios…',
         'msg.releaseBody': '«{title}» · nuevo episodio S{season}E{episode} en el catálogo',
@@ -276,6 +278,7 @@ export const EXTRA_LANGS = {
     },
     fr: {
         'nav.home': 'Retour à votre accueil',
+        'nav.skip': 'Aller au contenu',
         'nav.settings': 'Paramètres',
         'notice.nokey': '⚠ Clé TMDB manquante · impossible de rechercher',
         'notice.setkey': 'Définir la clé',
@@ -321,12 +324,13 @@ export const EXTRA_LANGS = {
         'tools.menu': 'Options de la bibliothèque',
         'tools.orderSection': 'Ordre des rangées films/séries',
         'tools.swap': '⇅ Inverser',
-        'detail.back': '← BlameFlix',
+        'detail.back': '← Retour',
         'detail.posterAlt': 'Affiche',
         'detail.sheet': 'Fiche du titre',
         'detail.year': 'Année',
-        'detail.vote': 'Note',
         'detail.revealHint': 'Appuyez pour afficher',
+        'detail.share': 'Partager',
+        'detail.tmdb': 'Ouvrir sur TMDB',
         'detail.markAllAired': '✓ Marquer toutes les saisons comme vues',
         'detail.markAllAiredUnwatched': 'Désmarquer toutes les saisons',
         'detail.watchNow': '↗ Ouvrir dans le navigateur',
@@ -409,45 +413,44 @@ export const EXTRA_LANGS = {
         'docs.close': '× Fermer',
         'docs.body': `
 <p class="docs-hint">Comment utiliser BlameFlix</p>
-<h3>Qu\'est-ce que BlameFlix</h3>
+<h3>Qu'est-ce que BlameFlix</h3>
 <p>BlameFlix est votre salle personnelle : un catalogue où vous regroupez les films et les séries qui vous intéressent. Vous pouvez rechercher des titres, les garder dans vos enregistrés et les regarder quand vous voulez, en reprenant toujours là où vous vous étiez arrêté.</p>
 <h3>Rechercher et enregistrer un titre</h3>
-<p>Utilisez la barre de recherche en haut pour trouver un film ou une série. Ouvrez la fiche du titre qui vous intéresse et appuyez sur <strong>« + Ajouter aux enregistrés »</strong> : le titre entre dans votre salle, où il reste jusqu\'à ce que vous l\'enleviez. Vous pouvez filtrer votre salle par <strong>Tous</strong>, <strong>Films</strong> ou <strong>Séries</strong> et choisir entre la vue en grille et en liste.</p>
+<p>Utilisez la barre de recherche en haut pour trouver un film ou une série. Ouvrez la fiche du titre qui vous intéresse et appuyez sur <strong>« + Ajouter aux enregistrés »</strong> : le titre entre dans votre salle, où il reste jusqu'à ce que vous l'enleviez. Vous pouvez filtrer votre salle par <strong>Tous</strong>, <strong>Films</strong> ou <strong>Séries</strong> et choisir entre la vue en grille et en liste.</p>
 <h3>Regarder un film</h3>
-<p>Ouvrez la fiche du film et appuyez sur <strong>« ↗ Ouvrir dans le navigateur »</strong>. BlameFlix ouvre l\'URL de la <strong>source</strong> que vous avez configurée dans les Paramètres. Sur mobile, l\'application externe s\'ouvre ; sur ordinateur, une nouvelle fenêtre.</p>
+<p>Ouvrez la fiche du film et appuyez sur <strong>« ↗ Ouvrir dans le navigateur »</strong>. BlameFlix ouvre l'URL de la <strong>source</strong> que vous avez configurée dans les Paramètres. Sur mobile, l'application externe s'ouvre ; sur ordinateur, une nouvelle fenêtre.</p>
 <h3>Regarder une série TV</h3>
-<p>Dans la fiche d\'une série, choisissez la <strong>saison</strong> dans le sélecteur : en dessous apparaissent les <strong>épisodes</strong> de cette saison, avec vignette, titre et description. Appuyez sur « ▶ Regarder » sur l\'épisode que vous voulez voir. Les épisodes déjà vus apparaissent <strong>atténués</strong> avec le badge « ✓ VU » ; ceux qui ne sont pas encore diffusés restent verrouillés jusqu\'à leur date de diffusion.</p>
-<p>BlameFlix marque automatiquement comme vu l\'épisode que vous regardez, mais vous pouvez modifier cela en cliquant sur le badge « ✓ VU » d\'un épisode. Avec le bouton <strong>« Marquer tout comme vu »</strong> en haut de la liste, vous pouvez marquer en un geste tous les épisodes déjà diffusés de la saison (rappuyez pour les démarquer). En rouvrant une série, vous repartez de la saison du dernier épisode vu, et « Regarder maintenant » ouvre directement le premier épisode non vu. Si une saison ou un épisode n\'apparaît pas dans la liste (car TMDB ne le liste pas), choisissez <strong>« Autre… »</strong> et saisissez le numéro à la main : votre choix est mémorisé.</p>
+<p>Dans la fiche d'une série, choisissez la <strong>saison</strong> dans le sélecteur : en dessous apparaissent les <strong>épisodes</strong> de cette saison, avec vignette, titre et description. Appuyez sur « ▶ Regarder » sur l'épisode que vous voulez voir. Les épisodes déjà vus apparaissent <strong>atténués</strong> avec le badge « ✓ VU » ; ceux qui ne sont pas encore diffusés restent verrouillés jusqu'à leur date de diffusion.</p>
+<p>BlameFlix marque automatiquement comme vu l'épisode que vous regardez, mais vous pouvez modifier cela en cliquant sur le badge « ✓ VU » d'un épisode. Avec le bouton <strong>« Marquer tout comme vu »</strong> en haut de la liste, vous pouvez marquer en un geste tous les épisodes déjà diffusés de la saison (rappuyez pour les démarquer). En rouvrant une série, vous repartez de la saison du dernier épisode vu, et « Regarder maintenant » ouvre directement le premier épisode non vu. Si une saison ou un épisode n'apparaît pas dans la liste (car TMDB ne le liste pas), choisissez <strong>« Autre… »</strong> et saisissez le numéro à la main : votre choix est mémorisé.</p>
 <h3>La source</h3>
-<p>BlameFlix ne contient pas de sources de streaming : il ouvre simplement l\'URL du service que vous choisissez. Dans les <strong>Paramètres</strong>, vous saisissez le modèle pour les films et celui pour les séries. L\'application remplace les espaces réservés <code>{id}</code>, <code>{type}</code>, <code>{season}</code> et <code>{episode}</code> par les valeurs du titre (ex. <code>https://exemple.com/watch?id={id}&s={season}&e={episode}</code>). Si le modèle n\'a pas d\'espaces réservés, l\'URL est ouverte exactement telle quelle. Seuls les liens <strong>http/https</strong> sont acceptés : magnet, torrent et autres protocoles ne sont pas pris en charge. Si un modèle est vide, le bouton « Regarder maintenant » est désactivé.</p>
-<p>Dans la fiche d\'un titre, vous pouvez définir une <strong>source spécifique</strong> qui prime sur la globale : appuyez sur <strong>« Source : globale »</strong> sous les boutons, saisissez le modèle et enregistrez-le avec « Utiliser pour ce titre ». Avec « Utiliser la globale », vous revenez au comportement par défaut. Les sources par titre sont stockées sur l\'appareil et incluses dans la sauvegarde.</p>
+<p>BlameFlix ne contient pas de sources de streaming : il ouvre simplement l'URL du service que vous choisissez. Dans les <strong>Paramètres</strong>, vous saisissez le modèle pour les films et celui pour les séries. L'application remplace les espaces réservés <code>{id}</code>, <code>{type}</code>, <code>{season}</code> et <code>{episode}</code> par les valeurs du titre (ex. <code>https://exemple.com/watch?id={id}&s={season}&e={episode}</code>). Si le modèle n'a pas d'espaces réservés, l'URL est ouverte exactement telle quelle. Seuls les liens <strong>http/https</strong> sont acceptés : magnet, torrent et autres protocoles ne sont pas pris en charge. Si un modèle est vide, le bouton « Regarder maintenant » est désactivé.</p>
+<p>Dans la fiche d'un titre, vous pouvez définir une <strong>source spécifique</strong> qui prime sur la globale : appuyez sur <strong>« Source : globale »</strong> sous les boutons, saisissez le modèle et enregistrez-le avec « Utiliser pour ce titre ». Avec « Utiliser la globale », vous revenez au comportement par défaut. Les sources par titre sont stockées sur l'appareil et incluses dans la sauvegarde.</p>
 <h3>Mises à jour</h3>
-<p>BlameFlix vérifie sur GitHub si une nouvelle version est disponible et, le cas échéant, affiche un avertissement avec le lien vers la page de téléchargement. Vous pouvez aussi vérifier manuellement dans les <strong>Paramètres</strong> (« Vérifier les mises à jour »), où vous voyez la version installée. Sur Android, le nouvel APK s\'installe <strong>par-dessus</strong> l\'existante, sans désinstaller quoi que ce soit.</p>
+<p>BlameFlix vérifie sur GitHub si une nouvelle version est disponible et, le cas échéant, affiche un avertissement avec le lien vers la page de téléchargement. Vous pouvez aussi vérifier manuellement dans les <strong>Paramètres</strong> (« Vérifier les mises à jour »), où vous voyez la version installée. Sur Android, le nouvel APK s'installe <strong>par-dessus</strong> l'existante, sans désinstaller quoi que ce soit.</p>
 <h3>Avis légal au démarrage</h3>
-<p>Lors de la première utilisation, BlameFlix affiche un avis légal sur l\'usage de l\'application : le démarrage est débloqué uniquement après acceptation (disponible après 10 secondes). L\'acceptation est mémorisée et n\'est plus demandée aux ouvertures suivantes.</p>
+<p>Lors de la première utilisation, BlameFlix affiche un avis légal sur l'usage de l'application : le démarrage est débloqué uniquement après acceptation (disponible après 10 secondes). L'acceptation est mémorisée et n'est plus demandée aux ouvertures suivantes.</p>
 <h3>Notifications de sortie</h3>
-<p>BlameFlix peut vous avertir quand un <strong>nouvel épisode</strong> d\'une série de votre salle sort (à sa date de diffusion). La vérification a lieu automatiquement à l\'ouverture de l\'application, à des intervalles configurables dans les Paramètres (toutes les 8, 12, 24 ou 48 heures) et manuellement avec le bouton <strong>« ⟳ Sync »</strong> de votre salle.</p>
-<p>Chaque nouvelle sortie rejoint aussi l\'historique <strong>« Nouveautés »</strong> de l\'accueil : en appuyant sur une entrée, vous ouvrez la fiche du titre et avec <strong>« Vider »</strong> vous pouvez le vider. Les épisodes que vous avez déjà marqués comme vus ne sont pas considérés comme nouveaux.</p>
+<p>BlameFlix peut vous avertir quand un <strong>nouvel épisode</strong> d'une série de votre salle sort (à sa date de diffusion). La vérification a lieu automatiquement à l'ouverture de l'application, à des intervalles configurables dans les Paramètres (toutes les 8, 12, 24 ou 48 heures) et manuellement avec le bouton <strong>« ⟳ Sync »</strong> de votre salle.</p>
+<p>Chaque nouvelle sortie rejoint aussi l'historique <strong>« Nouveautés »</strong> de l'accueil : en appuyant sur une entrée, vous ouvrez la fiche du titre et avec <strong>« Vider »</strong> vous pouvez le vider. Les épisodes que vous avez déjà marqués comme vus ne sont pas considérés comme nouveaux.</p>
 <p>Dans les <strong>Paramètres</strong>, la section notifications est simple : <strong>« Activer les notifications »</strong> et <strong>« Notifications pour les nouveaux épisodes »</strong>. Vous pouvez ajuster la fréquence de la <strong>synchronisation automatique</strong> et envoyer une <strong>notification de test</strong>. Sur Android, la première notification demande la permission système, et appuyer sur une notification ouvre la fiche de la série. Les dates proviennent de TMDB : si elles manquent ou changent, les alertes arrivent à la première vérification utile.</p>
 <h3>Legalité des contenus</h3>
-<p>BlameFlix est un lecteur générique : les sources de streaming sont configurées par vous dans les Paramètres. Vous êtes <strong>responsable de la légalité des contenus</strong> auxquels vous accédez via votre source, selon les lois de votre pays. En Italie, l\'accès à un streaming non autorisé peut entraîner des sanctions administratives (loi 93/2023) et des amendes plus sévères sont à l\'étude. BlameFlix ne fournit ni n\'indique aucune source de contenu.</p>
+<p>BlameFlix est un lecteur générique : les sources de streaming sont configurées par vous dans les Paramètres. Vous êtes <strong>responsable de la légalité des contenus</strong> auxquels vous accédez via votre source, selon les lois de votre pays. En Italie, l'accès à un streaming non autorisé peut entraîner des sanctions administratives (loi 93/2023) et des amendes plus sévères sont à l'étude. BlameFlix ne fournit ni n'indique aucune source de contenu.</p>
 <h3>Sauvegarde des données</h3>
-<p>Avec <strong>« Créer une sauvegarde »</strong>, vous enregistrez un fichier contenant vos données : les titres enregistrés, les épisodes vus (saison et épisode de chaque série), les derniers films et séries vus, l\'historique « Nouveautés », votre clé personnelle et vos préférences d\'affichage. L\'application vous demande où enregistrer le fichier.</p>
+<p>Avec <strong>« Créer une sauvegarde »</strong>, vous enregistrez un fichier contenant vos données : les titres enregistrés, les épisodes vus (saison et épisode de chaque série), les derniers films et séries vus, l'historique « Nouveautés », votre clé personnelle et vos préférences d'affichage. L'application vous demande où enregistrer le fichier.</p>
 <p>Avec <strong>« Restaurer »</strong>, vous choisissez un fichier de sauvegarde précédemment créé et BlameFlix remet toutes vos données en place. La sauvegarde ne contient que les identifiants des titres : lors de la restauration, les détails sont rechargés depuis TMDB, une connexion internet est donc nécessaire. Les titres non téléchargeables apparaissent tout de même comme des cartes sans données et les détails se chargent à leur ouverture.</p>
 <h3>Les titres ne se chargent pas</h3>
-<p>BlameFlix reçoit les données des titres depuis TMDB. Si la recherche ou les fiches ne se chargent pas, assurez-vous d\'être connecté à internet. En cas de problème, vous pouvez saisir dans les Paramètres une clé personnelle gratuite, obtenue sur themoviedb.org dans la section API.</p>
+<p>BlameFlix reçoit les données des titres depuis TMDB. Si la recherche ou les fiches ne se chargent pas, assurez-vous d'être connecté à internet. En cas de problème, vous pouvez saisir dans les Paramètres une clé personnelle gratuite, obtenue sur themoviedb.org dans la section API.</p>
 <h3>Confidentialité</h3>
 <p>Toutes vos données restent sur votre appareil et ne sont envoyées à personne, hormis les requêtes normales vers TMDB pour rechercher des titres. Conservez bien le fichier de sauvegarde : il contient vos données personnelles. Pour plus de détails, consultez la politique de confidentialité du projet.</p>
 <h3>Crédits</h3>
 <p><img src="tmdb.svg" alt="The Movie Database (TMDB)" class="docs-tmdb"></p>
 <p><em>This product uses the TMDB API but is not endorsed or certified by TMDB.</em></p>
-<p>Ce produit utilise l\'API TMDB mais n\'est pas approuvé ni certifié par TMDB. Les titres, textes et images proviennent de <a href="https://www.themoviedb.org" target="_blank" rel="noopener">The Movie Database (TMDB)</a>, qui n\'est pas affiliée à cette application. Les images d\'affiche sont affichées uniquement pour la consultation du catalogue.</p>`,
-        'footer.tmdb': `This product uses the TMDB API but is not endorsed or certified by TMDB.<br>Ce produit utilise l\'API TMDB mais n\'est pas approuvé ni certifié par TMDB. The Movie Database (TMDB) n\'est pas affiliée à cette application.`,
-        'footer.tag': 'Écran : votre salle',
+<p>Ce produit utilise l'API TMDB mais n'est pas approuvé ni certifié par TMDB. Les titres, textes et images proviennent de <a href="https://www.themoviedb.org" target="_blank" rel="noopener">The Movie Database (TMDB)</a>, qui n'est pas affiliée à cette application. Les images d'affiche sont affichées uniquement pour la consultation du catalogue.</p>`,
+        'footer.tmdb': `This product uses the TMDB API but is not endorsed or certified by TMDB.<br>Ce produit utilise l'API TMDB mais n'est pas approuvé ni certifié par TMDB. The Movie Database (TMDB) n'est pas affiliée à cette application.`,
         'disclaimer.legal': 'Avis légal',
         'disclaimer.title': 'ATTENTION',
         'disclaimer.accept': 'Accepter',
-        'disclaimer.body': `<p>Cette application appartient à <strong>padelle2603</strong> et est protégée par le droit d\'auteur. Elle doit être utilisée dans le respect des règles européennes et italiennes sur la vision de contenus soumis à la propriété intellectuelle. Le propriétaire n\'assume aucune responsabilité en cas d\'usage illégal et se réserve tous droits, raisons et actions pour sa propre protection, y compris le recours aux autorités compétentes, si l\'usage illicite de l\'utilisateur lui cause un préjudice de quelque nature que ce soit. Le programme ne démarrera qu\'après avoir cliqué sur Accepter à ces conditions.</p>`,
+        'disclaimer.body': `<p>Cette application appartient à <strong>padelle2603</strong> et est protégée par le droit d'auteur. Elle doit être utilisée dans le respect des règles européennes et italiennes sur la vision de contenus soumis à la propriété intellectuelle. Le propriétaire n'assume aucune responsabilité en cas d'usage illégal et se réserve tous droits, raisons et actions pour sa propre protection, y compris le recours aux autorités compétentes, si l'usage illicite de l'utilisateur lui cause un préjudice de quelque nature que ce soit. Le programme ne démarrera qu'après avoir cliqué sur Accepter à ces conditions.</p>`,
         'common.noTitle': 'Sans titre',
         'common.special': 'Spécial',
         'common.other': 'Autre…',
@@ -469,6 +472,7 @@ export const EXTRA_LANGS = {
         'episode.markAllWatched': '✓ Marquer tout comme vu',
         'episode.markAllUnwatched': 'Marquer tout comme non vu',
         'msg.allWatched': '✓ Tout vu',
+        'msg.linkCopied': 'Lien copié dans le presse-papiers',
         'msg.unwatchedCount': { one: '1 épisode à voir', other: '{n} épisodes à voir' },
         'msg.countingEpisodes': 'Comptage des épisodes…',
         'msg.releaseBody': '« {title} » · nouvel épisode S{season}E{episode} au catalogue',
@@ -547,6 +551,7 @@ export const EXTRA_LANGS = {
     },
     de: {
         'nav.home': 'Zurück zu deiner Startseite',
+        'nav.skip': 'Zum Inhalt springen',
         'nav.settings': 'Einstellungen',
         'notice.nokey': '⚠ Kein TMDB-Schlüssel · Suche nicht möglich',
         'notice.setkey': 'Schlüssel festlegen',
@@ -592,12 +597,13 @@ export const EXTRA_LANGS = {
         'tools.menu': 'Bibliotheksoptionen',
         'tools.orderSection': 'Reihenfolge der Film-/Serienreihen',
         'tools.swap': '⇅ Tauschen',
-        'detail.back': '← BlameFlix',
+        'detail.back': '← Zurück',
         'detail.posterAlt': 'Poster',
         'detail.sheet': 'Titeldetail',
         'detail.year': 'Jahr',
-        'detail.vote': 'Bewertung',
         'detail.revealHint': 'Tippen zum Anzeigen',
+        'detail.share': 'Teilen',
+        'detail.tmdb': 'Auf TMDB öffnen',
         'detail.markAllAired': '✓ Alle Staffeln als gesehen markieren',
         'detail.markAllAiredUnwatched': 'Alle Staffeln als ungesehen markieren',
         'detail.watchNow': '↗ Im Browser öffnen',
@@ -714,7 +720,6 @@ export const EXTRA_LANGS = {
 <p><em>This product uses the TMDB API but is not endorsed or certified by TMDB.</em></p>
 <p>Dieses Produkt verwendet die TMDB-API, wird aber von TMDB nicht unterstützt oder zertifiziert. Titel, Texte und Bilder stammen von <a href="https://www.themoviedb.org" target="_blank" rel="noopener">The Movie Database (TMDB)</a>, die mit dieser Anwendung nicht verbunden ist. Posterbilder werden nur zur Katalogansicht angezeigt.</p>`,
         'footer.tmdb': `This product uses the TMDB API but is not endorsed or certified by TMDB.<br>Dieses Produkt verwendet die TMDB-API, wird aber von TMDB nicht unterstützt oder zertifiziert. The Movie Database (TMDB) ist mit dieser Anwendung nicht verbunden.`,
-        'footer.tag': 'Bildschirm: dein Kino',
         'disclaimer.legal': 'Rechtlicher Hinweis',
         'disclaimer.title': 'WARNUNG',
         'disclaimer.accept': 'Akzeptieren',
@@ -740,6 +745,7 @@ export const EXTRA_LANGS = {
         'episode.markAllWatched': '✓ Alle als gesehen markieren',
         'episode.markAllUnwatched': 'Alle als ungesehen markieren',
         'msg.allWatched': '✓ Alles gesehen',
+        'msg.linkCopied': 'Link in die Zwischenablage kopiert',
         'msg.unwatchedCount': { one: '1 Episode zu sehen', other: '{n} Episoden zu sehen' },
         'msg.countingEpisodes': 'Episoden werden gezählt…',
         'msg.releaseBody': '„{title}“ · neue Episode S{season}E{episode} im Katalog',
@@ -818,6 +824,7 @@ export const EXTRA_LANGS = {
     },
     ru: {
         'nav.home': 'Вернуться на главную',
+        'nav.skip': 'Перейти к содержанию',
         'nav.settings': 'Настройки',
         'notice.nokey': '⚠ Нет ключа TMDB · поиск невозможен',
         'notice.setkey': 'Указать ключ',
@@ -863,12 +870,13 @@ export const EXTRA_LANGS = {
         'tools.menu': 'Параметры библиотеки',
         'tools.orderSection': 'Порядок рядов фильмов/сериалов',
         'tools.swap': '⇅ Поменять',
-        'detail.back': '← BlameFlix',
+        'detail.back': '← Назад',
         'detail.posterAlt': 'Постер',
         'detail.sheet': 'Карточка названия',
         'detail.year': 'Год',
-        'detail.vote': 'Рейтинг',
         'detail.revealHint': 'Нажмите, чтобы показать',
+        'detail.share': 'Поделиться',
+        'detail.tmdb': 'Открыть на TMDB',
         'detail.markAllAired': '✓ Отметить все сезоны просмотренными',
         'detail.markAllAiredUnwatched': 'Снять просмотр со всех сезонов',
         'detail.watchNow': '↗ Открыть в браузере',
@@ -985,7 +993,6 @@ export const EXTRA_LANGS = {
 <p><em>This product uses the TMDB API but is not endorsed or certified by TMDB.</em></p>
 <p>Этот продукт использует API TMDB, но не одобрен и не сертифицирован TMDB. Названия, тексты и изображения взяты из <a href="https://www.themoviedb.org" target="_blank" rel="noopener">The Movie Database (TMDB)</a>, которая не связана с этим приложением. Постеры показываются только для просмотра каталога.</p>`,
         'footer.tmdb': `This product uses the TMDB API but is not endorsed or certified by TMDB.<br>Этот продукт использует API TMDB, но не одобрен и не сертифицирован TMDB. The Movie Database (TMDB) не связана с этим приложением.`,
-        'footer.tag': 'Экран: ваш зал',
         'disclaimer.legal': 'Юридическое уведомление',
         'disclaimer.title': 'ВНИМАНИЕ',
         'disclaimer.accept': 'Принять',
@@ -1011,6 +1018,7 @@ export const EXTRA_LANGS = {
         'episode.markAllWatched': '✓ Отметить все просмотренными',
         'episode.markAllUnwatched': 'Отметить все непросмотренными',
         'msg.allWatched': '✓ Всё просмотрено',
+        'msg.linkCopied': 'Ссылка скопирована',
         'msg.unwatchedCount': { one: '1 эпизод к просмотру', other: '{n} эпизодов к просмотру' },
         'msg.countingEpisodes': 'Считаем эпизоды…',
         'msg.releaseBody': '«{title}» · новый эпизод S{season}E{episode} в каталоге',
@@ -1089,6 +1097,7 @@ export const EXTRA_LANGS = {
     },
     zh: {
         'nav.home': '返回你的主页',
+        'nav.skip': '跳到内容',
         'nav.settings': '设置',
         'notice.nokey': '⚠ 缺少 TMDB 密钥 · 无法搜索',
         'notice.setkey': '设置密钥',
@@ -1134,12 +1143,13 @@ export const EXTRA_LANGS = {
         'tools.menu': '媒体库选项',
         'tools.orderSection': '电影/剧集行顺序',
         'tools.swap': '⇅ 调换',
-        'detail.back': '← BlameFlix',
+        'detail.back': '← 返回',
         'detail.posterAlt': '海报',
         'detail.sheet': '影片信息卡',
         'detail.year': '年份',
-        'detail.vote': '评分',
         'detail.revealHint': '点击显示',
+        'detail.share': '分享',
+        'detail.tmdb': '在 TMDB 上打开',
         'detail.markAllAired': '✓ 将所有季标记为已看',
         'detail.markAllAiredUnwatched': '取消所有季的已看状态',
         'detail.watchNow': '↗ 在浏览器中打开',
@@ -1256,7 +1266,6 @@ export const EXTRA_LANGS = {
 <p><em>This product uses the TMDB API but is not endorsed or certified by TMDB.</em></p>
 <p>本产品使用 TMDB API，但未获 TMDB 认可或认证。标题、文本和图片来自 <a href="https://www.themoviedb.org" target="_blank" rel="noopener">The Movie Database (TMDB)</a>，该网站与本应用无关。海报图片仅用于目录浏览。</p>`,
         'footer.tmdb': 'This product uses the TMDB API but is not endorsed or certified by TMDB.<br>本产品使用 TMDB API，但未获 TMDB 认可或认证。The Movie Database (TMDB) 与本应用无关。',
-        'footer.tag': '屏幕：你的放映厅',
         'disclaimer.legal': '法律声明',
         'disclaimer.title': '警告',
         'disclaimer.accept': '接受',
@@ -1282,6 +1291,7 @@ export const EXTRA_LANGS = {
         'episode.markAllWatched': '✓ 全部标记为已看',
         'episode.markAllUnwatched': '全部标记为未看',
         'msg.allWatched': '✓ 全部已看',
+        'msg.linkCopied': '链接已复制',
         'msg.unwatchedCount': { one: '还有 1 集待看', other: '还有 {n} 集待看' },
         'msg.countingEpisodes': '正在统计剧集…',
         'msg.releaseBody': '《{title}》· 目录中有新集 S{season}E{episode}',
@@ -1360,6 +1370,7 @@ export const EXTRA_LANGS = {
     },
     hi: {
         'nav.home': 'अपने होमपेज पर वापस जाएं',
+        'nav.skip': 'सामग्री पर जाएं',
         'nav.settings': 'सेटिंग्स',
         'notice.nokey': '⚠ TMDB कुंजी नहीं · खोज नहीं हो सकती',
         'notice.setkey': 'कुंजी सेट करें',
@@ -1405,12 +1416,13 @@ export const EXTRA_LANGS = {
         'tools.menu': 'लाइब्रेरी विकल्प',
         'tools.orderSection': 'फ़िल्म/शृंखला पंक्ति क्रम',
         'tools.swap': '⇅ बदलें',
-        'detail.back': '← BlameFlix',
+        'detail.back': '← वापस',
         'detail.posterAlt': 'पोस्टर',
         'detail.sheet': 'शीर्षक शीट',
         'detail.year': 'वर्ष',
-        'detail.vote': 'रेटिंग',
         'detail.revealHint': 'दिखाने के लिए टैप करें',
+        'detail.share': 'साझा करें',
+        'detail.tmdb': 'TMDB पर खोलें',
         'detail.markAllAired': '✓ सभी सीज़न को देखा हुआ चिह्नित करें',
         'detail.markAllAiredUnwatched': 'सभी सीज़न का देखा हुआ हटाएँ',
         'detail.watchNow': '↗ ब्राउज़र में खोलें',
@@ -1527,7 +1539,6 @@ export const EXTRA_LANGS = {
 <p><em>This product uses the TMDB API but is not endorsed or certified by TMDB.</em></p>
 <p>यह उत्पाद TMDB API का उपयोग करता है लेकिन TMDB द्वारा अनुमोदित या प्रमाणित नहीं है। शीर्षक, पाठ और छवियाँ <a href="https://www.themoviedb.org" target="_blank" rel="noopener">The Movie Database (TMDB)</a> से हैं, जो इस ऐप से संबद्ध नहीं है। पोस्टर छवियाँ केवल कैटलॉग ब्राउज़ करने के लिए दिखाई जाती हैं।</p>`,
         'footer.tmdb': `This product uses the TMDB API but is not endorsed or certified by TMDB.<br>यह उत्पाद TMDB API का उपयोग करता है लेकिन TMDB द्वारा अनुमोदित या प्रमाणित नहीं है। The Movie Database (TMDB) इस ऐप से संबद्ध नहीं है।`,
-        'footer.tag': 'स्क्रीन: आपका कक्ष',
         'disclaimer.legal': 'कानूनी नोटिस',
         'disclaimer.title': 'चेतावनी',
         'disclaimer.accept': 'स्वीकार करें',
@@ -1553,6 +1564,7 @@ export const EXTRA_LANGS = {
         'episode.markAllWatched': '✓ सभी को देखा हुआ चिह्नित करें',
         'episode.markAllUnwatched': 'सभी को न देखा हुआ चिह्नित करें',
         'msg.allWatched': '✓ सभी देखे गए',
+        'msg.linkCopied': 'लिंक कॉपी हो गया',
         'msg.unwatchedCount': { one: '1 एपिसोड देखना है', other: '{n} एपिसोड देखने हैं' },
         'msg.countingEpisodes': 'एपिसोड गिने जा रहे हैं…',
         'msg.releaseBody': '“{title}” · कैटलॉग में नया एपिसोड S{season}E{episode}',

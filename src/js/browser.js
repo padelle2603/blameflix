@@ -4,7 +4,7 @@ const BROWSER_PREF_KEY = 'myBrowserPref';
 
 export const BROWSER_MODE = {
     DEFAULT: 'default',   // Capacitor Browser (Chrome Custom Tabs)
-    ASK: 'ask'            // Chiedi ogni volta — Android Intent chooser
+    ASK: 'ask'            // Ask every time — Android Intent chooser
 };
 
 export function getBrowserMode() {
@@ -17,8 +17,8 @@ export function setBrowserMode(mode) {
     }
 }
 
-// Apre con Capacitor Browser (Chrome Custom Tabs su Android)
-export async function openInCapacitor(url) {
+// Opens with Capacitor Browser (Chrome Custom Tabs on Android)
+async function openInCapacitor(url) {
     if (window.Capacitor?.Plugins?.Browser) {
         await window.Capacitor.Plugins.Browser.open({ url });
     } else {
@@ -26,8 +26,8 @@ export async function openInCapacitor(url) {
     }
 }
 
-// Apre con browser di sistema tramite Intent chooser (Android)
-export async function openInSystem(url) {
+// Opens with the system browser via Intent chooser (Android)
+async function openInSystem(url) {
     if (isNativeRuntime() && window.Capacitor?.Plugins?.BrowserChooser) {
         await window.Capacitor.Plugins.BrowserChooser.open({ url });
     } else if (isNativeRuntime()) {
@@ -40,7 +40,7 @@ export async function openInSystem(url) {
     }
 }
 
-// Apre il link secondo la preferenza salvata
+// Opens the link according to the saved preference
 export async function openLink(url) {
     if (getBrowserMode() === BROWSER_MODE.ASK) {
         return openInSystem(url);

@@ -6,12 +6,12 @@
 
 .update-popup__panel {
     max-width: 520px;
-    border: 1px solid var(--rosso);
+    border: 1px solid var(--danger);
 }
 
 .disclaimer-panel {
     max-width: 620px;
-    border: 1px solid var(--rosso);
+    border: 1px solid var(--danger);
 }
 
 .disclaimer-body {

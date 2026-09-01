@@ -9,7 +9,7 @@ import { setLanguage, t } from './i18n.js';
 import { persistResolverOverrides } from './resolver.js';
 import { syncApiKeyNotice, syncNotifySettingsInputs, syncResolverNotice } from './settings.js';
 import { startAutoSyncTimer } from './releases.js';
-import { sourceTemplateError } from './resolver.js';
+import { sourceTemplateError } from './sourceUtils.js';
 import { watchlistKey } from './watchlist.js';
 import { renderGrid, syncTools, showHome } from './catalog.js';
 import { refreshHomeUnwatchedCount } from './counter.js';
@@ -177,7 +177,7 @@ async function hydrateOne(item) {
     if (!item.id || !item.media_type) return null;
     try {
         const d = await getDetails(item.media_type, item.id);
-        if (!d.id) throw new Error('Dati non validi');
+        if (!d.id) throw new Error('Invalid data');
         return {
             id: d.id,
             media_type: item.media_type,
@@ -185,8 +185,7 @@ async function hydrateOne(item) {
             name: d.name,
             poster_path: d.poster_path,
             release_date: d.release_date,
-            first_air_date: d.first_air_date,
-            vote_average: d.vote_average
+            first_air_date: d.first_air_date
         };
     } catch (err) {
         // Details not downloadable (offline or removed title): the
@@ -397,7 +396,7 @@ backupFile.addEventListener('change', e => {
         try {
             const payload = JSON.parse(reader.result);
             const data = payload && typeof payload === 'object' && payload.data ? payload.data : payload;
-            if (!data || typeof data !== 'object') throw new Error('Struttura non valida');
+            if (!data || typeof data !== 'object') throw new Error('Invalid structure');
 
             const wl = sanitizeWatchlistItems(data.myWatchlist);
             const lp = sanitizeLastPlayedItems(data.myLastPlayed);

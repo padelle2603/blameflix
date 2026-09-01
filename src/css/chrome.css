@@ -1,4 +1,24 @@
 /* ===== TOP BAR ===== */
+.skip-link {
+    position: absolute;
+    top: -100%;
+    left: 0.5rem;
+    z-index: 100;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--paper);
+    background: var(--ink);
+    border-radius: var(--radius-sm);
+    padding: 10px 16px;
+}
+
+.skip-link:focus-visible {
+    top: 0.5rem;
+}
+
 .topbar {
     max-width: 1240px;
     margin: 0 auto;
@@ -25,7 +45,7 @@
     display: inline-flex;
     align-items: center;
     gap: 0.6rem;
-    font-family: 'Archivo Black', 'Archivo', sans-serif;
+    font-family: 'Archivo Black', var(--font-main);
     font-size: 1.35rem;
     letter-spacing: 0.02em;
     color: var(--ink);
@@ -91,8 +111,8 @@
     border: 1px solid var(--line-strong);
     border-radius: var(--radius-sm);
     color: var(--ink);
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     font-size: 1.2rem;
     line-height: 1;
     cursor: pointer;
@@ -120,7 +140,7 @@
     justify-content: space-between;
     gap: 1rem;
     flex-wrap: wrap;
-    border: 1px solid var(--rosso);
+    border: 1px solid var(--danger);
     background: var(--paper-hi);
     border-radius: var(--radius);
     padding: 0.8rem 1rem;
@@ -132,7 +152,7 @@
     font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--rosso);
+    color: var(--danger);
     margin: 0;
 }
 

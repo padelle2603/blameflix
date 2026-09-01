@@ -23,7 +23,7 @@
 
 .searchbar-row input {
     width: 100%;
-    font-family: 'Archivo', sans-serif;
+    font-family: var(--font-main);
     font-size: 1.15rem;
     color: var(--ink);
     background: var(--paper-hi);
@@ -38,7 +38,7 @@
 
 .searchbar-row input:focus-visible {
     border-color: var(--lago);
-    box-shadow: 0 0 0 2px rgba(224, 67, 52, 0.28);
+    box-shadow: 0 0 0 2px var(--lago-glow);
 }
 
 .searchbar-clear {
@@ -86,7 +86,7 @@ body:has(#search-clear[hidden]) #section-count {
 }
 
 .section-title {
-    font-family: 'Archivo Black', 'Archivo', sans-serif;
+    font-family: 'Archivo Black', var(--font-main);
     font-weight: 400;
     font-size: 1.6rem;
     line-height: 1.1;
@@ -237,6 +237,29 @@ body:has(#search-clear[hidden]) #section-count {
 
 .rail-arrow[disabled] { opacity: 0 !important; pointer-events: none !important; }
 
+/* Touch affordance: a soft fade at the row edges hints that more titles
+   slide out on swipe (desktop arrows remain the primary cue there). */
+.rail-wrap.is-scrollable::before,
+.rail-wrap.is-scrollable::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 10px;
+    width: 42px;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.rail-wrap.is-scrollable::before {
+    left: 0;
+    background: linear-gradient(to right, var(--paper), transparent);
+}
+
+.rail-wrap.is-scrollable::after {
+    right: 0;
+    background: linear-gradient(to left, var(--paper), transparent);
+}
+
 @media (hover: none), (pointer: coarse) {
     .rail-arrow { display: none; }
 }
@@ -311,7 +334,7 @@ body:has(#search-clear[hidden]) #section-count {
     font-size: 0.6rem;
     font-weight: 600;
     letter-spacing: 0.12em;
-    background: rgba(10, 12, 14, 0.82);
+    background: var(--chip-bg);
     color: var(--ink);
     border: 1px solid var(--line-strong);
     border-radius: var(--radius-sm);
@@ -327,7 +350,7 @@ body:has(#search-clear[hidden]) #section-count {
     font-weight: 600;
     letter-spacing: 0.08em;
     color: var(--lago);
-    background: rgba(10, 12, 14, 0.82);
+    background: var(--chip-bg);
     border: 1px solid var(--lago);
     border-radius: var(--radius-pill);
     padding: 3px 10px;
@@ -357,7 +380,7 @@ body:has(#search-clear[hidden]) #section-count {
 }
 
 .credit-title {
-    font-family: 'Archivo', sans-serif;
+    font-family: var(--font-main);
     font-weight: 700;
     font-size: 0.95rem;
     line-height: 1.2;
@@ -372,7 +395,40 @@ body:has(#search-clear[hidden]) #section-count {
     letter-spacing: 0.04em;
 }
 
-.credit-meta .star { color: var(--lago); font-style: normal; }
+.card-skeleton__poster {
+    aspect-ratio: 2 / 3;
+    width: 100%;
+    border-radius: 0;
+    border-bottom: 1px solid var(--line);
+}
+
+.card--skeleton {
+    cursor: default;
+    pointer-events: none;
+}
+
+.card--skeleton:hover {
+    transform: none;
+    border-color: var(--line);
+    box-shadow: none;
+}
+
+.card-skeleton__poster::after,
+.card--skeleton .sk-title::after,
+.card--skeleton .sk-meta::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg, transparent, rgba(230, 234, 238, 0.09), transparent);
+    animation: shimmer 1.4s infinite;
+}
+
+.card--skeleton .sk-title,
+.card--skeleton .sk-meta {
+    position: relative;
+    overflow: hidden;
+}
 
 /* ===== EMPTY STATE ===== */
 .empty-state {
@@ -394,7 +450,7 @@ body:has(#search-clear[hidden]) #section-count {
 }
 
 .empty-state p:last-child {
-    font-family: 'Archivo', sans-serif;
+    font-family: var(--font-main);
     font-size: 1.05rem;
     color: var(--ink);
     margin: 0;

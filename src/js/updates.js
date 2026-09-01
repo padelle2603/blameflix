@@ -4,6 +4,7 @@ import { GITHUB_REPO, GITHUB_LATEST_URL, UPDATE_CHECK_STORAGE, resolveAppVersion
 import { t, locale } from './i18n.js';
 import { updateNotice, updateNoticeText, updateNoticeApk, updateStatus, updatePopup, updatePopupText, updatePopupDownloadBtn } from './dom.js';
 import { openBrowser, openWindow } from './player.js';
+import { trapFocus } from './focusTrap.js';
 
 // Numeric semver comparison (handles "v" prefixes and suffixes).
 function compareVersions(a, b) {
@@ -87,12 +88,12 @@ function disarmOnlineRetry() {
 function syncLastUpdateCheck() {
     const el = document.getElementById('update-last-check');
     if (!el) return;
-    const state = getUpdateState();
-    if (!state.lastCheck) {
+    const updateState = getUpdateState();
+    if (!updateState.lastCheck) {
         el.hidden = true;
         return;
     }
-    const when = new Date(state.lastCheck).toLocaleString(locale());
+    const when = new Date(updateState.lastCheck).toLocaleString(locale());
     el.innerText = t('settings.lastCheck', { date: when });
     el.hidden = false;
 }
@@ -105,7 +106,7 @@ async function checkForUpdates(manual = false) {
     await resolveAppVersion();
     if (!isNativeRuntime()) {
         hideUpdateNotice();
-        if (updatePopup) updatePopup.hidden = true;
+        if (updatePopup) dismissUpdatePopup();
         if (manual && updateStatus) {
             updateStatus.classList.remove('is-error');
             updateStatus.innerText = t('settings.updatesWebOnly');
@@ -148,7 +149,7 @@ async function checkForUpdates(manual = false) {
             state.latestRelease = updateDismissed ? null : { tag, html_url: data.html_url || '', assets: Array.isArray(data.assets) ? data.assets : [] };
             if (updateDismissed) {
                 hideUpdateNotice();
-                if (updatePopup) updatePopup.hidden = true;
+                if (updatePopup) dismissUpdatePopup();
                 const settingsOpenDismissed = document.getElementById('settings-update-open');
                 if (settingsOpenDismissed) settingsOpenDismissed.hidden = true;
             } else {
@@ -164,7 +165,7 @@ async function checkForUpdates(manual = false) {
         } else {
             state.latestRelease = null;
             hideUpdateNotice();
-            if (updatePopup) updatePopup.hidden = true;
+            if (updatePopup) dismissUpdatePopup();
             const settingsOpen = document.getElementById('settings-update-open');
             if (settingsOpen) settingsOpen.hidden = true;
             if (manual && updateStatus) {
@@ -225,20 +226,22 @@ function hideUpdateNotice() {
 function dismissUpdate() {
     const tag = state.latestRelease && state.latestRelease.tag;
     if (tag) {
-        const state = getUpdateState();
-        state.dismissedTag = tag;
-        localStorage.setItem(UPDATE_CHECK_STORAGE, JSON.stringify(state));
+        const updateState = getUpdateState();
+        updateState.dismissedTag = tag;
+        localStorage.setItem(UPDATE_CHECK_STORAGE, JSON.stringify(updateState));
     }
     // Forget the release entirely: applyLanguage() re-shows the banner from
     // this variable on language change, and a dismissed update must stay hidden.
     state.latestRelease = null;
     hideUpdateNotice();
+    if (updatePopup) dismissUpdatePopup();
 }
 
 // Shows the startup popup that warns about a newer version. It keeps the
 // banner visible independently: "Later" only closes this popup.
 function showUpdatePopup() {
     updatePopup.hidden = false;
+    updatePopup._trap = trapFocus(updatePopup, { onEsc: dismissUpdatePopup });
     syncUpdatePopup();
 }
 
@@ -252,6 +255,10 @@ function syncUpdatePopup() {
 // Closes only the popup: the banner and the dismissed state stay untouched.
 function dismissUpdatePopup() {
     updatePopup.hidden = true;
+    if (updatePopup._trap) {
+        updatePopup._trap.close();
+        updatePopup._trap = null;
+    }
 }
 
 // Primary popup action: direct APK download when available, otherwise the

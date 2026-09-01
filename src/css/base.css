@@ -67,22 +67,39 @@
     --ink-hi: #FFFFFF;
     --meta: #8B96A3;
 
-    /* Brand red — the single accent (legacy token name kept) */
+    /* Brand red — the single accent */
     --lago: #E04334;
+    --lago-rgb: 224, 67, 52;
+    --lago-glow: rgba(224, 67, 52, 0.28);
+    --lago-hi: #EA5A4C;
 
     /* Glacial teal — "all caught up" success state only */
     --ok: #7ED4CB;
 
     /* Muted red — errors, warnings, legal notices only */
-    --rosso: #C97C74;
+    --danger: #C97C74;
 
+    /* Overlay / floating chip backdrop */
+    --chip-bg: rgba(10, 12, 14, 0.82);
+    --overlay-bg: rgba(5, 7, 9, 0.78);
+
+    /* Typography */
+    --font-main: 'Archivo', Helvetica, Arial, sans-serif;
+    --font-display: 'Archivo Black', 'Archivo', sans-serif;
     --font-mono: 'IBM Plex Mono', monospace;
+
+    /* Radii */
     --radius-sm: 4px;
     --radius: 6px;
     --radius-lg: 10px;
     --radius-pill: 999px;
+
+    /* Shadows */
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.35);
     --shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+
+    /* Shared custom select arrow (SVG data URI, stroke = --ink) */
+    --select-arrow: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='none' stroke='%23E6EAEE' stroke-width='2' d='M1 3l4 4 4-4'/%3E%3C/svg%3E");
 }
 
 * { box-sizing: border-box; }
@@ -92,7 +109,7 @@
 html { font-size: 107%; scroll-behavior: smooth; overscroll-behavior-y: contain; }
 
 body {
-    font-family: 'Archivo', Helvetica, Arial, sans-serif;
+    font-family: var(--font-main);
     background-color: var(--paper);
     color: var(--ink);
     margin: 0;
@@ -108,6 +125,26 @@ body {
 :focus-visible {
     outline: 2px solid var(--lago);
     outline-offset: 2px;
+}
+
+/* Rendered only when JavaScript is disabled: the stylesheet is a static
+   link so it still loads, letting us show a themed notice instead of a
+   blank page. */
+.noscript-block {
+    position: fixed;
+    inset: 1rem;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    text-align: center;
+    background: var(--paper-hi);
+    color: var(--ink-hi);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-sm);
 }
 
 * {

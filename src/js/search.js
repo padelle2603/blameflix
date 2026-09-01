@@ -1,9 +1,9 @@
 import { state } from './state.js';
-import { searchInput, searchClear, homeView, detailView, sectionEyebrow, sectionTitle, sectionCount } from './dom.js';
+import { searchClear, homeView, detailView, sectionEyebrow, sectionTitle, sectionCount } from './dom.js';
 import { fetchJson } from './tmdb.js';
 import { BASE_URL } from './env.js';
 import { t, locale } from './i18n.js';
-import { renderGrid, showEmpty, renderHome } from './catalog.js';
+import { renderGrid, showEmpty, showGridLoading, renderHome } from './catalog.js';
 import { LruCache } from './utils.js';
 
 const SEARCH_DEBOUNCE_MS = 300;
@@ -63,6 +63,7 @@ async function performSearch(q) {
     sectionEyebrow.innerText = t('home.tmdbArchive');
     sectionTitle.innerText = t('home.searchResults', { q });
     sectionCount.innerText = '';
+    showGridLoading();
 
     try {
         const data = await fetchJson(
@@ -79,7 +80,6 @@ async function performSearch(q) {
         renderGrid(state.currentList);
     } catch (err) {
         if (err && err.name === 'AbortError') return; // superseded by a newer search
-        console.error('Search error:', err);
         showEmpty(t('msg.networkError'), t('msg.networkErrorDesc'));
     }
 }

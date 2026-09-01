@@ -1,5 +1,5 @@
-// Entry point: wires the modules together, exposes the handlers used by the
-// inline HTML attributes and boots the application.
+// Entry point: wires the modules together, routes every user action through
+// a single delegated listener and boots the application.
 // Heavy modules are lazy-loaded via dynamic import().
 import { applyLanguage } from './i18n.js';
 import { initDisclaimer, acceptDisclaimer } from './startup.js';
@@ -8,65 +8,30 @@ import { handleSearch } from './search.js';
 import { clearNewsHistory } from './news.js';
 import { syncReleases } from './releases.js';
 import { toggleWatchlist } from './watchlist.js';
+import { searchInput, inputSeason } from './dom.js';
 import './ptr.js';
 
 // --- Lazy loaders for heavy modules ---
 
-let _detailsModule = null;
-async function loadDetailsModule() {
-    if (!_detailsModule) {
-        _detailsModule = await import('./details.js');
-    }
-    return _detailsModule;
+// Generic single-flight importer: caches the resolved module so repeated
+// calls don't re-fetch the same chunk. The loader must contain a literal
+// dynamic import() (e.g. () => import('./details.js')) so esbuild can still
+// split those modules into separate chunks instead of inlining them.
+function createLazyLoader(loader) {
+    let modulePromise = null;
+    return () => {
+        if (!modulePromise) modulePromise = loader();
+        return modulePromise;
+    };
 }
 
-let _playerModule = null;
-async function loadPlayerModule() {
-    if (!_playerModule) {
-        _playerModule = await import('./player.js');
-    }
-    return _playerModule;
-}
-
-let _settingsModule = null;
-async function loadSettingsModule() {
-    if (!_settingsModule) {
-        _settingsModule = await import('./settings.js');
-    }
-    return _settingsModule;
-}
-
-let _updatesModule = null;
-async function loadUpdatesModule() {
-    if (!_updatesModule) {
-        _updatesModule = await import('./updates.js');
-    }
-    return _updatesModule;
-}
-
-let _backupModule = null;
-async function loadBackupModule() {
-    if (!_backupModule) {
-        _backupModule = await import('./backup.js');
-    }
-    return _backupModule;
-}
-
-let _resolverModule = null;
-async function loadResolverModule() {
-    if (!_resolverModule) {
-        _resolverModule = await import('./resolver.js');
-    }
-    return _resolverModule;
-}
-
-let _networkModule = null;
-async function loadNetworkModule() {
-    if (!_networkModule) {
-        _networkModule = await import('./networkSchedule.js');
-    }
-    return _networkModule;
-}
+const loadDetailsModule = createLazyLoader(() => import('./details.js'));
+const loadPlayerModule = createLazyLoader(() => import('./player.js'));
+const loadSettingsModule = createLazyLoader(() => import('./settings.js'));
+const loadUpdatesModule = createLazyLoader(() => import('./updates.js'));
+const loadBackupModule = createLazyLoader(() => import('./backup.js'));
+const loadResolverModule = createLazyLoader(() => import('./resolver.js'));
+const loadNetworkModule = createLazyLoader(() => import('./networkSchedule.js'));
 
 // --- Public handlers with lazy loading ---
 
@@ -88,6 +53,16 @@ async function onSeasonChange(value) {
 async function openPlayer(resume = false) {
     const m = await loadPlayerModule();
     return m.openPlayer(resume);
+}
+
+async function shareTitle() {
+    const m = await loadDetailsModule();
+    return m.shareTitle();
+}
+
+async function openTmdbPage() {
+    const m = await loadDetailsModule();
+    return m.openTmdbPage();
 }
 
 async function openSettings() {
@@ -195,43 +170,65 @@ async function clearNetworkSource() {
     return m.clearNetworkSource();
 }
 
-Object.assign(window, {
-    showHome,
-    openSettings,
-    openLatestRelease,
-    downloadLatestApk,
-    dismissUpdate,
-    updatePopupDownload,
-    dismissUpdatePopup,
-    clearSearch,
-    handleSearch,
-    clearNewsHistory,
-    setFilter,
-    setView,
-    toggleKindOrder,
-    toggleCatalogMenu,
-    syncReleases,
-    markAllAiredWatched,
-    openPlayer,
-    toggleWatchlist,
-    toggleResolverOverride,
-    saveResolverOverride,
-    clearResolverOverride,
-    toggleNetworkSource,
-    saveNetworkSource,
-    clearNetworkSource,
-    onSeasonChange,
-    markSeasonWatched,
-    closeSettings,
-    openDocs,
-    closeDocs,
-    createBackup,
-    restoreBackup,
-    deleteAllData,
-    checkForUpdates,
-    saveSettings,
-    sendTestNotification,
-    acceptDisclaimer
+// --- ACTION DISPATCH ---
+// All user actions that used to live as inline HTML attributes are routed
+// through a single delegated listener: elements carry a data-action name
+// and the matching handler is looked up here (lazy modules load on demand).
+// Keeping the handlers off window() removes global-scope pollution, enables
+// dead-code elimination and keeps a strict CSP reachable.
+const actions = {
+    'show-home': showHome,
+    'clear-search': clearSearch,
+    'set-filter': el => setFilter(el.dataset.type),
+    'set-view': el => setView(el.dataset.view),
+    'toggle-kind-order': toggleKindOrder,
+    'toggle-catalog-menu': toggleCatalogMenu,
+    'sync-releases': () => syncReleases(),
+    'toggle-watchlist': () => toggleWatchlist(),
+    'clear-news-history': () => clearNewsHistory(),
+    'open-settings': el => openSettings(el),
+    'close-settings': () => closeSettings(),
+    'open-docs': el => openDocs(el),
+    'close-docs': () => closeDocs(),
+    'save-settings': () => saveSettings(),
+    'send-test-notification': () => sendTestNotification(),
+    'create-backup': () => createBackup(),
+    'restore-backup': () => restoreBackup(),
+    'delete-all-data': () => deleteAllData(),
+    'check-for-updates': () => checkForUpdates(true),
+    'open-latest-release': () => openLatestRelease(),
+    'download-latest-apk': () => downloadLatestApk(),
+    'dismiss-update': () => dismissUpdate(),
+    'update-popup-download': () => updatePopupDownload(),
+    'dismiss-update-popup': () => dismissUpdatePopup(),
+    'open-player': el => openPlayer(el.dataset.resume === 'true'),
+    'share-title': () => shareTitle(),
+    'open-tmdb-page': () => openTmdbPage(),
+    'mark-all-aired-watched': () => markAllAiredWatched(),
+    'mark-season-watched': () => markSeasonWatched(),
+    'toggle-resolver-override': () => toggleResolverOverride(),
+    'save-resolver-override': () => saveResolverOverride(),
+    'clear-resolver-override': () => clearResolverOverride(),
+    'toggle-network-source': () => toggleNetworkSource(),
+    'save-network-source': () => saveNetworkSource(),
+    'clear-network-source': () => clearNetworkSource(),
+    'accept-disclaimer': () => acceptDisclaimer()
+};
+
+document.addEventListener('click', e => {
+    const el = e.target.closest('[data-action]');
+    if (!el || !el.dataset.action) return;
+    const handler = actions[el.dataset.action];
+    if (handler) handler(el);
+});
+
+// Non-click interactions that were previously inline attributes.
+document.addEventListener('keyup', e => {
+    if (e.target === searchInput) handleSearch(e.target.value);
+});
+
+document.addEventListener('change', e => {
+    if (e.target === inputSeason) onSeasonChange(e.target.value);
 });
 
 applyLanguage();

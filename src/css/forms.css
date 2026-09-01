@@ -1,0 +1,82 @@
+/* ===== SHARED FORM CONTROLS ===== */
+/* Single source of truth for the mono uppercase field labels, the text
+   inputs and the custom-styled selects used by settings, the resolver
+   panel and the season controls. Grouped selectors keep the styling in
+   one place instead of duplicating it across files. */
+
+.settings-field label,
+.resolver-override__panel label {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--lago);
+}
+
+.settings-field input,
+.resolver-override__panel input {
+    font-family: var(--font-mono);
+    font-size: 0.88rem;
+    color: var(--ink);
+    background: var(--paper);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-sm);
+    padding: 0.55rem 0.7rem;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.settings-field input:focus-visible,
+.resolver-override__panel input:focus-visible {
+    border-color: var(--lago);
+    box-shadow: 0 0 0 2px var(--lago-glow);
+}
+
+.settings-field select,
+.season-controls select {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    color: var(--ink);
+    background: var(--paper);
+    background-image: var(--select-arrow);
+    background-repeat: no-repeat;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.settings-field select {
+    width: fit-content;
+    min-width: 190px;
+    font-size: 0.9rem;
+    background-position: right 10px center;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-sm);
+    padding: 8px 30px 8px 10px;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+.season-controls select {
+    min-width: 76px;
+    font-size: 1rem;
+    background-position: right 8px center;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-sm);
+    padding: 6px 26px 6px 10px;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+.settings-field select:focus-visible,
+.season-controls select:focus-visible {
+    border-color: var(--lago);
+    box-shadow: 0 0 0 2px var(--lago-glow);
+}
+
+.settings-field select option,
+.season-controls select option {
+    background: var(--paper-hi);
+    color: var(--ink);
+}
