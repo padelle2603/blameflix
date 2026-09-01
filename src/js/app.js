@@ -3,7 +3,7 @@
 // Heavy modules are lazy-loaded via dynamic import().
 import { applyLanguage } from './i18n.js';
 import { initDisclaimer, acceptDisclaimer } from './startup.js';
-import { showHome, clearSearch, setFilter, setView, toggleKindOrder, toggleCatalogMenu } from './catalog.js';
+import { showHome, clearSearch, setFilter, setView, toggleKindOrder, toggleKindCollapse, toggleCatalogMenu } from './catalog.js';
 import { handleSearch } from './search.js';
 import { clearNewsHistory } from './news.js';
 import { syncReleases } from './releases.js';
@@ -182,6 +182,7 @@ const actions = {
     'set-filter': el => setFilter(el.dataset.type),
     'set-view': el => setView(el.dataset.view),
     'toggle-kind-order': toggleKindOrder,
+    'toggle-kind-collapse': el => toggleKindCollapse(el.dataset.kind),
     'toggle-catalog-menu': toggleCatalogMenu,
     'sync-releases': () => syncReleases(),
     'toggle-watchlist': () => toggleWatchlist(),

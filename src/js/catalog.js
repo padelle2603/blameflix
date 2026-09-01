@@ -1,4 +1,4 @@
-import { state } from './state.js';
+import { state, persistCollapsedRows } from './state.js';
 import { homeView, detailView, searchInput, searchClear, grid, emptyState, sectionEyebrow, sectionTitle, sectionCount, catalogMenuBtn, catalogMenuPanel } from './dom.js';
 import { escapeHtml, tmdbImagePath } from './utils.js';
 import { IMG_GRID, PLACEHOLDER } from './env.js';
@@ -117,6 +117,21 @@ function renderGrid(items) {
     requestAnimationFrame(refreshRailArrows);
 }
 
+function toggleKindCollapse(kind) {
+    const wasCollapsed = !!state.collapsedRows[kind];
+    state.collapsedRows[kind] = !wasCollapsed;
+    persistCollapsedRows();
+    const row = grid.querySelector(`.kind-row[data-kind="${kind}"]`);
+    if (!row) return;
+    row.classList.toggle('is-collapsed', state.collapsedRows[kind]);
+    const btn = row.querySelector('.kind-row__heading-toggle');
+    if (btn) {
+        btn.setAttribute('aria-expanded', String(!state.collapsedRows[kind]));
+        const arrow = btn.querySelector('.kind-row__toggle');
+        if (arrow) arrow.textContent = state.collapsedRows[kind] ? '\u25B8' : '\u25BE';
+    }
+}
+
 // Builds one card exactly as the old flat grid did (shared by every view).
 function makeCard(item) {
     const d = detailFor(item);
@@ -126,7 +141,9 @@ function makeCard(item) {
     const year = date ? date.substring(0, 4) : '—';
     const kind = item.media_type === 'tv' ? t('common.tvKind') : t('common.movieKind');
     const saved = isSaved(item.id, item.media_type);
-    const unwatched = item.media_type === 'tv' ? showUnwatchedCache.get(item.id) : 0;
+    // The "N to watch" badge belongs to the home watchlist only; search
+    // results come from the TMDB archive, so the badge is not shown there.
+    const unwatched = (item.media_type === 'tv' && !state.searching) ? showUnwatchedCache.get(item.id) : 0;
 
     const card = document.createElement('div');
     card.className = 'card';
@@ -226,9 +243,34 @@ function buildKindRow(kind, items) {
     section.dataset.kind = kind;
 
     const label = `${kind === 'movie' ? t('home.kindMovies') : t('home.kindSeries')} - ${items.length}`;
+    // Collapse state only applies to the home page: search results always
+    // render fully expanded, otherwise a collapsed home row would surface in
+    // the results with no toggle to reopen it.
+    const collapsed = !state.searching && !!state.collapsedRows[kind];
+
+    if (collapsed) section.classList.add('is-collapsed');
+
     const head = document.createElement('h3');
     head.className = 'kind-row__head';
-    head.innerText = label;
+
+    if (state.searching) {
+        // Search results: the rows stay always expanded, no collapse toggle.
+        head.innerText = label;
+    } else {
+        const toggleBtn = document.createElement('button');
+        toggleBtn.type = 'button';
+        toggleBtn.className = 'kind-row__heading-toggle';
+        toggleBtn.dataset.action = 'toggle-kind-collapse';
+        toggleBtn.dataset.kind = kind;
+        toggleBtn.setAttribute('aria-expanded', String(!collapsed));
+        const arrow = document.createElement('span');
+        arrow.className = 'kind-row__toggle';
+        arrow.setAttribute('aria-hidden', 'true');
+        arrow.textContent = collapsed ? '\u25B8' : '\u25BE';
+        toggleBtn.appendChild(arrow);
+        toggleBtn.appendChild(document.createTextNode(` ${label}`));
+        head.appendChild(toggleBtn);
+    }
     section.appendChild(head);
 
     const wrap = document.createElement('div');
@@ -373,4 +415,4 @@ document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closeCatalogMenu();
 });
 
-export { renderHome, showHome, clearSearch, showEmpty, showGridLoading, renderGrid, syncCardSavedStamp, syncTools, setFilter, setView, toggleKindOrder, toggleCatalogMenu };
+export { renderHome, showHome, clearSearch, showEmpty, showGridLoading, renderGrid, syncCardSavedStamp, syncTools, setFilter, setView, toggleKindOrder, toggleKindCollapse, toggleCatalogMenu };

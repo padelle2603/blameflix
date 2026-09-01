@@ -1,5 +1,5 @@
 import { state } from './state.js';
-import { searchClear, homeView, detailView, sectionEyebrow, sectionTitle, sectionCount } from './dom.js';
+import { searchClear, homeView, detailView, sectionEyebrow, sectionTitle, sectionCount, homeUnwatchedEl } from './dom.js';
 import { fetchJson } from './tmdb.js';
 import { BASE_URL } from './env.js';
 import { t, locale } from './i18n.js';
@@ -60,9 +60,13 @@ async function performSearch(q) {
     searchClear.hidden = false;
     homeView.hidden = false;
     detailView.hidden = true;
-    sectionEyebrow.innerText = t('home.tmdbArchive');
+    // The search page keeps only the results heading: the home eyebrow and
+    // the TMDB archive label are both suppressed. The unwatched badge is a
+    // home concept, so it is hidden while browsing the archive.
+    sectionEyebrow.innerText = '';
     sectionTitle.innerText = t('home.searchResults', { q });
     sectionCount.innerText = '';
+    homeUnwatchedEl.hidden = true;
     showGridLoading();
 
     try {

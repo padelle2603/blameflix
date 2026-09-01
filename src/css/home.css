@@ -153,6 +153,8 @@ body:has(#search-clear[hidden]) #section-count {
    and by arrow keys once a card is focused. */
 .kind-row { margin: 0 0 1.7rem; }
 
+.kind-row.is-collapsed .rail-wrap { display: none; }
+
 .kind-row:last-child { margin-bottom: 0; }
 
 .kind-row__head {
@@ -163,7 +165,39 @@ body:has(#search-clear[hidden]) #section-count {
     text-transform: uppercase;
     color: var(--meta);
     margin: 0 0 0.6rem;
+    display: flex;
+    align-items: center;
 }
+
+.kind-row__heading-toggle {
+    display: inline-flex;
+    align-items: center;
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    font: inherit;
+    letter-spacing: inherit;
+    text-transform: inherit;
+    color: inherit;
+    cursor: pointer;
+}
+
+.kind-row__toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.4rem;
+    height: 1.4rem;
+    font-size: 0.72rem;
+    line-height: 1;
+    color: var(--meta);
+    margin-right: 0.4rem;
+    flex-shrink: 0;
+    transition: color 0.15s;
+}
+
+.kind-row__heading-toggle:hover { color: var(--ink); }
 
 .rail-wrap { position: relative; }
 

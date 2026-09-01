@@ -111,8 +111,47 @@
 
 /* ===== COLLAPSIBLE META ===== */
 /* The synopsis and the year facts start collapsed on every sheet
-   open; tapping (or Enter/Space) expands the block in full. */
+   open; tapping (or Enter/Space) expands the block in full. The icon
+   sits ON the fade while collapsed and below everything once expanded. */
+.detail-meta { position: relative; }
+
 .detail-meta.is-collapsed { cursor: pointer; }
+
+.detail-meta__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+.detail-meta.is-collapsed .detail-meta__icon {
+    position: absolute;
+    bottom: 0.5rem;
+    left: 50%;
+    transform: translate(-50%, 40%);
+    width: 2.4rem;
+    height: 2.4rem;
+    border-radius: var(--radius-pill);
+    background: var(--paper-hi);
+    border: 1px solid var(--line-strong);
+    box-shadow: var(--shadow);
+}
+
+.detail-meta.is-collapsed .detail-meta__icon::before {
+    content: '\25BE'; /* ▾ */
+    font-size: 1.15rem;
+    color: var(--ink);
+}
+
+.detail-meta:not(.is-collapsed) .detail-meta__icon {
+    margin-top: 0.6rem;
+}
+
+.detail-meta:not(.is-collapsed) .detail-meta__icon::before {
+    content: '\25B4'; /* ▴ */
+    font-size: 1.15rem;
+    color: var(--meta);
+}
 
 .detail-meta.is-collapsed .detail-overview {
     display: -webkit-box;
@@ -133,7 +172,7 @@
 .detail-unwatched {
     position: absolute;
     right: 12px;
-    bottom: 12px;
+    top: 12px;
     font-family: var(--font-mono);
     font-size: 1.5rem;
     font-weight: 600;

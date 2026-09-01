@@ -65,7 +65,8 @@ export const state = {
     networkSources: readStoredJson('myNetworkSources', {}), // per-series network schedule: showId -> { networkId?, networkName?, template? }
     latestRelease: null, // { tag, html_url, assets } of the latest GitHub release
     notifySettings: Object.assign({}, DEFAULT_NOTIFY_SETTINGS, readStoredJson('myNotifySettings', {})),
-    releaseState: loadReleaseState()
+    releaseState: loadReleaseState(),
+    collapsedRows: (() => { try { return JSON.parse(localStorage.getItem('myCollapsedRows')) || {}; } catch { return {}; } })()
 };
 
 // Only the identifiers are stored in localStorage (compliance with the TMDB
@@ -113,4 +114,8 @@ export function persistUnwatchedSnapshot(counts, total, anyAired) {
 
 export function invalidateUnwatchedSnapshot() {
     try { localStorage.removeItem('myUnwatchedSnapshot'); } catch (err) { /* ignore */ }
+}
+
+export function persistCollapsedRows() {
+    try { localStorage.setItem('myCollapsedRows', JSON.stringify(state.collapsedRows)); } catch { /* storage full */ }
 }

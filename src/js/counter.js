@@ -39,6 +39,9 @@ async function countUnwatchedForShow(showId) {
 
 // Updates in place the "N to watch" badges on the series posters in home.
 function updateGridUnwatchedBadges() {
+    // The badges are a home-page concept: never stamp them onto the
+    // TMDB search results.
+    if (state.searching) return;
     grid.querySelectorAll('.card[data-type="tv"]').forEach(card => {
         const id = Number(card.dataset.id);
         let badge = card.querySelector('.card-unwatched');
@@ -68,6 +71,9 @@ function applyHomeCounts(counts, total, anyAiredShows) {
 }
 
 async function refreshHomeUnwatchedCount() {
+    // A search dismisses the header badge: if the count is still running it
+    // must not repaint it over the search page (renderHome restores it).
+    if (state.searching) return;
     if (!homeUnwatchedEl || homeCountBusy) return;
     const tvShows = state.watchlist.filter(w => w.media_type === 'tv');
     if (!tvShows.length || !state.apiKey) {
