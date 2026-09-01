@@ -332,7 +332,7 @@ function renderEpisodeList(eps, highlightEpisode) {
                 </button>
                 <button type="button" class="episode-row__toggle" ${future ? 'disabled' : ''}
                     title="${watched ? t('episode.removeFromWatched') : t('episode.markWatched')}">
-                    ${watched ? '✓' : '○'}
+                    ✓
                 </button>
             </div>
         `;
@@ -358,7 +358,10 @@ function syncSeasonMarkButton(eps) {
 function syncAllAiredMarkButton(allWatched) {
     const btn = document.getElementById('btn-mark-all-aired');
     if (!btn || !state.currentMedia) return;
-    btn.innerText = allWatched ? t('detail.markAllAiredUnwatched') : t('detail.markAllAired');
+    const label = allWatched ? t('detail.markAllAiredUnwatched') : t('detail.markAllAired');
+    btn.setAttribute('aria-label', label);
+    btn.setAttribute('title', label);
+    btn.classList.toggle('is-all-clear', allWatched);
 }
 
 // Play from a list row: marks as watched and opens the player.
@@ -401,7 +404,7 @@ function syncEpisodeRow(season, episode) {
 
         const toggleBtn = row.querySelector('.episode-row__toggle');
         if (toggleBtn) {
-            toggleBtn.textContent = watched ? '✓' : '○';
+            toggleBtn.textContent = '✓';
             toggleBtn.title = watched ? t('episode.removeFromWatched') : t('episode.markWatched');
         }
     }
@@ -571,12 +574,17 @@ async function refreshUnwatchedCount() {
 
     let anyAired = false;
     loaded.forEach(eps => eps.forEach(ep => { if (isAired(ep.air_date)) anyAired = true; }));
-    syncAllAiredMarkButton(total === 0 && anyAired);
 
-    unwatchedEl.classList.toggle('is-all-clear', total === 0 && anyAired);
-    unwatchedEl.innerText = (total === 0 && anyAired)
-        ? t('msg.allWatched')
-        : tp('msg.unwatchedCount', total);
+    const allClear = total === 0 && anyAired;
+    if (total === 0 && !anyAired) {
+        unwatchedEl.hidden = true;
+        return total;
+    }
+    syncAllAiredMarkButton(allClear);
+
+    unwatchedEl.classList.toggle('is-all-clear', allClear);
+    unwatchedEl.innerText = allClear ? '✓' : String(total);
+    unwatchedEl.title = allClear ? t('msg.allWatched') : tp('msg.unwatchedCount', total);
     unwatchedEl.hidden = false;
     return total;
 }

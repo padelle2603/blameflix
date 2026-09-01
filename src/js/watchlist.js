@@ -37,7 +37,10 @@ function toggleWatchlist() {
 function updateWatchlistBtn() {
     const btn = document.getElementById('btn-watchlist');
     const saved = isSaved(state.currentMedia.id, state.currentMedia.media_type);
-    btn.innerText = saved ? t('detail.savedRemove') : t('detail.addSaved');
+    btn.innerHTML = saved ? '&#9829;' : '&#9825;';
+    const label = saved ? t('detail.savedRemove') : t('detail.addSaved');
+    btn.setAttribute('aria-label', label);
+    btn.setAttribute('title', label);
     btn.classList.toggle('btn--saved', saved);
 }
 

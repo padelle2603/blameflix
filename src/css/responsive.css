@@ -8,6 +8,8 @@
     .rail > .card { flex-basis: 140px; }
     .card--list .credit-block { padding: 11px 14px; }
     .detail-poster-wrap { width: 100%; }
+    .detail-actionbar { margin: 1.2rem 0 1.2rem; }
+    .btn-icon { width: 40px; height: 40px; }
     .episode-row { flex-wrap: wrap; }
     .episode-row__thumb { flex-basis: 100%; }
     .episode-row__actions { flex-direction: row; justify-content: flex-end; width: 100%; }

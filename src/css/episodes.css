@@ -180,6 +180,12 @@
 
 .episode-row__toggle:hover { border-color: var(--lago); color: var(--lago); }
 
+.episode-row.is-watched .episode-row__toggle {
+    border-color: var(--lago);
+    color: var(--lago);
+    opacity: 1;
+}
+
 .episode-row__badge {
     font-family: var(--font-mono);
     font-size: 0.6rem;

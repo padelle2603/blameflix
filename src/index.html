@@ -125,12 +125,19 @@
     <main id="detail-view" hidden>
         <button class="btn btn--ghost" onclick="showHome()" data-i18n="detail.back">&larr; BlameFlix</button>
 
+        <div class="detail-actionbar">
+            <button type="button" class="btn btn-icon btn--rosso" id="btn-watch" onclick="openPlayer(true)" data-i18n-title="detail.watchNow" aria-label="Apri nel browser" data-i18n-aria="detail.watchNow">&#9654;</button>
+            <button type="button" class="btn btn-icon btn--stamp" id="btn-watchlist" onclick="toggleWatchlist()" aria-label="Aggiungi ai salvati" data-i18n-aria="detail.addSaved">&#9825;</button>
+            <button type="button" class="btn btn-icon detail-mark-all" id="btn-mark-all-aired" onclick="markAllAiredWatched()" hidden aria-label="Segna tutte le uscite come viste" data-i18n-aria="detail.markAllAired">&#10003;</button>
+        </div>
+
         <div class="detail-backdrop" id="detail-backdrop" hidden aria-hidden="true"></div>
 
         <div class="detail-header">
             <div class="detail-poster-wrap">
                 <img id="detail-poster" class="detail-poster" src="" alt="Poster" data-i18n-alt="detail.posterAlt">
                 <span id="detail-kind" class="detail-kind">FILM</span>
+                <span class="detail-unwatched" id="detail-unwatched" hidden></span>
             </div>
             <div class="detail-content">
                 <span class="eyebrow" data-i18n="detail.sheet">Scheda titolo</span>
@@ -150,17 +157,6 @@
                             <dd id="detail-vote"></dd>
                         </div>
                     </dl>
-                </div>
-
-                <span class="detail-unwatched" id="detail-unwatched" hidden></span>
-
-                <button type="button" class="btn detail-mark-all" id="btn-mark-all-aired" onclick="markAllAiredWatched()" hidden data-i18n="detail.markAllAired">
-                    ✓ Segna tutte le uscite come viste
-                </button>
-
-                <div class="detail-actions">
-                    <button type="button" class="btn btn--rosso" id="btn-watch" onclick="openPlayer(true)" data-i18n="detail.watchNow">↗ Apri nel browser</button>
-                    <button type="button" class="btn btn--stamp" id="btn-watchlist" onclick="toggleWatchlist()">+ Aggiungi ai salvati</button>
                 </div>
 
                 <div class="resolver-override">
