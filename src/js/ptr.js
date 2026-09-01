@@ -5,7 +5,10 @@
 import { syncReleases } from './releases.js';
 import { ptrIndicator } from './dom.js';
 
-const PULL_THRESHOLD = 64;
+// Activation follows the Material 3 reference behavior: the resisted
+// distance (finger drag * RESISTANCE) must cross the 80dp positional
+// threshold, so a firm ~160px pull is required before the sync fires.
+const PULL_THRESHOLD = 80;
 const MAX_PULL = 110;
 const RESISTANCE = 0.5;
 
@@ -20,9 +23,10 @@ function gestureAllowed() {
 }
 
 function paintPull(distance) {
+    const adjusted = distance * RESISTANCE;
     document.body.classList.add('ptr-active');
-    ptrIndicator.style.transform = `translate(-50%, ${Math.min(distance * RESISTANCE, MAX_PULL)}px)`;
-    ptrIndicator.classList.toggle('is-ready', distance >= PULL_THRESHOLD);
+    ptrIndicator.style.transform = `translate(-50%, ${Math.min(adjusted, MAX_PULL)}px)`;
+    ptrIndicator.classList.toggle('is-ready', adjusted >= PULL_THRESHOLD);
 }
 
 function reset() {
