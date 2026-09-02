@@ -1,8 +1,9 @@
-import { state, sanitizeAutoSyncHours, persistNotifySettings } from './state.js';
+import { state, sanitizeAutoSyncHours, persistNotifySettings, persistCloudSync } from './state.js';
 import {
     settingsOverlay, settingsTitle, settingsKeyInput, settingsResolverMovieInput, settingsResolverTvInput,
     settingsLangInput, settingsBrowserInput, settingsStatus, keyNotice, resolverNotice,
     settingsNotifyEnabled, settingsNotifyTv, settingsNotifyMovies, settingsNotifyInterval,
+    cloudEnabled, cloudUrl, cloudAnon, cloudToken, cloudStatus,
     docsOverlay
 } from './dom.js';
 import { startAutoSyncTimer } from './releases.js';
@@ -16,6 +17,8 @@ import { startTutorial } from './tutorial.js';
 import { encryptAPIKey } from './crypto.js';
 import { getBrowserMode, setBrowserMode } from './browser.js';
 import { trapFocus } from './focusTrap.js';
+import { regenerateCloudToken } from './cloudSync.js';
+import { showToast } from './toast.js';
 
 function syncNotifySettingsInputs() {
     settingsNotifyEnabled.checked = state.notifySettings.enabled;
@@ -51,6 +54,47 @@ function syncResolverNotice() {
     resolverNotice.hidden = Boolean(state.resolver.movie && state.resolver.tv);
 }
 
+// --- CLOUD SYNC SETTINGS ---
+
+// Persists the current cloud-sync fields from the DOM into state + localStorage.
+function persistCloudInputs() {
+    state.cloudSync.url = cloudUrl.value.trim();
+    state.cloudSync.anonKey = cloudAnon.value.trim();
+    state.cloudSync.enabled = cloudEnabled.checked;
+    persistCloudSync();
+}
+
+// Reflects the persisted cloud config into the settings inputs.
+function syncCloudInputs() {
+    const cs = state.cloudSync;
+    cloudEnabled.checked = cs.enabled;
+    cloudUrl.value = cs.url || '';
+    cloudAnon.value = cs.anonKey || '';
+    cloudToken.value = cs.tokenEnc ? '••••••••' : '';
+}
+
+function showCloudStatus(msg, isError = false) {
+    cloudStatus.classList.toggle('is-error', isError);
+    cloudStatus.innerText = msg;
+    cloudStatus.hidden = false;
+    clearTimeout(showCloudStatus._t);
+    showCloudStatus._t = setTimeout(() => { cloudStatus.hidden = true; }, 3500);
+}
+
+function cloudToggle() {
+    persistCloudInputs();
+    showCloudStatus(t('msg.cloudConfigSaved'));
+}
+
+async function cloudGenerateToken() {
+    const token = await regenerateCloudToken();
+    cloudToken.value = token;
+    showCloudStatus(t('msg.cloudTokenGenerated'));
+    showToast('Cloud Sync', t('msg.cloudTokenCopy'), 8000);
+    // The token is needed to move to another device; keep it visible briefly.
+    setTimeout(() => { cloudToken.value = state.cloudSync.tokenEnc ? '••••••••' : ''; }, 10000);
+}
+
 // --- SETTINGS TABS ---
 
 const settingsTabPages = ['settings-tab-api', 'settings-tab-notify', 'settings-tab-prefs', 'settings-tab-data', 'settings-tab-updates', 'settings-tab-help'];
@@ -82,6 +126,7 @@ function openSettings(trigger = null) {
     settingsStatus.hidden = true;
     settingsStatus.classList.remove('is-error');
     syncNotifySettingsInputs();
+    syncCloudInputs();
     const versionEl = document.getElementById('settings-version');
     if (versionEl) versionEl.innerText = `${t('settings.version')} ${state.appVersion}`;
     const webHint = document.getElementById('settings-updates-web-hint');
@@ -199,4 +244,7 @@ settingsOverlay.addEventListener('click', e => {
     if (e.target === settingsOverlay) closeSettings();
 });
 
-export { syncNotifySettingsInputs, syncApiKeyNotice, syncResolverNotice, switchSettingsTab, openSettings, closeSettings, openDocs, closeDocs, saveSettings, sendTestNotification };
+cloudUrl.addEventListener('input', persistCloudInputs);
+cloudAnon.addEventListener('input', persistCloudInputs);
+
+export { syncNotifySettingsInputs, syncApiKeyNotice, syncResolverNotice, switchSettingsTab, openSettings, closeSettings, openDocs, closeDocs, saveSettings, sendTestNotification, syncCloudInputs, cloudToggle, cloudGenerateToken };

@@ -4,7 +4,7 @@
 import { App } from '@capacitor/app';
 import { applyLanguage } from './i18n.js';
 import { initDisclaimer, acceptDisclaimer } from './startup.js';
-import { showHome, clearSearch, setFilter, setView, toggleKindOrder, toggleKindCollapse, toggleCatalogMenu, closeCatalogMenu } from './catalog.js';
+import { showHome, clearSearch, setFilter, setView, setSort, toggleKindOrder, toggleKindCollapse, toggleCatalogMenu, closeCatalogMenu } from './catalog.js';
 import { handleSearch } from './search.js';
 import { clearNewsHistory } from './news.js';
 import { syncReleases } from './releases.js';
@@ -35,6 +35,7 @@ const loadUpdatesModule = createLazyLoader(() => import('./updates.js'));
 const loadBackupModule = createLazyLoader(() => import('./backup.js'));
 const loadResolverModule = createLazyLoader(() => import('./resolver.js'));
 const loadNetworkModule = createLazyLoader(() => import('./networkSchedule.js'));
+const loadCloudModule = createLazyLoader(() => import('./cloudSync.js'));
 
 // --- Public handlers with lazy loading ---
 
@@ -46,6 +47,11 @@ async function markAllAiredWatched() {
 async function markSeasonWatched() {
     const m = await loadDetailsModule();
     return m.markSeasonWatched();
+}
+
+async function cloudToggle() {
+    const m = await loadSettingsModule();
+    return m.cloudToggle();
 }
 
 async function onSeasonChange(value) {
@@ -173,6 +179,21 @@ async function clearNetworkSource() {
     return m.clearNetworkSource();
 }
 
+async function cloudPush() {
+    const m = await loadCloudModule();
+    return m.pushCloud();
+}
+
+async function cloudPull() {
+    const m = await loadCloudModule();
+    return m.pullCloud();
+}
+
+async function cloudGenerateToken() {
+    const m = await loadSettingsModule();
+    return m.cloudGenerateToken();
+}
+
 // --- ANDROID BACK BUTTON ---
 // On a native shell the default back action would leave the app from any
 // screen, so every press closes the topmost layer instead: dialogs and
@@ -208,10 +229,14 @@ const actions = {
     'clear-search': clearSearch,
     'set-filter': el => setFilter(el.dataset.type),
     'set-view': el => setView(el.dataset.view),
+    'set-sort': el => setSort(el.dataset.sort),
     'toggle-kind-order': toggleKindOrder,
     'toggle-kind-collapse': el => toggleKindCollapse(el.dataset.kind),
     'toggle-catalog-menu': toggleCatalogMenu,
     'sync-releases': () => syncReleases(),
+    'cloud-push': () => cloudPush(),
+    'cloud-pull': () => cloudPull(),
+    'cloud-generate-token': () => cloudGenerateToken(),
     'toggle-watchlist': () => toggleWatchlist(),
     'clear-news-history': () => clearNewsHistory(),
     'open-settings': el => openSettings(el),
@@ -257,6 +282,7 @@ document.addEventListener('keyup', e => {
 
 document.addEventListener('change', e => {
     if (e.target === inputSeason) onSeasonChange(e.target.value);
+    if (e.target.id === 'cloud-enabled') cloudToggle();
 });
 
 applyLanguage();

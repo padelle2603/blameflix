@@ -56,6 +56,62 @@ export function isEncryptedKey(str) {
     } catch { return false; }
 }
 
+// Generates a fresh high-entropy personal cloud token (32 random bytes,
+// base64url) used both for the Supabase partition (via its SHA-256 hash) and
+// as the AES-GCM key that encrypts the backup payload.
+export function generateCloudToken() {
+    const raw = crypto.getRandomValues(new Uint8Array(32));
+    return arrayBufferToBase64(raw).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+async function sha256Hex(text) {
+    const data = new TextEncoder().encode(text);
+    const digest = await crypto.subtle.digest('SHA-256', data);
+    return Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// Derives the opaque partition id (SHA-256 of the token). The raw token is
+// never persisted nor transmitted; only its hash is used for RLS isolation.
+export async function cloudPartitionHash(token) {
+    return sha256Hex(token);
+}
+
+// Encrypts the raw cloud token with the local myCryptoKey so it can be
+// stored on the device without exposing the plaintext.
+export async function encryptCloudToken(token) {
+    return encryptAPIKey(token);
+}
+
+// Decrypts the stored cloud token back to its plaintext for use.
+export async function decryptCloudToken(tokenEnc) {
+    return decryptAPIKey(tokenEnc);
+}
+
+// Encrypts a UTF-8 payload with the provided token (used as an AES-GCM key).
+// Returns an object { v, iv, data } as a JSON string.
+export async function encryptWithToken(plaintext, token) {
+    const raw = new Uint8Array(32);
+    const base64Clean = token.replace(/-/g, '+').replace(/_/g, '/');
+    const bin = atob(base64Clean);
+    for (let i = 0; i < 32; i++) raw[i] = bin.charCodeAt(i);
+    const key = await crypto.subtle.importKey('raw', raw, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const ciphertext = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, new TextEncoder().encode(plaintext));
+    return JSON.stringify({ v: 1, iv: Array.from(iv), data: arrayBufferToBase64(ciphertext) });
+}
+
+// Decrypts a payload produced by encryptWithToken, returning the UTF-8 text.
+export async function decryptWithToken(encryptedStr, token) {
+    const { iv, data } = JSON.parse(encryptedStr);
+    const raw = new Uint8Array(32);
+    const base64Clean = token.replace(/-/g, '+').replace(/_/g, '/');
+    const bin = atob(base64Clean);
+    for (let i = 0; i < 32; i++) raw[i] = bin.charCodeAt(i);
+    const key = await crypto.subtle.importKey('raw', raw, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+    const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: new Uint8Array(iv) }, key, base64ToArrayBuffer(data));
+    return new TextDecoder().decode(decrypted);
+}
+
 function arrayBufferToBase64(buffer) {
     const bytes = new Uint8Array(buffer);
     return btoa(String.fromCharCode(...bytes));

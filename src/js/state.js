@@ -38,6 +38,20 @@ function loadReleaseState() {
     return s;
 }
 
+function loadCloudSync() {
+    const s = readStoredJson('myCloudSync', {});
+    if (!s || typeof s !== 'object') return { enabled: false, url: '', anonKey: '', tokenEnc: '', partitionHash: '', lastPush: 0, lastPull: 0 };
+    return {
+        enabled: s.enabled === true,
+        url: typeof s.url === 'string' ? s.url : '',
+        anonKey: typeof s.anonKey === 'string' ? s.anonKey : '',
+        tokenEnc: typeof s.tokenEnc === 'string' ? s.tokenEnc : '',
+        partitionHash: typeof s.partitionHash === 'string' ? s.partitionHash : '',
+        lastPush: Number(s.lastPush) || 0,
+        lastPull: Number(s.lastPull) || 0
+    };
+}
+
 // Shared mutable application state. Field names match the original ones.
 export const state = {
     appVersion: BUILD_APP_VERSION,
@@ -59,6 +73,7 @@ export const state = {
     currentList: [], // Last rendered titles (watchlist or search results)
     viewMode: ['grid', 'list'].includes(localStorage.getItem('myViewMode')) ? localStorage.getItem('myViewMode') : 'grid',
     typeFilter: localStorage.getItem('myTypeFilter') || 'all', // 'all' | 'movie' | 'tv'
+    sortMode: (() => { const v = localStorage.getItem('mySortMode'); return ['added', 'alpha', 'release', 'rating'].includes(v) ? v : 'added'; })(), // how titles inside each row are ordered
     kindOrder: localStorage.getItem('myKindOrder') === 'tv' ? 'tv' : 'movie', // which block sits on the top row of the "all" view
     resolver: readStoredJson('myResolver', {}), // user-chosen URL templates { movie, tv }
     resolverOverrides: readStoredJson('myResolverOverrides', {}), // per-title source overrides
@@ -66,6 +81,7 @@ export const state = {
     latestRelease: null, // { tag, html_url, assets } of the latest GitHub release
     notifySettings: Object.assign({}, DEFAULT_NOTIFY_SETTINGS, readStoredJson('myNotifySettings', {})),
     releaseState: loadReleaseState(),
+    cloudSync: loadCloudSync(), // optional personal Supabase cloud sync { enabled, url, anonKey, tokenEnc, partitionHash, lastPush, lastPull }
     collapsedRows: (() => { try { return JSON.parse(localStorage.getItem('myCollapsedRows')) || {}; } catch { return {}; } })()
 };
 
@@ -118,4 +134,12 @@ export function invalidateUnwatchedSnapshot() {
 
 export function persistCollapsedRows() {
     try { localStorage.setItem('myCollapsedRows', JSON.stringify(state.collapsedRows)); } catch { /* storage full */ }
+}
+
+export function persistSortMode() {
+    localStorage.setItem('mySortMode', state.sortMode);
+}
+
+export function persistCloudSync() {
+    localStorage.setItem('myCloudSync', JSON.stringify(state.cloudSync));
 }

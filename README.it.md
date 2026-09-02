@@ -155,7 +155,62 @@ Nella pagina di una serie, apri la sezione **Rete**: scegli il canale TV dall'el
 - **Importa** riporta tutto su qualsiasi dispositivo.
 - Qui trovi anche **Elimina dati**, che cancella la libreria mantenendo chiave e lingua.
 
-### 9. Scegli la lingua
+### 9. Cloud Sync (opzionale)
+
+BlameFlix può sincronizzare i tuoi dati con un tuo progetto Supabase
+personale. Lo sviluppatore non ospita né accede ai tuoi dati: porti il
+tuo database. I dati vengono cifrati lato client con un token personale
+(AES-GCM) prima della trasmissione, e la Row Level Security di Supabase
+garantisce che ogni utente possa accedere solo alla propria partizione.
+
+**Cosa viene sincronizzato:** watchlist, episodi visti, ultime riproduzioni,
+selezioni personalizzate, cronologia novità, modalità visualizzazione,
+filtro tipo, impostazioni notifiche, stato release e lingua.
+
+**Cosa NON viene sincronizzata:** chiave API TMDB, template resolver e
+sorgenti di rete — restano solo sul dispositivo e nel backup locale.
+
+#### Configurazione (una tantum)
+
+1. Crea un account gratuito su [supabase.com](https://supabase.com) e avvia un nuovo progetto.
+2. Vai su **Project Settings → API** e copia:
+   - **Project URL** (es. `https://abcdefgh.supabase.co`)
+   - **anon public key** (inizia con `eyJ...`)
+3. Nel dashboard Supabase, apri **SQL Editor → New query** ed esegui questa SQL:
+
+```sql
+-- Tabella per i backup cloud cifrati
+CREATE TABLE IF NOT EXISTS blameflix_backup (
+    partition  TEXT PRIMARY KEY,
+    payload    TEXT NOT NULL,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- Abilita Row Level Security
+ALTER TABLE blameflix_backup ENABLE ROW LEVEL SECURITY;
+
+-- Funzione helper: legge la partizione dall'header della richiesta
+CREATE OR REPLACE FUNCTION get_partition_from_header()
+RETURNS TEXT AS $$
+    SELECT current_setting('request.headers', true)::json->>'x-partition'
+$$ LANGUAGE sql STABLE;
+
+-- Policy: ogni utente può SELECT/UPSERT solo la propria partizione
+CREATE POLICY "partition_isolation" ON blameflix_backup
+    FOR ALL
+    USING (partition = get_partition_from_header())
+    WITH CHECK (partition = get_partition_from_header());
+```
+
+4. In BlameFlix → **Impostazioni → Dati → Cloud Sync**: incolla URL, anon
+   key, genera un token e attiva il sync.
+5. Il pulsante ⬆ (push) nella topbar carica i tuoi dati; il pulsante ⬇
+   (pull) li scarica su un altro dispositivo (usa lo stesso token).
+
+> ⚠ La anon key è sicura da usare lato client — è limitata dalla RLS.
+> Non condividere mai la chiave **service_role**.
+
+### 10. Scegli la lingua
 
 Impostazioni → **Preferenze** ti lascia passare tra italiano e inglese. L'app prova a scegliere da sola, ma la tua preferenza vince sempre (ed è inclusa nei backup).
 

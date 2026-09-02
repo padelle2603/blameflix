@@ -40,6 +40,13 @@
                     <button type="button" class="ctl ctl--icon" data-view="grid" aria-pressed="true" data-action="set-view" title="Griglia" data-i18n="tools.grid" data-i18n-title="tools.grid">▦ Griglia</button>
                     <button type="button" class="ctl ctl--icon" data-view="list" aria-pressed="false" data-action="set-view" title="Lista" data-i18n="tools.list" data-i18n-title="tools.list">☰ Lista</button>
                 </div>
+                <p class="catalog-menu__label" data-i18n="tools.sortSection">Ordina per</p>
+                <div class="catalog-menu__section" role="group" aria-label="Ordina per" data-i18n-aria="tools.sortSection">
+                    <button type="button" class="ctl" data-sort="added" aria-pressed="true" data-action="set-sort" data-i18n="tools.sortAdded">Aggiunti</button>
+                    <button type="button" class="ctl" data-sort="alpha" aria-pressed="false" data-action="set-sort" data-i18n="tools.sortAlpha">Alfabetico</button>
+                    <button type="button" class="ctl" data-sort="release" aria-pressed="false" data-action="set-sort" data-i18n="tools.sortRelease">Data di uscita</button>
+                    <button type="button" class="ctl" data-sort="rating" aria-pressed="false" data-action="set-sort" data-i18n="tools.sortRating">Valutazione</button>
+                </div>
                 <p class="catalog-menu__label" data-i18n="tools.orderSection">Ordine righe film/serie</p>
                 <div class="catalog-menu__section" role="group">
                     <button type="button" class="ctl ctl--icon" id="btn-swap" data-action="toggle-kind-order" aria-pressed="false" title="Inverti ordine film e serie" data-i18n="tools.swap" data-i18n-title="tools.swap">⇅ Inverti</button>
@@ -47,6 +54,8 @@
             </div>
         </div>
         <button type="button" class="btn-settings btn-sync" id="btn-sync" data-action="sync-releases" title="Verifica nuove uscite" data-i18n-title="tools.sync" data-i18n-aria="common.sync">⟳</button>
+        <button type="button" class="btn-settings" id="btn-cloud-push" data-action="cloud-push" title="Carica sul cloud" data-i18n-title="cloud.push" data-i18n-aria="cloud.push">⬆</button>
+        <button type="button" class="btn-settings" id="btn-cloud-pull" data-action="cloud-pull" title="Scarica dal cloud" data-i18n-title="cloud.pull" data-i18n-aria="cloud.pull">⬇</button>
         <button type="button" class="btn-settings" data-action="open-settings" data-i18n-aria="nav.settings" data-i18n-title="nav.settings">⚙</button>
     </div>
 </header>
@@ -308,6 +317,25 @@
         </section>
 
         <section class="settings-tabpage" id="settings-tab-data" role="tabpanel" aria-labelledby="settings-tab-data" hidden>
+            <div class="settings-field">
+                <label for="cloud-url" data-i18n="cloud.title">Sync cloud</label>
+                <p class="settings-hint" data-i18n="cloud.hint">Sincronizza i tuoi dati con un tuo spazio Supabase personale. È tutto facoltativo: i dati restano sul dispositivo finché non configuri e attivi il sync. Prima di partire, i dati vengono cifrati sul dispositivo con un token segreto personale, quindi restano illeggibili anche per chiunque abbia accesso al database. La chiave API e le sorgenti restano solo sul dispositivo e nel backup locale.</p>
+                <label class="settings-check" for="cloud-enabled">
+                    <input type="checkbox" id="cloud-enabled">
+                    <span data-i18n="cloud.enabled">Sync cloud attivo</span>
+                </label>
+                <label for="cloud-url" data-i18n="cloud.url">Supabase URL</label>
+                <input type="text" id="cloud-url" class="settings-input" autocomplete="off" spellcheck="false">
+                <label for="cloud-anon" data-i18n="cloud.anonKey">Chiave anonima (anon key)</label>
+                <input type="text" id="cloud-anon" class="settings-input" autocomplete="off" spellcheck="false">
+                <label for="cloud-token" data-i18n="cloud.token">Token personale segreto</label>
+                <input type="text" id="cloud-token" class="settings-input" readonly placeholder="—" aria-describedby="cloud-token-hint">
+                <p class="settings-hint" id="cloud-token-hint" data-i18n="cloud.tokenHint">Genera un token e conservalo: serve per accedere ai tuoi dati su un altro dispositivo. Non inviarlo a nessuno.</p>
+                <div class="settings-actions">
+                    <button type="button" class="btn" data-action="cloud-generate-token" data-i18n="cloud.generate">🎲 Genera token</button>
+                </div>
+                <span class="settings-status" id="cloud-status" hidden></span>
+            </div>
             <div class="settings-field">
                 <label for="backup-status" data-i18n="settings.backup">Backup dati</label>
                 <p class="settings-hint" data-i18n="settings.backupHint">Salva i tuoi dati (salvati, puntate viste, ultime riproduzioni, stagioni personalizzate, novità e preferenze) e ripristinali in un secondo momento. Il backup contiene solo gli identificativi dei titoli: al ripristino i dettagli vengono riscaricati da TMDB (serve la connessione).</p>

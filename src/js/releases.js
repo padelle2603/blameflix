@@ -6,9 +6,11 @@ import { addNewsEntry, renderNewsSection } from './news.js';
 import { isEpisodeWatched } from './watched.js';
 import { fetchSchedule, judgeNetworkRelease } from './networkSchedule.js';
 import { detailFor } from './watchlist.js';
+import { hydrateWatchlistGrid } from './backup.js';
 import { t } from './i18n.js';
 import { showToast } from './toast.js';
 import { btnSync } from './dom.js';
+import { checkForUpdates } from './updates.js';
 
 // Mutex: the manual sync button, the auto timer and the visibilitychange
 // handler can overlap; only one release check runs at a time.
@@ -206,7 +208,12 @@ async function syncReleases() {
     if (btnSync.classList.contains('is-busy')) return;
     btnSync.classList.add('is-busy'); // icon-only button: the class drives the spin
     try {
+        // Reload the library from TMDB with the resolved API key, exactly
+        // like startup, then check for new releases. The latest app version
+        // is checked too, so a manual sync also surfaces a newer release.
+        await hydrateWatchlistGrid(true);
         await checkReleases(true);
+        await checkForUpdates(false);
     } finally {
         btnSync.classList.remove('is-busy');
     }
@@ -229,7 +236,12 @@ let autoSyncTimer = null;
 function startAutoSyncTimer() {
     if (autoSyncTimer) clearInterval(autoSyncTimer);
     autoSyncTimer = setInterval(() => {
-        if (shouldAutoSync()) checkReleases(false);
+        if (shouldAutoSync()) {
+            checkReleases(false);
+            // Every scheduled sync also refreshes the update check, so an
+            // available newer version is surfaced without a manual action.
+            checkForUpdates(false);
+        }
     }, autoSyncIntervalMs());
 }
 

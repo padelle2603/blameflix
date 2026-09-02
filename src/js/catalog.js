@@ -1,4 +1,4 @@
-import { state, persistCollapsedRows } from './state.js';
+import { state, persistCollapsedRows, persistSortMode } from './state.js';
 import { homeView, detailView, searchInput, searchClear, grid, emptyState, homeHead, searchHead, catalogMenuBtn, catalogMenuPanel } from './dom.js';
 import { escapeHtml, tmdbImagePath } from './utils.js';
 import { IMG_GRID, PLACEHOLDER } from './env.js';
@@ -99,8 +99,8 @@ function renderGrid(items) {
     grid.style.display = '';
     emptyState.hidden = true;
 
-    const movies = filtered.filter(item => item.media_type === 'movie');
-    const series = filtered.filter(item => item.media_type === 'tv');
+    const movies = sortTitles(filtered.filter(item => item.media_type === 'movie'));
+    const series = sortTitles(filtered.filter(item => item.media_type === 'tv'));
 
     // Rows are always labeled with their item count and follow the
     // persisted ⇅ order.
@@ -317,12 +317,40 @@ function filterLabel(type) {
     return t('filter.all');
 }
 
+// Orders the titles inside one row (movies or series) according to the
+// persisted sortMode. The list is copied before sorting so the original
+// watchlist (addition) order is never mutated. Titles whose details are not
+// hydrated yet fall back to an empty key and stay at the end.
+function titleSortKey(item) {
+    const d = detailFor(item);
+    const title = String(d.title || d.name || '').toLocaleLowerCase();
+    const date = d.release_date || d.first_air_date || '';
+    const rating = Number(d.vote_average) || 0;
+    return { title, date, rating };
+}
+
+function sortTitles(list) {
+    if (state.sortMode === 'added') return list.slice();
+    const sorted = list.slice();
+    if (state.sortMode === 'alpha') {
+        sorted.sort((a, b) => titleSortKey(a).title.localeCompare(titleSortKey(b).title));
+    } else if (state.sortMode === 'release') {
+        sorted.sort((a, b) => titleSortKey(b).date.localeCompare(titleSortKey(a).date));
+    } else if (state.sortMode === 'rating') {
+        sorted.sort((a, b) => titleSortKey(b).rating - titleSortKey(a).rating);
+    }
+    return sorted;
+}
+
 function syncTools() {
     document.querySelectorAll('.ctl[data-type]').forEach(btn => {
         btn.setAttribute('aria-pressed', btn.dataset.type === state.typeFilter ? 'true' : 'false');
     });
     document.querySelectorAll('.ctl[data-view]').forEach(btn => {
         btn.setAttribute('aria-pressed', btn.dataset.view === state.viewMode ? 'true' : 'false');
+    });
+    document.querySelectorAll('.ctl[data-sort]').forEach(btn => {
+        btn.setAttribute('aria-pressed', btn.dataset.sort === state.sortMode ? 'true' : 'false');
     });
 }
 
@@ -338,6 +366,14 @@ function setView(mode) {
     if (state.viewMode === mode) return;
     state.viewMode = mode;
     localStorage.setItem('myViewMode', state.viewMode);
+    syncTools();
+    renderGrid(state.currentList);
+}
+
+function setSort(mode) {
+    if (state.sortMode === mode) return;
+    state.sortMode = mode;
+    persistSortMode();
     syncTools();
     renderGrid(state.currentList);
 }
@@ -399,4 +435,4 @@ document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closeCatalogMenu();
 });
 
-export { renderHome, showHome, clearSearch, showEmpty, showGridLoading, renderGrid, syncTools, setFilter, setView, toggleKindOrder, toggleKindCollapse, toggleCatalogMenu, closeCatalogMenu, patchCard };
+export { renderHome, showHome, clearSearch, showEmpty, showGridLoading, renderGrid, syncTools, setFilter, setView, setSort, toggleKindOrder, toggleKindCollapse, toggleCatalogMenu, closeCatalogMenu, patchCard };

@@ -16,35 +16,37 @@ import { refreshHomeUnwatchedCount } from './counter.js';
 import { backupFile, backupStatus, homeView, settingsKeyInput, settingsOverlay, settingsResolverMovieInput, settingsResolverTvInput, settingsLangInput } from './dom.js';
 import { encryptAPIKey, decryptAPIKey, isEncryptedKey, getCryptoKeyString } from './crypto.js';
 
-async function backupData() {
-    let apiKeyPackage = state.apiKey;
-    if (state.apiKey) {
-        try {
-            apiKeyPackage = await encryptAPIKey(state.apiKey);
-        } catch { /* keep plaintext as fallback */ }
+async function backupData({ includeSensitive = true } = {}) {
+    const data = {
+        myWatchlist: state.watchlist.map(({ id, media_type }) => ({ id, media_type })),
+        myLastPlayed: state.lastPlayed.map(({ id, media_type, season, episode }) => ({ id, media_type, season, episode })),
+        myCustomSelections: state.customSelections,
+        myWatchedEpisodes: compressWatched(state.watchedEpisodes),
+        myNewsHistory: state.newsHistory,
+        myViewMode: state.viewMode,
+        myTypeFilter: state.typeFilter,
+        myNotifySettings: state.notifySettings,
+        myReleaseState: state.releaseState,
+        myLang: state.lang
+    };
+    if (includeSensitive) {
+        let apiKeyPackage = state.apiKey;
+        if (state.apiKey) {
+            try {
+                apiKeyPackage = await encryptAPIKey(state.apiKey);
+            } catch { /* keep plaintext as fallback */ }
+        }
+        data.myTMDbApiKey = apiKeyPackage;
+        data.myCryptoKey = await getCryptoKeyString();
+        data.myResolver = state.resolver;
+        data.myResolverOverrides = state.resolverOverrides;
+        data.myNetworkSources = state.networkSources;
     }
-    const cryptoKey = await getCryptoKeyString();
     return {
         app: 'BlameFlix',
         version: 8,
         exportedAt: new Date().toISOString(),
-        data: {
-            myWatchlist: state.watchlist.map(({ id, media_type }) => ({ id, media_type })),
-            myLastPlayed: state.lastPlayed.map(({ id, media_type, season, episode }) => ({ id, media_type, season, episode })),
-            myCustomSelections: state.customSelections,
-            myWatchedEpisodes: compressWatched(state.watchedEpisodes),
-            myNewsHistory: state.newsHistory,
-            myTMDbApiKey: apiKeyPackage,
-            myCryptoKey: cryptoKey,
-            myResolver: state.resolver,
-            myResolverOverrides: state.resolverOverrides,
-            myNetworkSources: state.networkSources,
-            myViewMode: state.viewMode,
-            myTypeFilter: state.typeFilter,
-            myNotifySettings: state.notifySettings,
-            myReleaseState: state.releaseState,
-            myLang: state.lang
-        }
+        data
     };
 }
 
@@ -225,10 +227,15 @@ async function hydrateWatchlist(items) {
 // applied to its card as soon as it arrives, so the library populates
 // card-by-card instead of rendering the whole grid once at the end.
 // Offline, the placeholder cards stay and details load on opening.
-async function hydrateWatchlistGrid() {
-    const missing = state.watchlist.filter(item => !state.watchlistDetails.has(watchlistKey(item.id, item.media_type)));
-    if (!missing.length) return;
-    await runPool(missing, HYDRATE_CONCURRENCY, item =>
+// With force=true every entry is re-fetched from TMDB (the shared details
+// cache still short-circuits within its TTL): used by the manual sync so
+// the library reloads exactly like on startup.
+async function hydrateWatchlistGrid(force = false) {
+    const list = force
+        ? state.watchlist.slice()
+        : state.watchlist.filter(item => !state.watchlistDetails.has(watchlistKey(item.id, item.media_type)));
+    if (!list.length) return;
+    await runPool(list, HYDRATE_CONCURRENCY, item =>
         hydrateOne(item).then(h => {
             if (!h) return;
             state.watchlistDetails.set(watchlistKey(h.id, h.media_type), h);
@@ -414,6 +421,95 @@ function sanitizeReleaseState(raw) {
     return clean;
 }
 
+// Applies a validated backup payload (the inner `data` object) to the local
+// state, persisting everything and refreshing the UI. Shared by the local
+// file restore and the cloud pull. `statusFn` reports user-facing feedback
+// and returns true/false; it returns false on the (non-throwing) decryption
+// failure, otherwise true. When `includeSensitive` is false (cloud pull),
+// the API key, resolver templates and network sources are never overwritten.
+async function applyBackupData(data, statusFn = (msg, isError) => showBackupStatus(msg, isError), { includeSensitive = true } = {}) {
+    const wl = sanitizeWatchlistItems(data.myWatchlist);
+    const lp = sanitizeLastPlayedItems(data.myLastPlayed);
+    const cs = sanitizeCustomSelections(data.myCustomSelections);
+    const we = data.myWatchedEpisodes && typeof data.myWatchedEpisodes === 'object' ? data.myWatchedEpisodes : {};
+    const nh = sanitizeNewsEntries(data.myNewsHistory);
+    const ns = data.myNotifySettings && typeof data.myNotifySettings === 'object'
+        ? Object.assign({}, DEFAULT_NOTIFY_SETTINGS, data.myNotifySettings)
+        : Object.assign({}, DEFAULT_NOTIFY_SETTINGS);
+    ns.autoSyncHours = sanitizeAutoSyncHours(ns.autoSyncHours);
+    const rl = sanitizeReleaseState(data.myReleaseState);
+
+    if (includeSensitive) {
+        let key = safeString(data.myTMDbApiKey, 500).trim() || state.apiKey || '';
+        const cryptoKey = safeString(data.myCryptoKey, 200).trim();
+        if (cryptoKey) localStorage.setItem('myCryptoKey', cryptoKey);
+        if (isEncryptedKey(key)) {
+            try {
+                key = await decryptAPIKey(key);
+            } catch {
+                statusFn(t('msg.backupDecryptError'), true);
+                return false;
+            }
+        }
+        state.apiKey = key;
+        syncApiKeyNotice();
+        localStorage.setItem('myTMDbApiKey', key);
+        state.resolver = data.myResolver && typeof data.myResolver === 'object'
+            ? { movie: safeString(data.myResolver.movie, 1000), tv: safeString(data.myResolver.tv, 1000) }
+            : { movie: '', tv: '' };
+        state.resolverOverrides = sanitizeResolverOverrides(data.myResolverOverrides);
+        state.networkSources = sanitizeNetworkSources(data.myNetworkSources);
+        localStorage.setItem('myResolver', JSON.stringify(state.resolver));
+        persistResolverOverrides();
+        persistNetworkSources();
+        syncResolverNotice();
+    }
+
+    const hydrated = await hydrateWatchlist(wl);
+    state.watchlist = [];
+    state.watchlistDetails.clear();
+    hydrated.forEach(h => {
+        state.watchlist.push({ id: h.id, media_type: h.media_type });
+        state.watchlistDetails.set(watchlistKey(h.id, h.media_type), h);
+    });
+    state.lastPlayed = lp;
+    state.customSelections = cs;
+    state.watchedEpisodes = normalizeWatched(we);
+    state.newsHistory = nh.slice(0, NEWS_HISTORY_MAX);
+    state.notifySettings = ns;
+    state.releaseState = rl;
+    persistWatchlist();
+    localStorage.setItem('myLastPlayed', JSON.stringify(state.lastPlayed));
+    localStorage.setItem('myCustomSelections', JSON.stringify(state.customSelections));
+    persistWatchedEpisodes();
+    persistNewsHistory();
+    persistNotifySettings();
+    persistReleaseState();
+    syncNotifySettingsInputs();
+    startAutoSyncTimer();
+
+    if (['grid', 'list'].includes(data.myViewMode)) {
+        state.viewMode = data.myViewMode;
+        localStorage.setItem('myViewMode', state.viewMode);
+    }
+    if (['all', 'movie', 'tv'].includes(data.myTypeFilter)) {
+        state.typeFilter = data.myTypeFilter;
+        localStorage.setItem('myTypeFilter', state.typeFilter);
+    }
+    if (data.myLang === 'it' || data.myLang === 'en') {
+        setLanguage(data.myLang, true);
+    }
+
+    settingsKeyInput.value = state.apiKey;
+    settingsResolverMovieInput.value = state.resolver.movie || '';
+    settingsResolverTvInput.value = state.resolver.tv || '';
+    settingsLangInput.value = state.lang;
+    syncTools();
+    showHome();
+    refreshHomeUnwatchedCount();
+    return true;
+}
+
 backupFile.addEventListener('change', e => {
     const file = e.target.files && e.target.files[0];
     if (!file) return;
@@ -424,87 +520,8 @@ backupFile.addEventListener('change', e => {
             const payload = JSON.parse(reader.result);
             const data = payload && typeof payload === 'object' && payload.data ? payload.data : payload;
             if (!data || typeof data !== 'object') throw new Error('Invalid structure');
-
-            const wl = sanitizeWatchlistItems(data.myWatchlist);
-            const lp = sanitizeLastPlayedItems(data.myLastPlayed);
-            const cs = sanitizeCustomSelections(data.myCustomSelections);
-            const we = data.myWatchedEpisodes && typeof data.myWatchedEpisodes === 'object' ? data.myWatchedEpisodes : {};
-            const nh = sanitizeNewsEntries(data.myNewsHistory);
-            let key = safeString(data.myTMDbApiKey, 500).trim() || localStorage.getItem('myTMDbApiKey') || '';
-            const cryptoKey = safeString(data.myCryptoKey, 200).trim();
-            if (cryptoKey) localStorage.setItem('myCryptoKey', cryptoKey);
-            if (isEncryptedKey(key)) {
-                try {
-                    key = await decryptAPIKey(key);
-                } catch {
-                    showBackupStatus(t('msg.backupDecryptError'), true);
-                    return;
-                }
-            }
-            const rs = data.myResolver && typeof data.myResolver === 'object'
-                ? { movie: safeString(data.myResolver.movie, 1000), tv: safeString(data.myResolver.tv, 1000) }
-                : { movie: '', tv: '' };
-            const ro = sanitizeResolverOverrides(data.myResolverOverrides);
-            const nws = sanitizeNetworkSources(data.myNetworkSources);
-            const ns = data.myNotifySettings && typeof data.myNotifySettings === 'object'
-                ? Object.assign({}, DEFAULT_NOTIFY_SETTINGS, data.myNotifySettings)
-                : Object.assign({}, DEFAULT_NOTIFY_SETTINGS);
-            ns.autoSyncHours = sanitizeAutoSyncHours(ns.autoSyncHours);
-            const rl = sanitizeReleaseState(data.myReleaseState);
-
-            state.apiKey = key;
-            syncApiKeyNotice();
-            const hydrated = await hydrateWatchlist(wl);
-            state.watchlist = [];
-            state.watchlistDetails.clear();
-            hydrated.forEach(h => {
-                state.watchlist.push({ id: h.id, media_type: h.media_type });
-                state.watchlistDetails.set(watchlistKey(h.id, h.media_type), h);
-            });
-            state.lastPlayed = lp;
-            state.customSelections = cs;
-            state.watchedEpisodes = normalizeWatched(we);
-            state.newsHistory = nh.slice(0, NEWS_HISTORY_MAX);
-            state.resolver = rs;
-            state.resolverOverrides = ro;
-            state.networkSources = nws;
-            state.notifySettings = ns;
-            state.releaseState = rl;
-            persistWatchlist();
-            localStorage.setItem('myLastPlayed', JSON.stringify(state.lastPlayed));
-            localStorage.setItem('myCustomSelections', JSON.stringify(state.customSelections));
-            persistWatchedEpisodes();
-            persistNewsHistory();
-            localStorage.setItem('myTMDbApiKey', key);
-            localStorage.setItem('myResolver', JSON.stringify(state.resolver));
-            persistResolverOverrides();
-            persistNotifySettings();
-            persistNetworkSources();
-            persistReleaseState();
-            syncNotifySettingsInputs();
-            startAutoSyncTimer();
-            syncResolverNotice();
-
-            if (['grid', 'list'].includes(data.myViewMode)) {
-                state.viewMode = data.myViewMode;
-                localStorage.setItem('myViewMode', state.viewMode);
-            }
-            if (['all', 'movie', 'tv'].includes(data.myTypeFilter)) {
-                state.typeFilter = data.myTypeFilter;
-                localStorage.setItem('myTypeFilter', state.typeFilter);
-            }
-            if (data.myLang === 'it' || data.myLang === 'en') {
-                setLanguage(data.myLang, true);
-            }
-
-            settingsKeyInput.value = state.apiKey;
-            settingsResolverMovieInput.value = state.resolver.movie || '';
-            settingsResolverTvInput.value = state.resolver.tv || '';
-            settingsLangInput.value = state.lang;
-            syncTools();
-            showHome();
-            refreshHomeUnwatchedCount();
-            showBackupStatus(t('msg.backupRestored'));
+            const ok = await applyBackupData(data);
+            if (ok) showBackupStatus(t('msg.backupRestored'));
         } catch (err) {
             showBackupStatus(t('msg.backupInvalid'), true);
         }
@@ -574,4 +591,4 @@ async function deleteAllData() {
     settingsOverlay.hidden = true;
 }
 
-export { createBackup, restoreBackup, deleteAllData, hydrateWatchlistGrid };
+export { createBackup, restoreBackup, deleteAllData, hydrateWatchlistGrid, backupData, applyBackupData };
