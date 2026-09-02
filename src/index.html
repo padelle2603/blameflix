@@ -31,6 +31,7 @@
 
     <!-- Right-hand action cluster: library options, sync, settings -->
     <div class="topbar__actions">
+        <button type="button" class="btn-settings" id="btn-search-toggle" data-action="toggle-search" aria-label="Cerca" aria-pressed="false" data-i18n-aria="search.label" data-i18n-title="search.label">🔍</button>
         <div class="catalog-menu">
             <button type="button" class="btn-settings" id="btn-catalog-menu" data-action="toggle-catalog-menu" aria-label="Menu catalogo" aria-expanded="false" aria-controls="catalog-menu-panel" data-i18n-aria="tools.menu" data-i18n-title="tools.menu">⋮</button>
             <div class="catalog-menu__panel" id="catalog-menu-panel" hidden>
@@ -108,7 +109,7 @@
 
 <div class="container">
 
-    <div class="searchbar" role="search">
+    <div class="searchbar" id="searchbar" role="search" hidden>
         <label class="searchbar-label" for="search-input" data-i18n="search.label">Cerca un titolo</label>
         <div class="searchbar-row">
             <input type="text" id="search-input" placeholder="Cerca film o serie TV…" autocomplete="off"

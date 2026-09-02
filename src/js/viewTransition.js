@@ -1,23 +1,7 @@
 // Simple SlideX view transitions for home ↔ detail and grid (home ↔ search).
 // Excludes settings tabs. Respects prefers-reduced-motion.
-import { homeView, detailView, grid } from './dom.js';
-
-const VIEW_DUR = 260;
-const GRID_DUR_OUT = 180;
-const GRID_DUR_IN = 220;
-
-function prefersReduced() {
-    return typeof window.matchMedia === 'function'
-        && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-}
-
-function wait(ms) {
-    return new Promise(r => setTimeout(r, ms));
-}
-
-function nextFrame() {
-    return new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
-}
+import { homeView, detailView, grid, searchbar, btnSearchToggle } from './dom.js';
+import { VIEW_DUR, GRID_DUR_OUT, GRID_DUR_IN, SEARCHBAR_DUR, prefersReduced, wait, nextFrame } from './motion.js';
 
 function getStack() {
     return document.querySelector('.view-stack');
@@ -70,8 +54,21 @@ export function syncStackToView(view) {
     setTimeout(() => { stack.style.height = ''; }, VIEW_DUR + 50);
 }
 
-// View: home -> detail (forward SlideX: home exits left, detail enters from right)
+// Close searchbar silently in background when navigating away (e.g., home/search -> detail)
+function closeSearchBarSilently() {
+    if (!searchbar || searchbar.hidden) return;
+    searchbar.classList.remove('is-visible');
+    if (btnSearchToggle) btnSearchToggle.setAttribute('aria-pressed', 'false');
+    if (prefersReduced()) {
+        searchbar.hidden = true;
+    } else {
+        setTimeout(() => { searchbar.hidden = true; }, SEARCHBAR_DUR);
+    }
+}
+
+ // View: home -> detail (forward SlideX: home exits left, detail enters from right)
 export async function slideHomeToDetail() {
+    closeSearchBarSilently();
     window.scrollTo(0, 0);
     if (prefersReduced()) {
         const stack = getStack();

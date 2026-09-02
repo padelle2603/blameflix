@@ -5,7 +5,7 @@ import { App } from '@capacitor/app';
 import { applyLanguage } from './i18n.js';
 import { initDisclaimer, acceptDisclaimer } from './startup.js';
 import { showHome, clearSearch, setFilter, setView, setSort, toggleKindOrder, toggleKindCollapse, toggleCatalogMenu, closeCatalogMenu } from './catalog.js';
-import { handleSearch } from './search.js';
+import { handleSearch, toggleSearchBar, openSearchBar, isSearchBarVisible, closeSearchBar } from './search.js';
 import { clearNewsHistory } from './news.js';
 import { syncReleases } from './releases.js';
 import { toggleWatchlist } from './watchlist.js';
@@ -211,6 +211,7 @@ function registerAndroidBack() {
         if (!networkPanel.hidden) { networkPanel.hidden = true; return; }
         if (!resolverPanel.hidden) { resolverPanel.hidden = true; return; }
         if (!detailView.hidden) { await showHome(); return; }
+        if (isSearchBarVisible()) { closeSearchBar(); return; }
         if (state.searching || (searchInput.value || '').trim()) { await clearSearch(); return; }
         await App.minimizeApp();
     });
@@ -225,6 +226,7 @@ function registerAndroidBack() {
 const actions = {
     'show-home': showHome,
     'clear-search': clearSearch,
+    'toggle-search': () => toggleSearchBar(),
     'set-filter': el => setFilter(el.dataset.type),
     'set-view': el => setView(el.dataset.view),
     'set-sort': el => setSort(el.dataset.sort),
@@ -264,7 +266,7 @@ const actions = {
     'save-network-source': () => saveNetworkSource(),
     'clear-network-source': () => clearNetworkSource(),
     'accept-disclaimer': () => acceptDisclaimer(),
-    'focus-search': () => { searchInput.focus(); searchInput.select(); }
+    'focus-search': () => { openSearchBar(); }
 };
 
 document.addEventListener('click', e => {
@@ -283,9 +285,8 @@ document.addEventListener('keyup', e => {
 document.addEventListener('keydown', e => {
     if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
         e.preventDefault();
-        showHome();
-        searchInput.focus();
-        searchInput.select();
+        if (!detailView.hidden) showHome().then(() => openSearchBar());
+        else openSearchBar();
     }
 });
 

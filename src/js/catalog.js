@@ -11,6 +11,7 @@ import { t } from './i18n.js';
 import { cancelSearch } from './search.js';
 import { trapFocus } from './focusTrap.js';
 import { slideDetailToHome, slideGridSwitch } from './viewTransition.js';
+import { prefersReduced } from './motion.js';
 
 // Event delegation on the grid: cards open the detail view without
 // attaching a click and keydown listener per card at every re-render.
@@ -338,15 +339,11 @@ function refreshHomeCardBadge(id, type) {
     return true;
 }
 
-const prefersReducedMotion = typeof window.matchMedia === 'function'
-    ? window.matchMedia('(prefers-reduced-motion: reduce)')
-    : { matches: false };
-
 // Slides a rail by roughly one viewport of cards.
 function scrollRail(rail, direction) {
     rail.scrollBy({
         left: direction * rail.clientWidth * 0.9,
-        behavior: prefersReducedMotion.matches ? 'auto' : 'smooth'
+        behavior: prefersReduced() ? 'auto' : 'smooth'
     });
 }
 

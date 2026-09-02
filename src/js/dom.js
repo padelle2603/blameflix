@@ -1,6 +1,8 @@
 // Shared DOM references, resolved once (the script runs after the markup).
 export const homeView = document.getElementById('home-view');
 export const detailView = document.getElementById('detail-view');
+export const searchbar = document.getElementById('searchbar');
+export const btnSearchToggle = document.getElementById('btn-search-toggle');
 export const searchInput = document.getElementById('search-input');
 export const searchClear = document.getElementById('search-clear');
 export const grid = document.getElementById('results-grid');

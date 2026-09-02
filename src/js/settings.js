@@ -20,6 +20,7 @@ import { trapFocus } from './focusTrap.js';
 import { setCloudToken, regenerateCloudToken } from './cloudSync.js';
 import { syncCloudQuickbar } from './catalog.js';
 import { showToast } from './toast.js';
+import { prefersReduced, wait, OVERLAY_DUR, OVERLAY_PANEL_DUR, TAB_DUR } from './motion.js';
 
 function syncNotifySettingsInputs() {
     settingsNotifyEnabled.checked = state.notifySettings.enabled;
@@ -115,14 +116,6 @@ async function cloudTokenSave() {
 
 const settingsTabPages = ['settings-tab-api', 'settings-tab-notify', 'settings-tab-prefs', 'settings-tab-data', 'settings-tab-cloud', 'settings-tab-updates', 'settings-tab-help'];
 
-function prefersReduced() {
-    return typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-}
-
-function wait(ms) {
-    return new Promise(r => setTimeout(r, ms));
-}
-
 async function switchSettingsTab(tabId, { animate = true } = {}) {
     const buttons = document.querySelectorAll('.settings-tab');
     buttons.forEach(btn => {
@@ -157,7 +150,7 @@ async function switchSettingsTab(tabId, { animate = true } = {}) {
         return;
     }
     oldEl.classList.add('is-exiting');
-    await wait(150);
+    await wait(TAB_DUR);
     oldEl.hidden = true;
     oldEl.classList.remove('is-exiting');
     newEl.classList.add('is-entering');
@@ -165,7 +158,7 @@ async function switchSettingsTab(tabId, { animate = true } = {}) {
     void newEl.offsetWidth;
     await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
     newEl.classList.remove('is-entering');
-    await wait(150);
+    await wait(TAB_DUR);
     if (tabId === 'settings-tab-updates') { syncLastUpdateCheck(); syncChangelog(); }
 }
 
@@ -201,7 +194,7 @@ async function openSettings(trigger = null) {
     void settingsOverlay.offsetWidth;
     await switchSettingsTab('settings-tab-api', { animate: false });
     requestAnimationFrame(() => requestAnimationFrame(() => settingsOverlay.classList.add('is-visible')));
-    await wait(220);
+    await wait(OVERLAY_PANEL_DUR);
     settingsOverlay._trap = trapFocus(settingsOverlay, { onEsc: closeSettings, restoreFocusTo: trigger });
     settingsTitle.focus();
 }
@@ -217,7 +210,7 @@ async function closeSettings() {
         return;
     }
     settingsOverlay.classList.remove('is-visible');
-    await wait(180);
+    await wait(OVERLAY_DUR);
     settingsOverlay.hidden = true;
     if (settingsOverlay._trap) {
         settingsOverlay._trap.close();
@@ -248,7 +241,7 @@ async function openDocs(trigger = null) {
     docsOverlay.classList.remove('is-visible');
     void docsOverlay.offsetWidth;
     requestAnimationFrame(() => requestAnimationFrame(() => docsOverlay.classList.add('is-visible')));
-    await wait(180);
+    await wait(OVERLAY_DUR);
     const firstFocusable = docsOverlay.querySelector('button, a, input');
     docsOverlay._trap = trapFocus(docsOverlay, { onEsc: closeDocs, restoreFocusTo: trigger });
     if (firstFocusable) firstFocusable.focus();
@@ -265,7 +258,7 @@ async function closeDocs() {
         return;
     }
     docsOverlay.classList.remove('is-visible');
-    await wait(180);
+    await wait(OVERLAY_DUR);
     docsOverlay.hidden = true;
     if (docsOverlay._trap) {
         docsOverlay._trap.close();
