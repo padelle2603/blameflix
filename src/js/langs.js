@@ -27,7 +27,4 @@ export function langMeta(code) {
     return LANG_BY_CODE[code] || LANG_BY_CODE.en;
 }
 
-// True when the language uses a comma as decimal separator (e.g. 7,2).
-export function decimalIsComma(code) {
-    return langMeta(code).decimal !== 'dot';
-}
+

@@ -10,7 +10,7 @@ import { clearNewsHistory } from './news.js';
 import { syncReleases } from './releases.js';
 import { toggleWatchlist } from './watchlist.js';
 import { skipTutorial } from './tutorial.js';
-import { searchInput, inputSeason, detailView, settingsOverlay, docsOverlay, catalogMenuPanel } from './dom.js';
+import { searchInput, inputSeason, detailView, settingsOverlay, docsOverlay, catalogMenuPanel, disclaimerOverlay, tutorialOverlay, updatePopup, networkPanel, resolverPanel } from './dom.js';
 import { state } from './state.js';
 import './ptr.js';
 
@@ -202,18 +202,16 @@ async function cloudGenerateToken() {
 function registerAndroidBack() {
     if (!window.Capacitor?.isNativePlatform?.()) return;
     App.addListener('backButton', async () => {
-        if (!document.getElementById('disclaimer-overlay').hidden) return;
-        if (!document.getElementById('tutorial-overlay').hidden) { skipTutorial(); return; }
-        if (!document.getElementById('update-popup').hidden) { await dismissUpdatePopup(); return; }
+        if (!disclaimerOverlay.hidden) return;
+        if (!tutorialOverlay.hidden) { skipTutorial(); return; }
+        if (!updatePopup.hidden) { await dismissUpdatePopup(); return; }
         if (!settingsOverlay.hidden) { await closeSettings(); return; }
         if (!docsOverlay.hidden) { await closeDocs(); return; }
         if (!catalogMenuPanel.hidden) { closeCatalogMenu(); return; }
-        const networkPanel = document.getElementById('network-panel');
         if (!networkPanel.hidden) { networkPanel.hidden = true; return; }
-        const resolverPanel = document.getElementById('resolver-override-panel');
         if (!resolverPanel.hidden) { resolverPanel.hidden = true; return; }
-        if (!detailView.hidden) { showHome(); return; }
-        if (state.searching || (searchInput.value || '').trim()) { clearSearch(); return; }
+        if (!detailView.hidden) { await showHome(); return; }
+        if (state.searching || (searchInput.value || '').trim()) { await clearSearch(); return; }
         await App.minimizeApp();
     });
 }
@@ -265,7 +263,8 @@ const actions = {
     'toggle-network-source': () => toggleNetworkSource(),
     'save-network-source': () => saveNetworkSource(),
     'clear-network-source': () => clearNetworkSource(),
-    'accept-disclaimer': () => acceptDisclaimer()
+    'accept-disclaimer': () => acceptDisclaimer(),
+    'focus-search': () => { searchInput.focus(); searchInput.select(); }
 };
 
 document.addEventListener('click', e => {
@@ -278,6 +277,16 @@ document.addEventListener('click', e => {
 // Non-click interactions that were previously inline attributes.
 document.addEventListener('keyup', e => {
     if (e.target === searchInput) handleSearch(e.target.value);
+});
+
+// Ctrl+K / Cmd+K shortcut to focus searchbar.
+document.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        showHome();
+        searchInput.focus();
+        searchInput.select();
+    }
 });
 
 document.addEventListener('change', e => {

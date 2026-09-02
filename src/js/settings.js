@@ -11,7 +11,7 @@ import { setLanguage, t } from './i18n.js';
 import { sourceTemplateError } from './sourceUtils.js';
 import { ensureNotifyPermission, notify } from './notifications.js';
 import { isNativeRuntime } from './env.js';
-import { syncLastUpdateCheck } from './updates.js';
+import { syncLastUpdateCheck, syncChangelog } from './updates.js';
 import { LANGS } from './langs.js';
 import { startTutorial } from './tutorial.js';
 import { encryptAPIKey } from './crypto.js';
@@ -115,25 +115,65 @@ async function cloudTokenSave() {
 
 const settingsTabPages = ['settings-tab-api', 'settings-tab-notify', 'settings-tab-prefs', 'settings-tab-data', 'settings-tab-cloud', 'settings-tab-updates', 'settings-tab-help'];
 
-function switchSettingsTab(tabId) {
+function prefersReduced() {
+    return typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
+function wait(ms) {
+    return new Promise(r => setTimeout(r, ms));
+}
+
+async function switchSettingsTab(tabId, { animate = true } = {}) {
     const buttons = document.querySelectorAll('.settings-tab');
     buttons.forEach(btn => {
         const active = btn.dataset.tab === tabId;
         btn.classList.toggle('is-active', active);
         btn.setAttribute('aria-selected', String(active));
+        btn.setAttribute('tabindex', active ? '0' : '-1');
     });
-    settingsTabPages.forEach(id => {
-        const page = document.getElementById(id);
-        if (page) page.hidden = id !== tabId;
+    const currentId = settingsTabPages.find(id => {
+        const el = document.getElementById(id);
+        return el && !el.hidden;
     });
-    if (tabId === 'settings-tab-updates') syncLastUpdateCheck();
+    if (!animate || prefersReduced() || !currentId || currentId === tabId) {
+        settingsTabPages.forEach(id => {
+            const page = document.getElementById(id);
+            if (page) {
+                page.classList.remove('is-exiting', 'is-entering');
+                page.hidden = id !== tabId;
+            }
+        });
+        if (tabId === 'settings-tab-updates') { syncLastUpdateCheck(); syncChangelog(); }
+        return;
+    }
+    const oldEl = document.getElementById(currentId);
+    const newEl = document.getElementById(tabId);
+    if (!oldEl || !newEl) {
+        settingsTabPages.forEach(id => {
+            const page = document.getElementById(id);
+            if (page) page.hidden = id !== tabId;
+        });
+        if (tabId === 'settings-tab-updates') { syncLastUpdateCheck(); syncChangelog(); }
+        return;
+    }
+    oldEl.classList.add('is-exiting');
+    await wait(150);
+    oldEl.hidden = true;
+    oldEl.classList.remove('is-exiting');
+    newEl.classList.add('is-entering');
+    newEl.hidden = false;
+    void newEl.offsetWidth;
+    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+    newEl.classList.remove('is-entering');
+    await wait(150);
+    if (tabId === 'settings-tab-updates') { syncLastUpdateCheck(); syncChangelog(); }
 }
 
 document.querySelectorAll('.settings-tab').forEach(btn => {
     btn.addEventListener('click', () => switchSettingsTab(btn.dataset.tab));
 });
 
-function openSettings(trigger = null) {
+async function openSettings(trigger = null) {
     settingsKeyInput.value = state.apiKey;
     settingsResolverMovieInput.value = state.resolver.movie || '';
     settingsResolverTvInput.value = state.resolver.tv || '';
@@ -149,13 +189,35 @@ function openSettings(trigger = null) {
     const checkBtn = document.getElementById('settings-update-check');
     if (webHint) webHint.hidden = isNativeRuntime();
     if (checkBtn) checkBtn.hidden = !isNativeRuntime();
+    if (prefersReduced()) {
+        settingsOverlay.hidden = false;
+        await switchSettingsTab('settings-tab-api', { animate: false });
+        settingsOverlay._trap = trapFocus(settingsOverlay, { onEsc: closeSettings, restoreFocusTo: trigger });
+        settingsTitle.focus();
+        return;
+    }
     settingsOverlay.hidden = false;
-    switchSettingsTab('settings-tab-api');
+    settingsOverlay.classList.remove('is-visible');
+    void settingsOverlay.offsetWidth;
+    await switchSettingsTab('settings-tab-api', { animate: false });
+    requestAnimationFrame(() => requestAnimationFrame(() => settingsOverlay.classList.add('is-visible')));
+    await wait(220);
     settingsOverlay._trap = trapFocus(settingsOverlay, { onEsc: closeSettings, restoreFocusTo: trigger });
     settingsTitle.focus();
 }
 
-function closeSettings() {
+async function closeSettings() {
+    if (prefersReduced() || settingsOverlay.hidden) {
+        settingsOverlay.hidden = true;
+        settingsOverlay.classList.remove('is-visible');
+        if (settingsOverlay._trap) {
+            settingsOverlay._trap.close();
+            settingsOverlay._trap = null;
+        }
+        return;
+    }
+    settingsOverlay.classList.remove('is-visible');
+    await wait(180);
     settingsOverlay.hidden = true;
     if (settingsOverlay._trap) {
         settingsOverlay._trap.close();
@@ -165,19 +227,45 @@ function closeSettings() {
 
 // --- DOCUMENTATION ---
 
-function openDocs(trigger = null) {
+async function openDocs(trigger = null) {
     if (settingsOverlay._trap) {
         settingsOverlay._trap.close();
         settingsOverlay._trap = null;
     }
     settingsOverlay.hidden = true;
+    settingsOverlay.classList.remove('is-visible');
+    if (prefersReduced()) {
+        docsOverlay.hidden = false;
+        docsOverlay.classList.remove('is-visible');
+        void docsOverlay.offsetWidth;
+        docsOverlay.classList.add('is-visible');
+        const firstFocusable = docsOverlay.querySelector('button, a, input');
+        docsOverlay._trap = trapFocus(docsOverlay, { onEsc: closeDocs, restoreFocusTo: trigger });
+        if (firstFocusable) firstFocusable.focus();
+        return;
+    }
     docsOverlay.hidden = false;
+    docsOverlay.classList.remove('is-visible');
+    void docsOverlay.offsetWidth;
+    requestAnimationFrame(() => requestAnimationFrame(() => docsOverlay.classList.add('is-visible')));
+    await wait(180);
     const firstFocusable = docsOverlay.querySelector('button, a, input');
     docsOverlay._trap = trapFocus(docsOverlay, { onEsc: closeDocs, restoreFocusTo: trigger });
     if (firstFocusable) firstFocusable.focus();
 }
 
-function closeDocs() {
+async function closeDocs() {
+    if (prefersReduced() || docsOverlay.hidden) {
+        docsOverlay.hidden = true;
+        docsOverlay.classList.remove('is-visible');
+        if (docsOverlay._trap) {
+            docsOverlay._trap.close();
+            docsOverlay._trap = null;
+        }
+        return;
+    }
+    docsOverlay.classList.remove('is-visible');
+    await wait(180);
     docsOverlay.hidden = true;
     if (docsOverlay._trap) {
         docsOverlay._trap.close();
@@ -259,6 +347,40 @@ async function sendTestNotification() {
 settingsOverlay.addEventListener('click', e => {
     if (e.target === settingsOverlay) closeSettings();
 });
+
+// --- Inline validation for URL fields and API key ---
+function setupInlineValidation() {
+    const urlInputs = [settingsResolverMovieInput, settingsResolverTvInput];
+    urlInputs.forEach(input => {
+        input.addEventListener('input', () => {
+            const val = input.value.trim();
+            if (val && sourceTemplateError(val)) {
+                input.classList.add('is-invalid');
+            } else {
+                input.classList.remove('is-invalid');
+            }
+        });
+    });
+    settingsKeyInput.addEventListener('input', () => {
+        const val = settingsKeyInput.value.trim();
+        if (val && !/^[a-f0-9]{32}$/i.test(val) && val.length > 5) {
+            settingsKeyInput.classList.add('is-invalid');
+        } else {
+            settingsKeyInput.classList.remove('is-invalid');
+        }
+    });
+}
+setupInlineValidation();
+
+// Toggle API key visibility
+const toggleKeyBtn = document.getElementById('toggle-api-key-vis');
+if (toggleKeyBtn) {
+    toggleKeyBtn.addEventListener('click', () => {
+        const isPassword = settingsKeyInput.type === 'password';
+        settingsKeyInput.type = isPassword ? 'text' : 'password';
+        toggleKeyBtn.textContent = isPassword ? '🔒' : '👁';
+    });
+}
 
 cloudUrl.addEventListener('input', persistCloudInputs);
 cloudAnon.addEventListener('input', persistCloudInputs);

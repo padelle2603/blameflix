@@ -130,4 +130,4 @@ async function regenerateCloudToken() {
     return token;
 }
 
-export { pushCloud, pullCloud, setCloudToken, regenerateCloudToken, resolveToken };
+export { pushCloud, pullCloud, setCloudToken, regenerateCloudToken };

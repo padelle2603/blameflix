@@ -1,5 +1,6 @@
 import { t } from './i18n.js';
 import { openSettings, closeSettings } from './settings.js';
+import { trapFocus } from './focusTrap.js';
 
 // --- Interactive, skippable first-launch tour ---
 // Each step highlights a UI element with a spotlight (a dark mask with a
@@ -21,6 +22,7 @@ let overlay, shadesRoot, tooltip, titleEl, bodyEl, progressEl, prevBtn, nextBtn,
 let currentStep = -1;
 let settingsOpenedByUs = false;
 let initialized = false;
+let tutorialTrap = null;
 
 function cacheEls() {
     overlay = document.getElementById('tutorial-overlay');
@@ -179,6 +181,7 @@ function render() {
 
 function showOverlay() {
     overlay.hidden = false;
+    tutorialTrap = trapFocus(tooltip, { onEsc: skipTutorial });
     document.addEventListener('keydown', onKey);
     window.addEventListener('resize', render);
     window.addEventListener('scroll', render, true);
@@ -187,6 +190,7 @@ function showOverlay() {
 function hideOverlay() {
     overlay.hidden = true;
     clearShades();
+    if (tutorialTrap) { tutorialTrap.close(); tutorialTrap = null; }
     if (settingsOpenedByUs) {
         closeSettings();
         settingsOpenedByUs = false;
@@ -197,8 +201,7 @@ function hideOverlay() {
 }
 
 function onKey(e) {
-    if (e.key === 'Escape') skipTutorial();
-    else if (e.key === 'ArrowRight') tutorialNext();
+    if (e.key === 'ArrowRight') tutorialNext();
     else if (e.key === 'ArrowLeft') tutorialPrev();
 }
 
@@ -215,13 +218,13 @@ export function startTutorial() {
     render();
 }
 
-export function tutorialNext() {
+function tutorialNext() {
     if (currentStep >= STEPS.length - 1) { finish(); return; }
     currentStep++;
     render();
 }
 
-export function tutorialPrev() {
+function tutorialPrev() {
     if (currentStep <= 0) return;
     currentStep--;
     render();

@@ -1,7 +1,11 @@
+const ESCAPE_RE = /[&<>"']/g;
+const ESCAPE_MAP = new Map([
+    ['&', '&amp;'], ['<', '&lt;'], ['>', '&gt;'],
+    ['"', '&quot;'], ["'", '&#39;']
+]);
+
 function escapeHtml(str) {
-    return String(str).replace(/[&<>"']/g, c => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-    })[c]);
+    return String(str).replace(ESCAPE_RE, c => ESCAPE_MAP.get(c));
 }
 
 // Sanitizes a TMDB image path before it is interpolated into a URL or an

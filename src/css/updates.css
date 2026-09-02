@@ -6,3 +6,48 @@
     flex-wrap: wrap;
 }
 
+/* ===== CHANGELOG ===== */
+.changelog-body {
+    max-height: 260px;
+    overflow-y: auto;
+    padding: 0.8rem 1rem;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    font-family: var(--font-mono);
+    font-size: var(--fs-sm);
+    line-height: 1.6;
+    color: var(--ink);
+}
+.changelog-body h2,
+.changelog-body h3,
+.changelog-body h4 {
+    font-family: var(--font-main);
+    color: var(--ink-hi);
+    margin: 1rem 0 0.4rem;
+}
+.changelog-body h2 { font-size: 1.1rem; }
+.changelog-body h3 { font-size: 0.95rem; }
+.changelog-body h4 { font-size: 0.85rem; }
+.changelog-body ul {
+    margin: 0.3rem 0;
+    padding-left: 1.4rem;
+}
+.changelog-body li {
+    margin-bottom: 0.2rem;
+}
+.changelog-body code {
+    background: var(--paper-hi);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    padding: 1px 5px;
+    font-size: 0.9em;
+}
+.changelog-body a {
+    color: var(--lago);
+    text-decoration: none;
+}
+@media (hover: hover) and (pointer: fine) {
+    .changelog-body a:hover { text-decoration: underline; }
+}
+

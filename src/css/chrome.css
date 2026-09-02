@@ -5,7 +5,7 @@
     left: 0.5rem;
     z-index: 100;
     font-family: var(--font-mono);
-    font-size: 0.72rem;
+    font-size: var(--fs-sm);
     font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -20,7 +20,7 @@
 }
 
 .topbar {
-    max-width: 1240px;
+    max-width: var(--max-width);
     margin: 0 auto;
     padding: 1.4rem 1.4rem 0.4rem;
     display: flex;
@@ -114,12 +114,12 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    transition: background 0.15s, color 0.15s;
+    transition: background 0.15s, color 0.15s, transform 0.1s;
 }
 
 /* ===== MISSING API KEY ===== */
 .key-notice {
-    max-width: 1240px;
+    max-width: var(--max-width);
     margin: 0 auto;
     padding: 0 1.4rem;
 }
@@ -138,7 +138,7 @@
 
 .key-notice p {
     font-family: var(--font-mono);
-    font-size: 0.72rem;
+    font-size: var(--fs-sm);
     font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -170,7 +170,7 @@
     align-items: center;
     gap: 0.45rem;
     font-family: var(--font-mono);
-    font-size: 0.66rem;
+    font-size: var(--fs-caption);
     font-weight: 600;
     letter-spacing: 0.08em;
     color: var(--meta);
@@ -217,5 +217,12 @@ body.is-detail .searchbar {
 /* Detail view: hide cloud quickbar */
 body.is-detail .cloud-quickbar {
     display: none;
+}
+
+/* Search view: hide cloud quickbar (bottom and topbar) */
+body.is-searching .cloud-quickbar,
+body.is-searching [data-action="cloud-push"],
+body.is-searching [data-action="cloud-pull"] {
+    display: none !important;
 }
 

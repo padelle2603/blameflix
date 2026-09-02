@@ -1,5 +1,5 @@
-import { state, persistCollapsedRows, persistSortMode } from './state.js';
-import { homeView, detailView, searchInput, searchClear, grid, emptyState, homeHead, searchHead, catalogMenuBtn, catalogMenuPanel, cloudQuickbar } from './dom.js';
+import { state, persistCollapsedRows, persistSortMode, addToWatchlistIndex, removeFromWatchlistIndex } from './state.js';
+import { homeView, detailView, searchInput, searchClear, grid, emptyState, homeHead, searchHead, searchTitle, catalogMenuBtn, catalogMenuPanel, cloudQuickbar } from './dom.js';
 import { escapeHtml, tmdbImagePath } from './utils.js';
 import { IMG_GRID, PLACEHOLDER } from './env.js';
 import { showUnwatchedCache } from './tmdb.js';
@@ -10,10 +10,38 @@ import { renderNewsSection } from './news.js';
 import { t } from './i18n.js';
 import { cancelSearch } from './search.js';
 import { trapFocus } from './focusTrap.js';
+import { slideDetailToHome, slideGridSwitch } from './viewTransition.js';
 
 // Event delegation on the grid: cards open the detail view without
 // attaching a click and keydown listener per card at every re-render.
 function handleCardActivation(e) {
+    // Quick-add button: toggle watchlist without opening detail
+    const addBtn = e.target.closest('[data-action="quick-add"]');
+    if (addBtn) {
+        e.stopPropagation();
+        const id = Number(addBtn.dataset.id);
+        const type = addBtn.dataset.type;
+        const key = `${type}:${id}`;
+        const isCurrentlySaved = state._watchlistIndex.has(key);
+        if (!isCurrentlySaved) {
+            state.watchlist.push({ id, media_type: type });
+            addToWatchlistIndex(id, type);
+            state._watchlistDirty = true;
+            addBtn.innerHTML = '&#9829;';
+            addBtn.classList.add('card-add-btn--saved');
+            addBtn.setAttribute('aria-label', t('detail.savedRemove'));
+        } else {
+            const existing = state.watchlist.findIndex(w => w.id === id && w.media_type === type);
+            state.watchlist.splice(existing, 1);
+            removeFromWatchlistIndex(id, type);
+            state._watchlistDirty = true;
+            addBtn.innerHTML = '&#9825;';
+            addBtn.classList.remove('card-add-btn--saved');
+            addBtn.setAttribute('aria-label', t('detail.addSaved'));
+        }
+        localStorage.setItem('myWatchlist', JSON.stringify(state.watchlist));
+        return;
+    }
     const card = e.target.closest('.card');
     if (!card || !card.dataset.id) return;
     if (e.type === 'keydown') {
@@ -26,39 +54,126 @@ grid.addEventListener('click', handleCardActivation);
 grid.addEventListener('keydown', handleCardActivation);
 
 function syncCloudQuickbar() {
-    if (cloudQuickbar) cloudQuickbar.hidden = !state.cloudSync.enabled;
+    if (cloudQuickbar) cloudQuickbar.hidden = !state.cloudSync.enabled || state.searching;
+    document.body.classList.toggle('is-searching', !!state.searching);
 }
 
-function renderHome() {
+async function renderHome() {
+    const detailVisible = !detailView.hidden;
+    const wasSearching = state.searching;
+
     cancelSearch();
     state.searching = false;
-    homeView.hidden = false;
-    detailView.hidden = true;
-    document.body.classList.remove('is-detail');
+    state.currentList = state.watchlist;
+    searchClear.hidden = searchInput.value.length === 0;
+    renderNewsSection();
+    refreshHomeUnwatchedCount();
+    syncCloudQuickbar();
+
+    if (detailVisible) {
+        // Detail -> Home (SlideX backward): prepare home headers before slide
+        homeHead.hidden = false;
+        searchHead.hidden = true;
+        await slideDetailToHome();
+        // After view slide, avoid full grid refresh that looks like a flash.
+        // Grid already shows watchlist underneath detail (detail was absolute overlay).
+        // Re-render only if watchlist/search state changed or grid is empty.
+        const needsFullRender = state._watchlistDirty || wasSearching || !grid.innerHTML.trim() || state.currentList !== state.watchlist;
+        if (needsFullRender) {
+            renderGrid(state.currentList);
+            state._watchlistDirty = false;
+            state._watchedDirty = false;
+        } else if (state._watchedDirty) {
+            // Only watched state changed (e.g., marked episodes in detail) -> patch single card badge
+            const patched = refreshHomeCardBadge(state.currentMedia?.id, state.currentMedia?.media_type);
+            if (!patched) renderGrid(state.currentList);
+            state._watchedDirty = false;
+            // Keep view-stack height in sync after badge update (no jump)
+            requestAnimationFrame(refreshRailArrows);
+        } else {
+            requestAnimationFrame(refreshRailArrows);
+        }
+        return;
+    }
+
+    if (wasSearching) {
+        // Search -> Home inside same view: animate grid backward
+        homeHead.hidden = false;
+        searchHead.hidden = true;
+        await slideGridSwitch(() => {
+            renderGrid(state.currentList);
+            state._watchlistDirty = false;
+            state._watchedDirty = false;
+        }, 'backward');
+        return;
+    }
+
+    // Home -> Home (initial or refresh): instant
     homeHead.hidden = false;
     searchHead.hidden = true;
-    searchClear.hidden = searchInput.value.length === 0;
-    state.currentList = state.watchlist;
+    homeView.hidden = false;
     renderGrid(state.currentList);
+    state._watchlistDirty = false;
+    state._watchedDirty = false;
+}
+
+async function showHome() {
+    const detailVisible = !detailView.hidden;
+    const shouldRestoreSearch = detailVisible && state.searching && (searchInput.value || '').trim().length >= 2;
+    if (shouldRestoreSearch) {
+        // Detail was opened from search -> return to search, not watchlist
+        await restoreSearchFromDetail();
+        return;
+    }
+    searchInput.value = '';
+    searchClear.hidden = true;
+    await renderHome();
+}
+
+async function restoreSearchFromDetail() {
+    // Keep searching state and currentList (search results)
+    // Ensure headers for search
+    homeHead.hidden = true;
+    searchHead.hidden = false;
+    const q = (searchInput.value || '').trim();
+    if (q) {
+        try { searchTitle.innerText = t('home.searchResults', { q }); } catch (_e) { /* ignore */ }
+    }
+    searchClear.hidden = false;
+    await slideDetailToHome();
+    // Grid already contains search results (preserved while detail was open)
+    // Ensure it is rendered (in case it was cleared)
+    if (!grid.innerHTML.trim()) renderGrid(state.currentList);
     renderNewsSection();
     refreshHomeUnwatchedCount();
     syncCloudQuickbar();
 }
 
-function showHome() {
-    searchInput.value = '';
-    searchClear.hidden = true;
-    renderHome();
+async function clearSearch() {
+    // Called from search input when query <2 or clear button
+    // If detail is open, go to home via view slide; else grid slide is handled by renderHome
+    await showHome();
 }
 
-function clearSearch() {
-    showHome();
-}
-
-function showEmpty(kicker, text) {
+function showEmpty(kicker, text, retryFn) {
     grid.style.display = 'none';
     emptyState.querySelector('.empty-kicker').innerText = kicker;
     emptyState.querySelector('p:last-child').innerText = text;
+    let retryBtn = emptyState.querySelector('.empty-retry');
+    if (retryFn) {
+        if (!retryBtn) {
+            retryBtn = document.createElement('button');
+            retryBtn.className = 'btn empty-retry';
+            retryBtn.setAttribute('type', 'button');
+            emptyState.appendChild(retryBtn);
+        }
+        retryBtn.textContent = t('common.retry');
+        retryBtn.hidden = false;
+        retryBtn.onclick = retryFn;
+    } else if (retryBtn) {
+        retryBtn.hidden = true;
+        retryBtn.onclick = null;
+    }
     emptyState.hidden = false;
 }
 
@@ -80,11 +195,12 @@ function skeletonCardHtml() {
 function showGridLoading() {
     emptyState.hidden = true;
     grid.style.display = '';
-    grid.innerHTML = '';
     const count = state.viewMode === 'list' ? 6 : 8;
+    let html = '';
     for (let i = 0; i < count; i++) {
-        grid.insertAdjacentHTML('beforeend', skeletonCardHtml());
+        html += skeletonCardHtml();
     }
+    grid.innerHTML = html;
 }
 
 function renderGrid(items) {
@@ -148,6 +264,18 @@ function makeCard(item) {
     // The "N to watch" badge belongs to the home watchlist only; search
     // results come from the TMDB archive, so the badge is not shown there.
     const unwatched = (item.media_type === 'tv' && !state.searching) ? showUnwatchedCache.get(item.id) : 0;
+    let resumeLabel = '';
+    if (unwatched > 0 && item.media_type === 'tv') {
+        const lp = state._lastPlayedMap.get(`${item.id}:tv`);
+        if (lp) {
+            const nextEp = lp.episode + 1;
+            resumeLabel = `${t('common.resume')} S${lp.season}E${nextEp}`;
+        } else {
+            resumeLabel = `${unwatched} ${t('common.toWatch')}`;
+        }
+    } else if (unwatched > 0) {
+        resumeLabel = `${unwatched} ${t('common.toWatch')}`;
+    }
 
     const card = document.createElement('div');
     card.className = 'card';
@@ -156,10 +284,13 @@ function makeCard(item) {
     card.dataset.type = item.media_type;
     card.tabIndex = 0;
 
+    const saved = state.searching && state._watchlistIndex.has(`${item.media_type}:${item.id}`);
+
     card.innerHTML = `
         <div class="card-poster">
-            <img src="${poster}" alt="${escapeHtml(title)}" loading="lazy" decoding="async">
-            ${unwatched > 0 ? `<span class="card-unwatched">${unwatched} ${t('common.toWatch')}</span>` : ''}
+            <img src="${poster}" alt="${escapeHtml(title)}" loading="lazy" decoding="async" sizes="(max-width: 600px) 120px, 185px">
+            ${resumeLabel ? `<span class="card-unwatched">${escapeHtml(resumeLabel)}</span>` : ''}
+            ${state.searching ? `<button type="button" class="card-add-btn ${saved ? 'card-add-btn--saved' : ''}" data-action="quick-add" data-id="${item.id}" data-type="${item.media_type}" aria-label="${saved ? t('detail.savedRemove') : t('detail.addSaved')}">${saved ? '&#9829;' : '&#9825;'}</button>` : ''}
         </div>
         <div class="credit-block">
             <h3 class="credit-title">${escapeHtml(title)}</h3>
@@ -174,6 +305,37 @@ function makeCard(item) {
 function patchCard(d) {
     const card = grid.querySelector(`.card[data-id="${d.id}"][data-type="${d.media_type}"]`);
     if (card) card.replaceWith(makeCard(d));
+}
+
+// Updates only the unwatched badge of a home card (efficient, no full grid refresh).
+// Returns true if patched, false if card not found (fallback to full render).
+function refreshHomeCardBadge(id, type) {
+    if (!id || !type) return false;
+    const card = grid.querySelector(`.card[data-id="${id}"][data-type="${type}"]`);
+    if (!card) return false;
+    const item = state.watchlist.find(w => w.id === id && w.media_type === type);
+    if (!item) return false;
+    const unwatched = (type === 'tv') ? (showUnwatchedCache.get(id) || 0) : 0;
+    let resumeLabel = '';
+    if (unwatched > 0) {
+        const lp = state._lastPlayedMap.get(`${id}:tv`);
+        if (lp) resumeLabel = `${t('common.resume')} S${lp.season}E${lp.episode + 1}`;
+        else resumeLabel = `${unwatched} ${t('common.toWatch')}`;
+    }
+    const posterWrap = card.querySelector('.card-poster');
+    if (!posterWrap) return false;
+    let badge = posterWrap.querySelector('.card-unwatched');
+    if (resumeLabel) {
+        if (!badge) {
+            badge = document.createElement('span');
+            badge.className = 'card-unwatched';
+            posterWrap.appendChild(badge);
+        }
+        badge.textContent = resumeLabel;
+    } else if (badge) {
+        badge.remove();
+    }
+    return true;
 }
 
 const prefersReducedMotion = typeof window.matchMedia === 'function'
@@ -199,6 +361,15 @@ function syncRailArrows(rail) {
     if (prev) prev.disabled = rail.scrollLeft <= 1;
     if (next) next.disabled = rail.scrollLeft >= max - 1;
     wrap.classList.toggle('is-scrollable', max > 1);
+}
+
+// Throttled scroll handling: coalesces ~60fps scroll events into one rAF flush.
+let _scrollRafId = null;
+const _pendingRails = new Set();
+function _flushScroll() {
+    _scrollRafId = null;
+    for (const rail of _pendingRails) syncRailArrows(rail);
+    _pendingRails.clear();
 }
 
 // Full pass over every rendered rail: used after renders, resizes and
@@ -293,7 +464,10 @@ function buildKindRow(kind, items) {
     const frag = document.createDocumentFragment();
     items.forEach(item => frag.appendChild(makeCard(item)));
     rail.appendChild(frag);
-    rail.addEventListener('scroll', () => syncRailArrows(rail), { passive: true });
+    rail.addEventListener('scroll', () => {
+        _pendingRails.add(rail);
+        if (!_scrollRafId) _scrollRafId = requestAnimationFrame(_flushScroll);
+    }, { passive: true });
 
     const prev = document.createElement('button');
     prev.type = 'button';
@@ -317,6 +491,14 @@ function buildKindRow(kind, items) {
 
 // --- CATALOG FILTERS AND VIEW ---
 
+let _ctlTypeBtns, _ctlViewBtns, _ctlSortBtns;
+
+function initToolBtns() {
+    _ctlTypeBtns = document.querySelectorAll('.ctl[data-type]');
+    _ctlViewBtns = document.querySelectorAll('.ctl[data-view]');
+    _ctlSortBtns = document.querySelectorAll('.ctl[data-sort]');
+}
+
 function filterLabel(type) {
     if (type === 'movie') return t('filter.movie');
     if (type === 'tv') return t('filter.tv');
@@ -338,24 +520,28 @@ function titleSortKey(item) {
 function sortTitles(list) {
     if (state.sortMode === 'added') return list.slice();
     const sorted = list.slice();
+    // Precompute sort keys once per item: O(N) instead of O(N log N) recomputations.
+    const keys = new Map();
+    for (const item of sorted) keys.set(item, titleSortKey(item));
     if (state.sortMode === 'alpha') {
-        sorted.sort((a, b) => titleSortKey(a).title.localeCompare(titleSortKey(b).title));
+        sorted.sort((a, b) => keys.get(a).title.localeCompare(keys.get(b).title));
     } else if (state.sortMode === 'release') {
-        sorted.sort((a, b) => titleSortKey(b).date.localeCompare(titleSortKey(a).date));
+        sorted.sort((a, b) => keys.get(b).date.localeCompare(keys.get(a).date));
     } else if (state.sortMode === 'rating') {
-        sorted.sort((a, b) => titleSortKey(b).rating - titleSortKey(a).rating);
+        sorted.sort((a, b) => keys.get(b).rating - keys.get(a).rating);
     }
     return sorted;
 }
 
 function syncTools() {
-    document.querySelectorAll('.ctl[data-type]').forEach(btn => {
+    if (!_ctlTypeBtns) initToolBtns();
+    _ctlTypeBtns?.forEach(btn => {
         btn.setAttribute('aria-pressed', btn.dataset.type === state.typeFilter ? 'true' : 'false');
     });
-    document.querySelectorAll('.ctl[data-view]').forEach(btn => {
+    _ctlViewBtns?.forEach(btn => {
         btn.setAttribute('aria-pressed', btn.dataset.view === state.viewMode ? 'true' : 'false');
     });
-    document.querySelectorAll('.ctl[data-sort]').forEach(btn => {
+    _ctlSortBtns?.forEach(btn => {
         btn.setAttribute('aria-pressed', btn.dataset.sort === state.sortMode ? 'true' : 'false');
     });
 }

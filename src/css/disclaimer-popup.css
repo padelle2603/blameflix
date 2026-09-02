@@ -25,7 +25,7 @@
 
 .disclaimer-status {
     font-family: var(--font-mono);
-    font-size: 0.72rem;
+    font-size: var(--fs-sm);
     font-weight: 600;
     letter-spacing: 0.08em;
     color: var(--meta);

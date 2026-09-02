@@ -93,4 +93,4 @@ function syncResolverOverrideBtn() {
     btn.classList.toggle('btn--saved', has);
 }
 
-export { resolveTemplate, sourceTemplateError, effectiveResolverTemplate, toggleResolverOverride, persistResolverOverrides, saveResolverOverride, clearResolverOverride, getResolverOverride, syncResolverOverrideBtn };
+export { resolveTemplate, effectiveResolverTemplate, toggleResolverOverride, persistResolverOverrides, saveResolverOverride, clearResolverOverride, getResolverOverride, syncResolverOverrideBtn };

@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="BlameFlix — la tua sala personale: cerca film e serie TV, tienili nei salvati e guardali quando vuoi.">
     <meta name="theme-color" content="#0A0C0E">
+    <meta name="color-scheme" content="dark">
+    <meta property="og:title" content="BlameFlix">
+    <meta property="og:description" content="La tua sala personale: cerca film e serie TV, tienili nei salvati e guardali quando vuoi.">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="it_IT">
     <link rel="preconnect" href="https://image.tmdb.org" crossorigin>
     <title>BlameFlix</title>
     <link rel="icon" type="image/png" href="favicon.png">
@@ -27,7 +32,7 @@
     <!-- Right-hand action cluster: library options, sync, settings -->
     <div class="topbar__actions">
         <div class="catalog-menu">
-            <button type="button" class="btn-settings" id="btn-catalog-menu" data-action="toggle-catalog-menu" aria-expanded="false" aria-controls="catalog-menu-panel" data-i18n-aria="tools.menu" data-i18n-title="tools.menu">⋮</button>
+            <button type="button" class="btn-settings" id="btn-catalog-menu" data-action="toggle-catalog-menu" aria-label="Menu catalogo" aria-expanded="false" aria-controls="catalog-menu-panel" data-i18n-aria="tools.menu" data-i18n-title="tools.menu">⋮</button>
             <div class="catalog-menu__panel" id="catalog-menu-panel" hidden>
                 <p class="catalog-menu__label" data-i18n="tools.filterBy">Filtra per tipo</p>
                 <div class="catalog-menu__section" role="group" aria-label="Filtra per tipo" data-i18n-aria="tools.filterBy">
@@ -53,8 +58,8 @@
                 </div>
             </div>
         </div>
-        <button type="button" class="btn-settings btn-sync" id="btn-sync" data-action="sync-releases" title="Verifica nuove uscite" data-i18n-title="tools.sync" data-i18n-aria="common.sync">⟳</button>
-        <button type="button" class="btn-settings" data-action="open-settings" data-i18n-aria="nav.settings" data-i18n-title="nav.settings">⚙</button>
+        <button type="button" class="btn-settings btn-sync" id="btn-sync" data-action="sync-releases" aria-label="Verifica nuove uscite" title="Verifica nuove uscite" data-i18n-title="tools.sync" data-i18n-aria="common.sync">⟳</button>
+        <button type="button" class="btn-settings" data-action="open-settings" aria-label="Impostazioni" data-i18n-aria="nav.settings" data-i18n-title="nav.settings">⚙</button>
     </div>
 </header>
 
@@ -114,6 +119,7 @@
     </div>
 
     <!-- HOMEPAGE / SEARCH -->
+    <div class="view-stack">
     <main id="home-view">
         <div class="section-head" id="home-head">
             <span class="section-unwatched" id="home-unwatched" hidden></span>
@@ -130,11 +136,12 @@
             <ul class="news-list" id="news-list"></ul>
         </section>
 
-        <div id="results-grid"></div>
+        <div id="results-grid" aria-live="polite"></div>
 
         <div id="empty-state" class="empty-state" hidden>
             <p class="empty-kicker" data-i18n="home.noTitles">Nessun titolo in sala</p>
             <p data-i18n="home.emptyRoom">La tua sala è vuota. Cerca il primo film o la prima serie qui sopra per iniziare.</p>
+            <button type="button" class="btn" id="empty-search-btn" data-action="focus-search" data-i18n="home.startSearch">Cerca un titolo</button>
         </div>
     </main>
 
@@ -167,10 +174,8 @@
                     <p id="detail-overview" class="detail-overview"></p>
 
                     <dl class="detail-facts">
-                        <div>
-                            <dt data-i18n="detail.year">Anno</dt>
-                            <dd id="detail-date"></dd>
-                        </div>
+                        <dt data-i18n="detail.year">Anno</dt>
+                        <dd id="detail-date"></dd>
                     </dl>
                     <span class="detail-meta__icon" aria-hidden="true"></span>
                 </div>
@@ -228,6 +233,7 @@
             <div id="episode-list" class="episode-list"></div>
         </section>
     </div>
+    </div>
 </div>
 
 <div id="settings-overlay" class="overlay" hidden>
@@ -253,8 +259,11 @@
         <section class="settings-tabpage" id="settings-tab-api" role="tabpanel" aria-labelledby="settings-tab-api">
             <div class="settings-field">
                 <label for="settings-api-key" data-i18n="settings.apiKey">Chiave API TMDB</label>
-                <input type="password" id="settings-api-key" inputmode="text" autocomplete="off"
-                       placeholder="Inserisci la tua chiave personale" data-i18n-placeholder="settings.apiKeyPlaceholder">
+                <div class="input-with-toggle">
+                    <input type="password" id="settings-api-key" inputmode="text" autocomplete="off"
+                           placeholder="Inserisci la tua chiave personale" data-i18n-placeholder="settings.apiKeyPlaceholder">
+                    <button type="button" class="input-toggle-btn" id="toggle-api-key-vis" aria-label="Mostra nascondi chiave" data-i18n-aria="settings.toggleKeyVis">👁</button>
+                </div>
                 <p class="settings-hint" data-i18n="settings.apiKeyHint">La chiave personale si ottiene gratuitamente su themoviedb.org → Impostazioni → API. Senza chiave non puoi cercare titoli.</p>
             </div>
 
@@ -373,6 +382,10 @@
                 <span class="settings-status" id="update-status" hidden></span>
                 <p class="settings-hint" id="update-last-check" hidden></p>
             </div>
+            <div class="settings-field" id="changelog-section" hidden>
+                <label data-i18n="settings.changelog">Novità della versione</label>
+                <div class="changelog-body" id="changelog-body"></div>
+            </div>
         </section>
 
         <section class="settings-tabpage" id="settings-tab-help" role="tabpanel" aria-labelledby="settings-tab-help" hidden>
@@ -457,8 +470,8 @@
 </div>
 
 <div id="cloud-quickbar" class="cloud-quickbar" hidden>
-    <button type="button" class="btn-settings" id="btn-cloud-push" data-action="cloud-push" title="Carica sul cloud" data-i18n-title="cloud.push" data-i18n-aria="cloud.push">⬆</button>
-    <button type="button" class="btn-settings" id="btn-cloud-pull" data-action="cloud-pull" title="Scarica dal cloud" data-i18n-title="cloud.pull" data-i18n-aria="cloud.pull">⬇</button>
+    <button type="button" class="btn-settings" id="btn-cloud-push" data-action="cloud-push" aria-label="Carica sul cloud" title="Carica sul cloud" data-i18n-title="cloud.push" data-i18n-aria="cloud.push">⬆</button>
+    <button type="button" class="btn-settings" id="btn-cloud-pull" data-action="cloud-pull" aria-label="Scarica dal cloud" title="Scarica dal cloud" data-i18n-title="cloud.pull" data-i18n-aria="cloud.pull">⬇</button>
 </div>
 
 <footer class="colophon">
@@ -470,6 +483,21 @@
         Questo prodotto usa l'API TMDB ma non è approvato né certificato da TMDB. The Movie Database (TMDB) non è affiliato a questa applicazione.
     </p>
 </footer>
+
+<div id="confirm-overlay" class="overlay" hidden role="alertdialog" aria-modal="true" aria-labelledby="confirm-title">
+    <div class="settings-panel" style="max-width:400px;">
+        <div class="settings-head">
+            <div>
+                <h2 id="confirm-title"></h2>
+            </div>
+        </div>
+        <p id="confirm-body" style="margin:0 0 1.5rem;color:var(--ink);line-height:1.5;"></p>
+        <div class="settings-actions">
+            <button type="button" class="btn btn--danger" id="confirm-ok">OK</button>
+            <button type="button" class="btn" id="confirm-cancel">Annulla</button>
+        </div>
+    </div>
+</div>
 
 <div id="disclaimer-overlay" class="overlay disclaimer-overlay" hidden role="alertdialog" aria-modal="true" aria-labelledby="disclaimer-title">
     <div class="settings-panel disclaimer-panel">
@@ -491,7 +519,7 @@
 
 <div id="tutorial-overlay" class="tutorial-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="tutorial-title">
     <div class="tutorial-shades" id="tutorial-shades" aria-hidden="true"></div>
-    <div class="tutorial-tooltip" id="tutorial-tooltip" role="document">
+    <div class="tutorial-tooltip" id="tutorial-tooltip">
         <span class="eyebrow" data-i18n="tutorial.kicker">Quick tour</span>
         <h2 class="tutorial-title" id="tutorial-title"></h2>
         <p class="tutorial-body" id="tutorial-body"></p>

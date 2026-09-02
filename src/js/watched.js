@@ -90,12 +90,38 @@ function compressWatched(w) {
 
 function persistWatchedEpisodes() {
     localStorage.setItem('myWatchedEpisodes', JSON.stringify(compressWatched(state.watchedEpisodes)));
+    _invalidateWatchedCache();
     invalidateUnwatchedSnapshot(); // watched state changed: cached home counts are stale
+    state._watchedDirty = true;
+}
+
+// Set-based cache for O(1) episode lookups. Rebuilt lazily after mutations.
+let _watchedSetsCache = null;
+
+function _rebuildWatchedCache() {
+    const cache = {};
+    for (const showId of Object.keys(state.watchedEpisodes)) {
+        const seasons = state.watchedEpisodes[showId];
+        if (!seasons || typeof seasons !== 'object') continue;
+        const showCache = {};
+        for (const season of Object.keys(seasons)) {
+            const list = seasons[season];
+            if (Array.isArray(list)) showCache[season] = new Set(list);
+        }
+        if (Object.keys(showCache).length) cache[showId] = showCache;
+    }
+    return cache;
+}
+
+function _invalidateWatchedCache() {
+    _watchedSetsCache = null;
 }
 
 function isEpisodeWatched(showId, season, episode) {
-    const list = state.watchedEpisodes[showId] && state.watchedEpisodes[showId][season];
-    return !!list && list.includes(episode);
+    if (!_watchedSetsCache) _watchedSetsCache = _rebuildWatchedCache();
+    const showCache = _watchedSetsCache[showId];
+    const seasonSet = showCache && showCache[season];
+    return seasonSet instanceof Set ? seasonSet.has(episode) : false;
 }
 
 // Marks (true) or removes (false) an episode from the watched ones; without
@@ -117,4 +143,4 @@ function toggleEpisodeWatched(showId, season, episode, force) {
     return next;
 }
 
-export { normalizeWatched, compressWatched, persistWatchedEpisodes, isEpisodeWatched, toggleEpisodeWatched };
+export { normalizeWatched, compressWatched, persistWatchedEpisodes, isEpisodeWatched, toggleEpisodeWatched, _invalidateWatchedCache };

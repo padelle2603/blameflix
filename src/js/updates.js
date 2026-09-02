@@ -146,7 +146,7 @@ async function checkForUpdates(manual = false) {
             // Set only when an update is really available: applyLanguage()
             // re-shows the banner from this variable on language change, so
             // an up-to-date install must leave it null.
-            state.latestRelease = updateDismissed ? null : { tag, html_url: data.html_url || '', assets: Array.isArray(data.assets) ? data.assets : [] };
+            state.latestRelease = updateDismissed ? null : { tag, html_url: data.html_url || '', body: data.body || '', assets: Array.isArray(data.assets) ? data.assets : [] };
             if (updateDismissed) {
                 hideUpdateNotice();
                 if (updatePopup) dismissUpdatePopup();
@@ -154,6 +154,7 @@ async function checkForUpdates(manual = false) {
                 if (settingsOpenDismissed) settingsOpenDismissed.hidden = true;
             } else {
                 showUpdateNotice(state.latestRelease);
+                syncChangelog();
                 if (!manual) showUpdatePopup();
                 const settingsOpen = document.getElementById('settings-update-open');
                 if (settingsOpen) settingsOpen.hidden = false;
@@ -200,6 +201,7 @@ function useReleaseFromState(stored) {
     state.latestRelease = {
         tag: stored.lastTag,
         html_url: `https://github.com/${GITHUB_REPO}/releases/tag/${encodeURIComponent(stored.lastTag)}`,
+        body: '',
         assets: []
     };
     showUpdateNotice(state.latestRelease);
@@ -235,6 +237,43 @@ function dismissUpdate() {
     state.latestRelease = null;
     hideUpdateNotice();
     if (updatePopup) dismissUpdatePopup();
+}
+
+// Simple Markdown-to-HTML converter for changelog (bold, lists, links, code).
+const MD_ESC_RE = /[&<>]/g;
+const MD_ESC_MAP = new Map([['&', '&amp;'], ['<', '&lt;'], ['>', '&gt;']]);
+const MD_RULES = [
+    [/\*\*(.+?)\*\*/g, '<strong>$1</strong>'],
+    [/`(.+?)`/g, '<code>$1</code>'],
+    [/\[(.+?)\]\((.+?)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>'],
+    [/^### (.+)$/gm, '<h4>$1</h4>'],
+    [/^## (.+)$/gm, '<h3>$1</h3>'],
+    [/^# (.+)$/gm, '<h2>$1</h2>'],
+    [/^- (.+)$/gm, '<li>$1</li>'],
+];
+const MD_LIST_RE = /(<li>.*<\/li>\n?)+/gs;
+const MD_NL2_RE = /\n{2,}/g;
+const MD_NL_RE = /\n/g;
+
+function mdToHtml(md) {
+    if (!md) return '';
+    let s = String(md).replace(MD_ESC_RE, c => MD_ESC_MAP.get(c));
+    for (const [re, replacement] of MD_RULES) s = s.replace(re, replacement);
+    s = s.replace(MD_LIST_RE, m => `<ul>${m}</ul>`);
+    s = s.replace(MD_NL2_RE, '<br><br>').replace(MD_NL_RE, '<br>');
+    return s;
+}
+
+function syncChangelog() {
+    const section = document.getElementById('changelog-section');
+    const body = document.getElementById('changelog-body');
+    if (!section || !body) return;
+    if (state.latestRelease && state.latestRelease.body) {
+        body.innerHTML = mdToHtml(state.latestRelease.body);
+        section.hidden = false;
+    } else {
+        section.hidden = true;
+    }
 }
 
 // Shows the startup popup that warns about a newer version. It keeps the
@@ -295,4 +334,4 @@ function openExternalUrl(url) {
     }
 }
 
-export { checkForUpdates, dismissUpdate, dismissUpdatePopup, updatePopupDownload, showUpdateNotice, syncUpdatePopup, syncLastUpdateCheck, openLatestRelease, downloadLatestApk };
+export { checkForUpdates, dismissUpdate, dismissUpdatePopup, updatePopupDownload, showUpdateNotice, syncUpdatePopup, syncLastUpdateCheck, syncChangelog, openLatestRelease, downloadLatestApk };

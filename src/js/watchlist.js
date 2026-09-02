@@ -1,8 +1,8 @@
-import { state, persistWatchlist } from './state.js';
+import { state, persistWatchlist, addToWatchlistIndex, removeFromWatchlistIndex } from './state.js';
 import { t } from './i18n.js';
 
 function isSaved(id, media_type) {
-    return state.watchlist.some(w => w.id === id && w.media_type === media_type);
+    return state._watchlistIndex.has(`${media_type}:${id}`);
 }
 
 function watchlistKey(id, media_type) {
@@ -22,9 +22,13 @@ function toggleWatchlist() {
     if (index === -1) {
         // Only the identifiers are saved; the details live in memory
         state.watchlist.push({ id: state.currentMedia.id, media_type: state.currentMedia.media_type });
+        addToWatchlistIndex(state.currentMedia.id, state.currentMedia.media_type);
+        state._watchlistDirty = true;
         state.watchlistDetails.set(watchlistKey(state.currentMedia.id, state.currentMedia.media_type), state.currentMedia);
     } else {
         state.watchlist.splice(index, 1);
+        removeFromWatchlistIndex(state.currentMedia.id, state.currentMedia.media_type);
+        state._watchlistDirty = true;
         state.watchlistDetails.delete(watchlistKey(state.currentMedia.id, state.currentMedia.media_type));
     }
 
@@ -42,4 +46,4 @@ function updateWatchlistBtn() {
     btn.classList.toggle('btn--saved', saved);
 }
 
-export { isSaved, watchlistKey, detailFor, toggleWatchlist, updateWatchlistBtn };
+export { watchlistKey, detailFor, toggleWatchlist, updateWatchlistBtn };

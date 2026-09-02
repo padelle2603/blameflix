@@ -1,4 +1,4 @@
-import { state } from './state.js';
+import { state, setLastPlayedEntry } from './state.js';
 import { inputSeasonCustom, inputEpisodeCustom } from './dom.js';
 import { findNextUnwatched, syncResumeSelection, refreshUnwatchedCount } from './details.js';
 import { effectiveResolverTemplate, resolveTemplate } from './resolver.js';
@@ -32,18 +32,21 @@ async function openBrowser(url) {
 function saveLastPlayed(media, season, episode) {
     // Keyed by (id, media_type): movie and tv ids live in separate TMDB
     // namespaces and the same numeric id can exist in both.
-    const index = state.lastPlayed.findIndex(l => l.id === media.id && l.media_type === media.media_type);
+    const key = `${media.id}:${media.media_type}`;
     const entry = { id: media.id, media_type: media.media_type, title: media.name || media.title, season: Number(season), episode: Number(episode), timestamp: Date.now() };
-    if (index === -1) {
-        state.lastPlayed.push(entry);
+    const existing = state._lastPlayedMap.get(key);
+    if (existing) {
+        const index = state.lastPlayed.indexOf(existing);
+        if (index !== -1) state.lastPlayed[index] = entry;
     } else {
-        state.lastPlayed[index] = entry;
+        state.lastPlayed.push(entry);
     }
+    setLastPlayedEntry(entry);
     localStorage.setItem('myLastPlayed', JSON.stringify(state.lastPlayed));
 }
 
 function getLastPlayed(id, mediaType) {
-    return state.lastPlayed.find(l => l.id === id && l.media_type === (mediaType || 'tv'));
+    return state._lastPlayedMap.get(`${id}:${mediaType || 'tv'}`) || null;
 }
 
 // resume=true (the "Watch now" button) starts from the first aired

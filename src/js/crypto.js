@@ -114,7 +114,11 @@ export async function decryptWithToken(encryptedStr, token) {
 
 function arrayBufferToBase64(buffer) {
     const bytes = new Uint8Array(buffer);
-    return btoa(String.fromCharCode(...bytes));
+    let binary = '';
+    for (let i = 0; i < bytes.length; i += 8192) {
+        binary += String.fromCharCode(...bytes.subarray(i, i + 8192));
+    }
+    return btoa(binary);
 }
 
 function base64ToArrayBuffer(base64) {

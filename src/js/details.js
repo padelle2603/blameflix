@@ -1,5 +1,5 @@
 import { state } from './state.js';
-import { homeView, detailView, episodeSection, episodeList, customControls, inputSeason, inputSeasonCustom, inputEpisodeCustom, unwatchedEl } from './dom.js';
+import { detailView, episodeSection, episodeList, customControls, inputSeason, inputSeasonCustom, inputEpisodeCustom, unwatchedEl, detailTitle, detailOverview, detailDate, detailKind, detailPoster, detailBackdrop, tvControls, btnMarkAllAired } from './dom.js';
 import { getDetails, getSeasonEpisodes, seasonEpisodesCache, fetchSeasons } from './tmdb.js';
 import { toggleEpisodeWatched, isEpisodeWatched, persistWatchedEpisodes } from './watched.js';
 import { escapeHtml, tmdbImagePath, isAired, mapPool } from './utils.js';
@@ -13,6 +13,7 @@ import { syncResolverOverrideBtn, getResolverOverride } from './resolver.js';
 import { syncNetworkSourceBtn } from './networkSchedule.js';
 import { showHome } from './catalog.js';
 import { countUnwatchedEps, refreshHomeUnwatchedCount } from './counter.js';
+import { slideHomeToDetail, syncStackToView } from './viewTransition.js';
 
 // Request token: only the latest showDetails() call is allowed to touch
 // the DOM, so two quick taps on different cards never mix their data.
@@ -20,11 +21,8 @@ let detailsRequestSeq = 0;
 
 async function showDetails(id, type, opts) {
     const requestSeq = ++detailsRequestSeq;
-    window.scrollTo(0, 0);
-    homeView.hidden = true;
-    detailView.hidden = false;
-    document.body.classList.add('is-detail');
     resetDetailView();
+    await slideHomeToDetail();
 
     try {
         const data = await getDetails(type, id);
@@ -33,34 +31,33 @@ async function showDetails(id, type, opts) {
         state.currentMedia = { ...data, media_type: type }; // Keep the full data in memory
 
         // Populate the UI
-        document.getElementById('detail-title').innerText = data.title || data.name || t('common.noTitle');
-        document.getElementById('detail-overview').innerText = data.overview || t('detail.noOverview');
-        document.getElementById('detail-date').innerText = data.release_date || data.first_air_date || '—';
+        detailTitle.innerText = data.title || data.name || t('common.noTitle');
+        detailOverview.innerText = data.overview || t('detail.noOverview');
+        detailDate.innerText = data.release_date || data.first_air_date || '—';
         resetDetailSpoilers();
-        document.getElementById('detail-poster').src = tmdbImagePath(data.poster_path) ? `${IMG_BASE}${data.poster_path}` : PLACEHOLDER;
-        document.getElementById('detail-kind').innerText = type === 'tv' ? t('common.tvKindLong') : t('common.movieKindLong');
+        detailPoster.src = tmdbImagePath(data.poster_path) ? `${IMG_BASE}${data.poster_path}` : PLACEHOLDER;
+        detailPoster.sizes = '(max-width: 600px) 180px, 300px';
+        detailKind.innerText = type === 'tv' ? t('common.tvKindLong') : t('common.movieKindLong');
 
         // Hero backdrop
-        const backdrop = document.getElementById('detail-backdrop');
         if (tmdbImagePath(data.backdrop_path)) {
-            backdrop.style.backgroundImage = `url(${IMG_BACKDROP}${data.backdrop_path})`;
-            backdrop.hidden = false;
+            detailBackdrop.style.backgroundImage = `url(${IMG_BACKDROP}${data.backdrop_path})`;
+            detailBackdrop.hidden = false;
         } else {
-            backdrop.hidden = true;
+            detailBackdrop.hidden = true;
         }
 
         // Manage TV vs movie controls
-        const tvControls = document.getElementById('tv-controls');
         if (type === 'tv') {
             tvControls.hidden = false;
             episodeSection.hidden = false;
-            document.getElementById('btn-mark-all-aired').hidden = false;
+            btnMarkAllAired.hidden = false;
             setupSeasonControls(data, opts);
             refreshUnwatchedCount();
         } else {
             tvControls.hidden = true;
             episodeSection.hidden = true;
-            document.getElementById('btn-mark-all-aired').hidden = true;
+            btnMarkAllAired.hidden = true;
             refreshUnwatchedCount();
         }
 
@@ -79,6 +76,9 @@ async function showDetails(id, type, opts) {
             overridePanel.hidden = true;
             document.getElementById('resolver-override-input').value = getResolverOverride();
         }
+        // Detail height may have grown from skeleton to full content (and episodes)
+        // Sync stack height smoothly to avoid vertical twitch
+        requestAnimationFrame(() => syncStackToView(detailView));
 
     } catch (err) {
         if (requestSeq !== detailsRequestSeq) return; // stale failure: a newer view took over
@@ -89,18 +89,19 @@ async function showDetails(id, type, opts) {
 
 // Blanks the hero before a new title loads so the previous title's content
 // never flashes on screen for the duration of the (possibly network) fetch.
+// Shows skeleton placeholders while data is loading.
 function resetDetailView() {
-    document.getElementById('detail-title').innerText = '';
-    document.getElementById('detail-overview').innerText = '';
-    document.getElementById('detail-date').innerText = '';
-    document.getElementById('detail-kind').innerText = '';
-    document.getElementById('detail-poster').src = PLACEHOLDER;
-    document.getElementById('detail-backdrop').hidden = true;
+    detailTitle.innerHTML = '<span class="skeleton-block" style="display:inline-block;width:60%;height:1.4rem;"></span>';
+    detailOverview.innerHTML = '<span class="skeleton-block" style="display:block;width:100%;height:0.8rem;margin-bottom:0.4rem;"></span><span class="skeleton-block" style="display:block;width:90%;height:0.8rem;margin-bottom:0.4rem;"></span><span class="skeleton-block" style="display:block;width:75%;height:0.8rem;"></span>';
+    detailDate.innerHTML = '<span class="skeleton-block" style="display:inline-block;width:80px;height:0.8rem;"></span>';
+    detailKind.innerText = '';
+    detailPoster.src = PLACEHOLDER;
+    detailBackdrop.hidden = true;
     if (unwatchedEl) unwatchedEl.hidden = true;
     episodeList.innerHTML = '';
     episodeSection.hidden = true;
-    document.getElementById('tv-controls').hidden = true;
-    document.getElementById('btn-mark-all-aired').hidden = true;
+    tvControls.hidden = true;
+    btnMarkAllAired.hidden = true;
     resetDetailSpoilers();
 }
 
@@ -122,6 +123,7 @@ function toggleSpoiler(el) {
     el.setAttribute('aria-expanded', String(!collapsed));
     if (collapsed) el.setAttribute('title', t('detail.revealHint'));
     else el.removeAttribute('title');
+    requestAnimationFrame(() => syncStackToView(detailView));
 }
 
 // Fills the network <select> with the TMDB networks of the series and
@@ -167,10 +169,21 @@ episodeList.addEventListener('click', e => {
     if (!row || row.classList.contains('episode-row--skeleton')) return;
     const season = Number(row.dataset.season);
     const episode = Number(row.dataset.episode);
-    if (e.target.closest('.episode-row__toggle')) {
+    if (e.target.closest('.episode-row__toggle') || e.target.closest('.episode-row__badge')) {
         toggleWatchedFromList(season, episode);
     } else if (e.target.closest('.episode-row__play')) {
         playEpisode(season, episode);
+    }
+});
+
+episodeList.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') {
+        const badge = e.target.closest('.episode-row__badge');
+        if (badge) {
+            e.preventDefault();
+            const row = badge.closest('.episode-row[data-season]');
+            if (row) toggleWatchedFromList(Number(row.dataset.season), Number(row.dataset.episode));
+        }
     }
 });
 
@@ -283,11 +296,19 @@ function formatAirDateTime(dateStr) {
 // title, meta, synopsis and a play button. Watched = greyed out with a
 // "✓ Watched" badge; not yet aired = disabled with the air date.
 function renderEpisodeList(eps, highlightEpisode) {
-    episodeList.innerHTML = '';
-    if (!eps.length) {
-        episodeList.innerHTML = '<p class="episode-list__empty">' + t('msg.noEpisodes') + '</p>';
-        return;
-    }
+    episodeList.classList.add('is-transitioning');
+    setTimeout(() => {
+        episodeList.innerHTML = '';
+        if (!eps.length) {
+            episodeList.innerHTML = '<p class="episode-list__empty">' + t('msg.noEpisodes') + '</p>';
+            episodeList.classList.remove('is-transitioning');
+            return;
+        }
+
+    // Pre-compute per-episode labels used multiple times in the template.
+    const seasonLabel = state.currentSeason === 0 ? t('common.special') : state.currentSeason;
+    const removeFromWatchedLabel = t('episode.removeFromWatched');
+    const markWatchedLabel = t('episode.markWatched');
 
     const frag = document.createDocumentFragment();
     eps.forEach(ep => {
@@ -306,30 +327,38 @@ function renderEpisodeList(eps, highlightEpisode) {
 
         const still = tmdbImagePath(ep.still_path) ? `${IMG_STILL}${ep.still_path}` : EPISODE_PLACEHOLDER;
         const title = ep.name || t('episode.label', { n: epNum });
+        const safeTitle = escapeHtml(title);
         const meta = [];
         if (ep.runtime) meta.push(`${ep.runtime} min`);
-        if (ep.air_date) meta.push(formatAirDateTime(ep.air_date));
+        const airDateFormatted = ep.air_date ? formatAirDateTime(ep.air_date) : '';
+        if (airDateFormatted) meta.push(airDateFormatted);
+
+        const epLabel = `${seasonLabel}-${epNum}`;
+        const playLabel = future
+            ? t('episode.airingOn', { date: escapeHtml(airDateFormatted) })
+            : (watched ? t('episode.watchAgain') : t('episode.watch'));
 
         row.innerHTML = `
             <div class="episode-row__thumb">
-                <img src="${still}" alt="${escapeHtml(title)}" loading="lazy" decoding="async">
-                <span class="episode-row__num">${state.currentSeason === 0 ? t('common.special') : state.currentSeason}-${epNum}</span>
+                <img src="${still}" alt="${safeTitle}" loading="lazy" decoding="async">
+                <span class="episode-row__num">${epLabel}</span>
             </div>
             <div class="episode-row__body">
                 <div class="episode-row__head">
-                    <h4 class="episode-row__title">${escapeHtml(title)}</h4>
-                    ${watched ? `<span class="episode-row__badge" title="${t('episode.removeFromWatched')}">${t('episode.watched')}</span>` : ''}
+                    <h4 class="episode-row__title">${safeTitle}</h4>
+                    ${watched ? `<span class="episode-row__badge" role="button" tabindex="0" aria-label="${removeFromWatchedLabel}" title="${removeFromWatchedLabel}">${t('episode.watched')}</span>` : ''}
                 </div>
                 <p class="episode-row__meta">${escapeHtml(meta.join(' · '))}</p>
                 <p class="episode-row__overview">${escapeHtml(ep.overview || t('detail.noOverview'))}</p>
             </div>
             <div class="episode-row__actions">
                 <button type="button" class="btn episode-row__play" ${future ? 'disabled' : ''}
-                    ${future ? `title="${escapeHtml(formatAirDateTime(ep.air_date))}"` : ''}>
-                    ${future ? t('episode.airingOn', { date: escapeHtml(formatAirDateTime(ep.air_date)) }) : (watched ? t('episode.watchAgain') : t('episode.watch'))}
+                    ${future ? `title="${escapeHtml(airDateFormatted)}"` : ''}
+                    aria-label="${playLabel} ${epLabel}">
+                    ${playLabel}
                 </button>
                 <button type="button" class="episode-row__toggle" ${future ? 'disabled' : ''}
-                    title="${watched ? t('episode.removeFromWatched') : t('episode.markWatched')}">
+                    title="${watched ? removeFromWatchedLabel : markWatchedLabel}">
                     ✓
                 </button>
             </div>
@@ -339,6 +368,10 @@ function renderEpisodeList(eps, highlightEpisode) {
     episodeList.appendChild(frag);
 
     syncSeasonMarkButton(eps);
+    episodeList.classList.remove('is-transitioning');
+    // Sync stack height after episode list renders (detail height changed)
+    requestAnimationFrame(() => syncStackToView(detailView));
+    }, 150);
 }
 
 // Syncs the "mark the whole season" button from the episodes list.
@@ -354,12 +387,11 @@ function syncSeasonMarkButton(eps) {
 // Syncs the "mark/unmark every season as watched" button from the current
 // watched state of the whole series.
 function syncAllAiredMarkButton(allWatched) {
-    const btn = document.getElementById('btn-mark-all-aired');
-    if (!btn || !state.currentMedia) return;
+    if (!btnMarkAllAired || !state.currentMedia) return;
     const label = allWatched ? t('detail.markAllAiredUnwatched') : t('detail.markAllAired');
-    btn.setAttribute('aria-label', label);
-    btn.setAttribute('title', label);
-    btn.classList.toggle('is-all-clear', allWatched);
+    btnMarkAllAired.setAttribute('aria-label', label);
+    btnMarkAllAired.setAttribute('title', label);
+    btnMarkAllAired.classList.toggle('is-all-clear', allWatched);
 }
 
 // Play from a list row: marks as watched and opens the player.
@@ -387,9 +419,12 @@ function syncEpisodeRow(season, episode) {
             if (!badge) {
                 badge = document.createElement('span');
                 badge.className = 'episode-row__badge';
+                badge.setAttribute('role', 'button');
+                badge.setAttribute('tabindex', '0');
                 row.querySelector('.episode-row__head').appendChild(badge);
             }
             badge.title = t('episode.removeFromWatched');
+            badge.setAttribute('aria-label', t('episode.removeFromWatched'));
             badge.textContent = t('episode.watched');
         } else if (badge) {
             badge.remove();
@@ -451,8 +486,12 @@ function markSeasonWatched() {
 // today). Future episodes stay locked.
 async function markAllAiredWatched() {
     if (!state.currentMedia || state.currentMedia.media_type !== 'tv') return;
-    const btn = document.getElementById('btn-mark-all-aired');
-    if (btn) btn.disabled = true;
+    if (btnMarkAllAired) {
+        btnMarkAllAired.disabled = true;
+        btnMarkAllAired.dataset.originalText = btnMarkAllAired.textContent;
+        btnMarkAllAired.textContent = '⟳';
+        btnMarkAllAired.setAttribute('aria-busy', 'true');
+    }
 
     const seasons = (state.currentMedia.seasons || []).filter(s => s.season_number >= 1);
     const results = await mapPool(seasons, 5, async s => {
@@ -515,7 +554,12 @@ async function markAllAiredWatched() {
     if (cached) renderEpisodeList(cached, null);
     refreshUnwatchedCount();
     refreshHomeUnwatchedCount();
-    if (btn) btn.disabled = false;
+    if (btnMarkAllAired) {
+        btnMarkAllAired.disabled = false;
+        btnMarkAllAired.textContent = btnMarkAllAired.dataset.originalText || '✓';
+        btnMarkAllAired.removeAttribute('aria-busy');
+        delete btnMarkAllAired.dataset.originalText;
+    }
 }
 
 // Finds the resume point of a series: the first already-aired episode,
@@ -680,4 +724,4 @@ async function openTmdbPage() {
     if (url) await openLink(url);
 }
 
-export { showDetails, markSeasonWatched, markAllAiredWatched, onSeasonChange, refreshUnwatchedCount, findNextUnwatched, syncResumeSelection, loadEpisodes, shareTitle, openTmdbPage };
+export { showDetails, markSeasonWatched, markAllAiredWatched, onSeasonChange, refreshUnwatchedCount, findNextUnwatched, syncResumeSelection, shareTitle, openTmdbPage };

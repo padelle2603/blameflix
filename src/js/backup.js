@@ -1,8 +1,9 @@
 import {
     state, DEFAULT_NOTIFY_SETTINGS, sanitizeAutoSyncHours, NEWS_HISTORY_MAX,
-    persistWatchlist, persistNotifySettings, persistReleaseState, persistNewsHistory, persistNetworkSources
+    persistWatchlist, persistNotifySettings, persistReleaseState, persistNewsHistory, persistNetworkSources,
+    rebuildWatchlistIndex, rebuildLastPlayedMap
 } from './state.js';
-import { compressWatched, normalizeWatched, persistWatchedEpisodes } from './watched.js';
+import { compressWatched, normalizeWatched, persistWatchedEpisodes, _invalidateWatchedCache } from './watched.js';
 import { getDetails } from './tmdb.js';
 import { sanitizeMediaType, toIntOr } from './utils.js';
 import { setLanguage, t } from './i18n.js';
@@ -472,7 +473,9 @@ async function applyBackupData(data, statusFn = (msg, isError) => showBackupStat
         state.watchlist.push({ id: h.id, media_type: h.media_type });
         state.watchlistDetails.set(watchlistKey(h.id, h.media_type), h);
     });
+    rebuildWatchlistIndex();
     state.lastPlayed = lp;
+    rebuildLastPlayedMap();
     state.customSelections = cs;
     state.watchedEpisodes = normalizeWatched(we);
     state.newsHistory = nh.slice(0, NEWS_HISTORY_MAX);
@@ -532,11 +535,43 @@ backupFile.addEventListener('change', e => {
 
 // Wipes every user data key from localStorage and resets the in-memory state.
 // Language, accepted disclaimer and update-check dismissal are kept so the
+// Shows a styled confirmation dialog (replaces window.confirm).
+function showConfirmDialog(title, message) {
+    return new Promise(resolve => {
+        const overlay = document.getElementById('confirm-overlay');
+        const titleEl = document.getElementById('confirm-title');
+        const bodyEl = document.getElementById('confirm-body');
+        const okBtn = document.getElementById('confirm-ok');
+        const cancelBtn = document.getElementById('confirm-cancel');
+        titleEl.textContent = title;
+        bodyEl.textContent = message;
+        overlay.hidden = false;
+        okBtn.focus();
+        function onKey(e) { if (e.key === 'Escape') close(false); }
+        function close(result) {
+            overlay.hidden = true;
+            okBtn.removeEventListener('click', onOk);
+            cancelBtn.removeEventListener('click', onCancel);
+            overlay.removeEventListener('click', onBg);
+            document.removeEventListener('keydown', onKey);
+            resolve(result);
+        }
+        function onOk() { close(true); }
+        function onCancel() { close(false); }
+        function onBg(e) { if (e.target === overlay) close(false); }
+        okBtn.addEventListener('click', onOk);
+        cancelBtn.addEventListener('click', onCancel);
+        overlay.addEventListener('click', onBg);
+        document.addEventListener('keydown', onKey);
+    });
+}
+
 // app stays usable and the consent is preserved. The API key is removed
 // along with the data. Asks for confirmation first because the operation
 // is irreversible.
 async function deleteAllData() {
-    if (!window.confirm(t('settings.dataDeleteConfirm'))) return;
+    const confirmed = await showConfirmDialog(t('settings.dataDelete'), t('settings.dataDeleteConfirm'));
+    if (!confirmed) return;
 
     const keepKeys = ['myCryptoKey', 'myLang', 'myDisclaimerAccepted', 'myUpdateCheck'];
     const toRemove = [];
@@ -549,9 +584,12 @@ async function deleteAllData() {
     state.apiKey = '';
     state.watchlist = [];
     state.watchlistDetails.clear();
+    rebuildWatchlistIndex();
     state.lastPlayed = [];
+    rebuildLastPlayedMap();
     state.customSelections = {};
     state.watchedEpisodes = {};
+    _invalidateWatchedCache();
     state.newsHistory = [];
     state.resolver = {};
     state.resolverOverrides = {};

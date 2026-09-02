@@ -23,7 +23,7 @@
 .btn-icon--brand {
     font-family: var(--font-mono);
     font-weight: 700;
-    font-size: 0.72rem;
+    font-size: var(--fs-sm);
     letter-spacing: 0.02em;
 }
 
@@ -94,7 +94,7 @@
 
 .detail-facts dt {
     font-family: var(--font-mono);
-    font-size: 0.66rem;
+    font-size: var(--fs-caption);
     font-weight: 600;
     letter-spacing: 0.14em;
     text-transform: uppercase;
@@ -207,7 +207,7 @@
 /* ===== BUTTONS ===== */
 .btn {
     font-family: var(--font-mono);
-    font-size: 0.78rem;
+    font-size: var(--fs-base);
     font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -258,15 +258,10 @@
 
 .season-controls label {
     font-family: var(--font-mono);
-    font-size: 0.72rem;
+    font-size: var(--fs-sm);
     font-weight: 600;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-}
-
-.season-controls select {
-    min-width: 76px;
-    font-size: 1rem;
 }
 
 .season-controls .season-controls__custom {
@@ -305,7 +300,7 @@
 
 .season-controls .season-controls__custom-hint {
     font-family: var(--font-mono);
-    font-size: 0.68rem;
+    font-size: var(--fs-xs);
     color: var(--meta);
     letter-spacing: 0.06em;
     margin: 0;
@@ -315,6 +310,36 @@
 /* ===== HERO BACKDROP ===== */
 #detail-view { position: relative; }
 #detail-view > .btn--ghost { position: relative; z-index: 1; }
+
+/* ===== VIEW SLIDEX — home ↔ detail (excludes settings) ===== */
+#detail-view {
+    opacity: 0;
+    transform: translateX(32px);
+    transition: transform 260ms cubic-bezier(0.32, 0.72, 0, 1), opacity 200ms ease;
+    will-change: transform, opacity;
+}
+#detail-view.is-visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+#detail-view.is-exiting {
+    opacity: 0;
+    transform: translateX(32px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #home-view,
+    #detail-view {
+        transition: none !important;
+    }
+    #home-view.is-exiting,
+    #home-view.is-entering,
+    #detail-view,
+    #detail-view.is-visible,
+    #detail-view.is-exiting {
+        transform: none !important;
+    }
+}
 
 .detail-backdrop { display: none; }
 

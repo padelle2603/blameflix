@@ -5,7 +5,7 @@ import { LANG_CODES } from './langs.js';
 
 // Version injected at build time from package.json; resolved against the
 // native wrapper at startup (see env.resolveAppVersion).
-export const BUILD_APP_VERSION = __BLAMEFLIX_VERSION__;
+const BUILD_APP_VERSION = __BLAMEFLIX_VERSION__;
 
 export const LANG_STORAGE = 'myLang';
 const storedLangValue = localStorage.getItem(LANG_STORAGE);
@@ -21,7 +21,7 @@ function detectLang() {
 
 // Release notifications
 export const DEFAULT_NOTIFY_SETTINGS = { enabled: true, tv: true, movies: true, autoSyncHours: 24 };
-export const AUTO_SYNC_HOURS = [8, 12, 24, 48];
+const AUTO_SYNC_HOURS = [8, 12, 24, 48];
 
 // Makes the auto-sync interval consistent, accepting only the expected values.
 export function sanitizeAutoSyncHours(hours) {
@@ -62,7 +62,9 @@ export const state = {
     currentMedia: null, // The media currently shown in the details view
     watchlist: readStoredJson('myWatchlist', []),
     watchlistDetails: new Map(), // in-memory cache: key 'media_type:id' -> full object (never persisted)
+    _watchlistIndex: new Set(), // 'media_type:id' strings for O(1) lookup
     lastPlayed: readStoredJson('myLastPlayed', []),
+    _lastPlayedMap: new Map(), // 'id:media_type' -> entry for O(1) lookup
     customSelections: readStoredJson('myCustomSelections', {}), // manual seasons/episodes per title
     customMode: false, // true when the manual inputs are used for a series
     currentSeason: 1, // season selected in the episode list
@@ -82,7 +84,9 @@ export const state = {
     notifySettings: Object.assign({}, DEFAULT_NOTIFY_SETTINGS, readStoredJson('myNotifySettings', {})),
     releaseState: loadReleaseState(),
     cloudSync: loadCloudSync(), // optional personal Supabase cloud sync { enabled, url, anonKey, tokenEnc, partitionHash, lastPush, lastPull }
-    collapsedRows: (() => { try { return JSON.parse(localStorage.getItem('myCollapsedRows')) || {}; } catch { return {}; } })()
+    collapsedRows: (() => { try { return JSON.parse(localStorage.getItem('myCollapsedRows')) || {}; } catch { return {}; } })(),
+    _watchlistDirty: false,
+    _watchedDirty: false
 };
 
 // Only the identifiers are stored in localStorage (compliance with the TMDB
@@ -139,6 +143,37 @@ export function persistCollapsedRows() {
 export function persistSortMode() {
     localStorage.setItem('mySortMode', state.sortMode);
 }
+
+// Rebuilds the O(1) watchlist lookup index from the array.
+export function rebuildWatchlistIndex() {
+    state._watchlistIndex = new Set(
+        state.watchlist.map(w => `${w.media_type}:${w.id}`)
+    );
+}
+
+export function addToWatchlistIndex(id, mediaType) {
+    state._watchlistIndex.add(`${mediaType}:${id}`);
+}
+
+export function removeFromWatchlistIndex(id, mediaType) {
+    state._watchlistIndex.delete(`${mediaType}:${id}`);
+}
+
+// Rebuilds the O(1) lastPlayed lookup map from the array.
+export function rebuildLastPlayedMap() {
+    state._lastPlayedMap = new Map();
+    for (const entry of state.lastPlayed) {
+        state._lastPlayedMap.set(`${entry.id}:${entry.media_type}`, entry);
+    }
+}
+
+export function setLastPlayedEntry(entry) {
+    state._lastPlayedMap.set(`${entry.id}:${entry.media_type}`, entry);
+}
+
+// Initialize indices at startup.
+rebuildWatchlistIndex();
+rebuildLastPlayedMap();
 
 export function persistCloudSync() {
     localStorage.setItem('myCloudSync', JSON.stringify(state.cloudSync));

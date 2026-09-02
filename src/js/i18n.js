@@ -43,6 +43,7 @@ const I18N = {
         'home.searchResults': 'Risultati per «{q}»',
         'home.noTitles': 'Nessun titolo in sala',
         'home.emptyRoom': 'La tua sala è vuota. Cerca il primo film o la prima serie qui sopra per iniziare.',
+        'home.startSearch': 'Cerca un titolo',
         'home.emptyFilter': 'Nessun titolo',
         'home.emptyFilterDesc': '{label} non trovati con questi criteri.',
         'home.noResults': 'Nessun risultato',
@@ -231,8 +232,10 @@ const I18N = {
         'common.movieKindLong': 'FILM',
         'common.saved': 'SALVATO',
         'common.toWatch': 'da vedere',
+        'common.resume': 'Riprendi da',
         'common.sync': 'Sincronizza',
         'common.syncing': '⟳ …',
+        'common.retry': 'Riprova',
         'episode.label': 'Episodio {n}',
         'episode.watched': '✓ Vista',
         'episode.removeFromWatched': 'Togli da viste',
@@ -357,6 +360,7 @@ const I18N = {
         'home.searchResults': 'Results for «{q}»',
         'home.noTitles': 'No titles in your room',
         'home.emptyRoom': 'Your room is empty. Search the first movie or series above to get started.',
+        'home.startSearch': 'Search a title',
         'home.emptyFilter': 'No titles',
         'home.emptyFilterDesc': 'No {label} found with these criteria.',
         'home.noResults': 'No results',
@@ -545,8 +549,10 @@ const I18N = {
         'common.movieKindLong': 'MOVIE',
         'common.saved': 'SAVED',
         'common.toWatch': 'to watch',
+        'common.resume': 'Resume from',
         'common.sync': 'Sync',
         'common.syncing': '⟳ …',
+        'common.retry': 'Retry',
         'episode.label': 'Episode {n}',
         'episode.watched': '✓ Watched',
         'episode.removeFromWatched': 'Remove from watched',
@@ -679,12 +685,16 @@ function locale() {
 // Applies the current language to every static and dynamic element.
 function applyLanguage() {
     document.documentElement.lang = state.lang;
-    document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
-    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => { el.placeholder = t(el.dataset.i18nPlaceholder); });
-    document.querySelectorAll('[data-i18n-aria]').forEach(el => { el.setAttribute('aria-label', t(el.dataset.i18nAria)); });
-    document.querySelectorAll('[data-i18n-title]').forEach(el => { el.setAttribute('title', t(el.dataset.i18nTitle)); });
-    document.querySelectorAll('[data-i18n-alt]').forEach(el => { el.setAttribute('alt', t(el.dataset.i18nAlt)); });
-    document.querySelectorAll('[data-i18n-html]').forEach(el => { el.innerHTML = t(el.dataset.i18nHtml); });
+    // Single DOM walk instead of 6 separate querySelectorAll calls.
+    const selector = '[data-i18n],[data-i18n-placeholder],[data-i18n-aria],[data-i18n-title],[data-i18n-alt],[data-i18n-html]';
+    document.querySelectorAll(selector).forEach(el => {
+        if (el.dataset.i18n) el.textContent = t(el.dataset.i18n);
+        if (el.dataset.i18nPlaceholder) el.placeholder = t(el.dataset.i18nPlaceholder);
+        if (el.dataset.i18nAria) el.setAttribute('aria-label', t(el.dataset.i18nAria));
+        if (el.dataset.i18nTitle) el.setAttribute('title', t(el.dataset.i18nTitle));
+        if (el.dataset.i18nAlt) el.setAttribute('alt', t(el.dataset.i18nAlt));
+        if (el.dataset.i18nHtml) el.innerHTML = t(el.dataset.i18nHtml);
+    });
     syncTools();
     if (typeof syncNotifySettingsInputs === 'function') syncNotifySettingsInputs();
     renderNewsSection();

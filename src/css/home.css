@@ -1,8 +1,91 @@
 /* ===== CONTAINER ===== */
 .container {
-    max-width: 1240px;
+    max-width: var(--max-width);
     margin: 0 auto;
     padding: 0 1.4rem;
+    overflow-x: clip;
+}
+
+/* ===== VIEW STACK — layers home and detail for SlideX ===== */
+.view-stack {
+    position: relative;
+    display: grid;
+    align-items: start;
+    transition: height 260ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.view-stack > #home-view,
+.view-stack > #detail-view {
+    grid-area: 1 / 1;
+    min-width: 0;
+}
+
+.view-stack > #home-view.is-exiting,
+.view-stack > #detail-view.is-exiting {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    pointer-events: none;
+}
+
+/* ===== VIEW SLIDEX — home ↔ detail (excludes settings) ===== */
+#home-view {
+    opacity: 1;
+    transform: translateX(0);
+    transition: transform 260ms cubic-bezier(0.32, 0.72, 0, 1), opacity 200ms ease;
+    will-change: transform, opacity;
+}
+
+#home-view.is-exiting {
+    opacity: 0;
+    transform: translateX(-24px);
+}
+
+#home-view.is-entering {
+    opacity: 0;
+    transform: translateX(-24px);
+}
+
+/* ===== GRID SLIDEX — home ↔ search (inside #home-view) ===== */
+#results-grid {
+    transition: transform 220ms cubic-bezier(0.32, 0.72, 0, 1), opacity 180ms ease;
+    will-change: transform, opacity;
+}
+
+#results-grid.is-slide-out-left {
+    opacity: 0;
+    transform: translateX(-16px);
+}
+
+#results-grid.is-slide-out-right {
+    opacity: 0;
+    transform: translateX(16px);
+}
+
+#results-grid.is-entering-from-right {
+    opacity: 0;
+    transform: translateX(16px);
+}
+
+#results-grid.is-entering-from-left {
+    opacity: 0;
+    transform: translateX(-16px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .view-stack {
+        transition: none !important;
+    }
+    #results-grid {
+        transition: none !important;
+    }
+    #results-grid.is-slide-out-left,
+    #results-grid.is-slide-out-right,
+    #results-grid.is-entering-from-right,
+    #results-grid.is-entering-from-left {
+        transform: none !important;
+    }
 }
 
 /* ===== SEARCH ===== */
@@ -109,7 +192,7 @@
 /* ===== CATALOG CONTROLS (.ctl) ===== */
 .ctl {
     font-family: var(--font-mono);
-    font-size: 0.72rem;
+    font-size: var(--fs-sm);
     font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -174,7 +257,7 @@
     justify-content: center;
     width: 1.4rem;
     height: 1.4rem;
-    font-size: 0.72rem;
+    font-size: var(--fs-sm);
     line-height: 1;
     color: var(--meta);
     margin-right: 0.4rem;
@@ -291,7 +374,13 @@
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease, opacity 0.3s ease;
+    animation: cardFadeIn 0.3s ease both;
+}
+
+@keyframes cardFadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .card-poster {
@@ -348,6 +437,34 @@
     letter-spacing: 0.04em;
 }
 
+/* Quick-add button on search result cards */
+.card-add-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-pill);
+    background: var(--chip-bg);
+    border: 1px solid var(--line-strong);
+    color: var(--ink);
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, color 0.15s, transform 0.1s;
+    z-index: 2;
+}
+.card-add-btn--saved {
+    color: var(--lago);
+    border-color: var(--lago);
+}
+@media (hover: hover) and (pointer: fine) {
+    .card-add-btn:hover { background: var(--lago); color: var(--paper); border-color: var(--lago); }
+    .card-add-btn--saved:hover { background: var(--paper); color: var(--lago); }
+}
+
 .card-skeleton__poster {
     aspect-ratio: 2 / 3;
     width: 100%;
@@ -367,7 +484,7 @@
     position: absolute;
     inset: 0;
     transform: translateX(-100%);
-    background: linear-gradient(90deg, transparent, rgba(230, 234, 238, 0.09), transparent);
+    background: linear-gradient(90deg, transparent, rgba(var(--ink-rgb), 0.09), transparent);
     animation: shimmer 1.4s infinite;
 }
 

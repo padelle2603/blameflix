@@ -22,7 +22,7 @@
     .rail { gap: 12px; }
     .rail > .card { flex-basis: 140px; }
     .card--list .credit-block { padding: 11px 14px; }
-    .detail-poster-wrap { width: 100%; }
+    .detail-poster-wrap { width: 45%; max-width: 180px; }
     .detail-actionbar { margin: 1.2rem 0 1.2rem; }
     .btn-icon { width: 40px; height: 40px; }
     .episode-row { flex-wrap: wrap; }
@@ -71,4 +71,13 @@
     /* chrome.css */
     .catalog-menu__section .ctl:hover { border-color: var(--line-strong); background: var(--paper); }
     .btn-settings:hover { background: var(--ink); color: var(--paper); }
+}
+
+/* ===== TOUCH: active feedback only (no hover flash) ===== */
+@media (hover: none), (pointer: coarse) {
+    .card:active { transform: scale(0.98); }
+    .btn:active { transform: scale(0.97); }
+    .ctl:active { transform: scale(0.97); }
+    .btn-settings:active { transform: scale(0.95); }
+    .episode-row__badge:active { transform: scale(0.95); }
 }

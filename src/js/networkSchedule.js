@@ -3,13 +3,6 @@ import { t } from './i18n.js';
 import { showToast } from './toast.js';
 import { sourceTemplateError } from './sourceUtils.js';
 
-// Validates the schedule template: empty is allowed (means "no network
-// source"), otherwise it must be an http/https URL. Returns an error
-// message or null.
-function templateError(template) {
-    return sourceTemplateError(template);
-}
-
 // Replaces the network-schedule placeholders ({id}, {networkId},
 // {networkName}, {season}) and refuses templates with leftovers or a bad
 // scheme. networkName is URL-encoded so spaces/special chars are safe.
@@ -157,7 +150,7 @@ function saveNetworkSource() {
     const networkName = opt && opt.value ? opt.textContent.trim() : null;
     const input = document.getElementById('network-schedule-input');
     const template = input.value.trim();
-    const err = templateError(template);
+    const err = sourceTemplateError(template);
     if (err) { showToast(t('toast.noSource'), err); return; }
     const existing = state.networkSources[key] || {};
     if (template) {
@@ -192,7 +185,6 @@ function syncNetworkSourceBtn() {
 }
 
 export {
-    resolveTemplate, parseSchedule, getNetworkSource,
     fetchSchedule, judgeNetworkRelease,
     toggleNetworkSource, saveNetworkSource, clearNetworkSource, syncNetworkSourceBtn
 };

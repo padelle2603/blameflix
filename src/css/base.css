@@ -64,6 +64,7 @@
 
     /* Ice-white text scale */
     --ink: #E6EAEE;
+    --ink-rgb: 230, 234, 238;
     --ink-hi: #FFFFFF;
     --meta: #8B96A3;
 
@@ -83,10 +84,19 @@
     --chip-bg: rgba(10, 12, 14, 0.82);
     --overlay-bg: rgba(5, 7, 9, 0.78);
 
+    /* Layout */
+    --max-width: 1240px;
+
     /* Typography */
     --font-main: 'Archivo', Helvetica, Arial, sans-serif;
     --font-display: 'Archivo Black', 'Archivo', sans-serif;
     --font-mono: 'IBM Plex Mono', monospace;
+
+    /* Font sizes — reusable scale */
+    --fs-caption: 0.66rem;
+    --fs-xs: 0.68rem;
+    --fs-sm: 0.72rem;
+    --fs-base: 0.78rem;
 
     /* Radii */
     --radius-sm: 4px;
@@ -95,7 +105,6 @@
     --radius-pill: 999px;
 
     /* Shadows */
-    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.35);
     --shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
 
     /* Shared custom select arrow (SVG data URI, stroke = --ink) */
@@ -120,6 +129,10 @@ body {
 ::selection {
     background: var(--lago);
     color: var(--paper);
+}
+
+@keyframes shimmer {
+    to { transform: translateX(100%); }
 }
 
 :focus-visible {
@@ -151,6 +164,9 @@ body {
 @media (hover: none), (pointer: coarse) {
     a, button, [role="button"], input, select, textarea {
         -webkit-tap-highlight-color: transparent;
+    }
+    :focus-visible {
+        outline: none;
     }
 }
 
