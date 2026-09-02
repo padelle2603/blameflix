@@ -24,7 +24,7 @@ function dismissToast(el) {
     setTimeout(() => el.remove(), TOAST_HIDE_MS);
 }
 
-function showToast(title, body, ms = 5000) {
+function showToast(title, body, ms = 2500) {
     const el = document.createElement('div');
     el.className = 'toast';
     const titleEl = document.createElement('strong');
@@ -37,6 +37,8 @@ function showToast(title, body, ms = 5000) {
         bodyEl.innerText = body;
         el.appendChild(bodyEl);
     }
+
+    el.addEventListener('click', () => dismissToast(el));
 
     getContainer().appendChild(el);
     requestAnimationFrame(() => el.classList.add('is-visible'));

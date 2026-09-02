@@ -54,8 +54,6 @@
             </div>
         </div>
         <button type="button" class="btn-settings btn-sync" id="btn-sync" data-action="sync-releases" title="Verifica nuove uscite" data-i18n-title="tools.sync" data-i18n-aria="common.sync">⟳</button>
-        <button type="button" class="btn-settings" id="btn-cloud-push" data-action="cloud-push" title="Carica sul cloud" data-i18n-title="cloud.push" data-i18n-aria="cloud.push">⬆</button>
-        <button type="button" class="btn-settings" id="btn-cloud-pull" data-action="cloud-pull" title="Scarica dal cloud" data-i18n-title="cloud.pull" data-i18n-aria="cloud.pull">⬇</button>
         <button type="button" class="btn-settings" data-action="open-settings" data-i18n-aria="nav.settings" data-i18n-title="nav.settings">⚙</button>
     </div>
 </header>
@@ -247,6 +245,7 @@
             <button type="button" class="settings-tab" data-tab="settings-tab-notify" role="tab" aria-selected="false" aria-controls="settings-tab-notify" data-i18n="settings.tab.notify">Notifiche</button>
             <button type="button" class="settings-tab" data-tab="settings-tab-prefs" role="tab" aria-selected="false" aria-controls="settings-tab-prefs" data-i18n="settings.tab.preferences">Preferenze</button>
             <button type="button" class="settings-tab" data-tab="settings-tab-data" role="tab" aria-selected="false" aria-controls="settings-tab-data" data-i18n="settings.tab.data">Dati</button>
+            <button type="button" class="settings-tab" data-tab="settings-tab-cloud" role="tab" aria-selected="false" aria-controls="settings-tab-cloud" data-i18n="settings.tab.cloud">Cloud</button>
             <button type="button" class="settings-tab" data-tab="settings-tab-updates" role="tab" aria-selected="false" aria-controls="settings-tab-updates" data-i18n="settings.tab.updates">Aggiornamenti</button>
             <button type="button" class="settings-tab" data-tab="settings-tab-help" role="tab" aria-selected="false" aria-controls="settings-tab-help" data-i18n="settings.tab.help">Aiuto</button>
         </nav>
@@ -318,25 +317,6 @@
 
         <section class="settings-tabpage" id="settings-tab-data" role="tabpanel" aria-labelledby="settings-tab-data" hidden>
             <div class="settings-field">
-                <label for="cloud-url" data-i18n="cloud.title">Sync cloud</label>
-                <p class="settings-hint" data-i18n="cloud.hint">Sincronizza i tuoi dati con un tuo spazio Supabase personale. È tutto facoltativo: i dati restano sul dispositivo finché non configuri e attivi il sync. Prima di partire, i dati vengono cifrati sul dispositivo con un token segreto personale, quindi restano illeggibili anche per chiunque abbia accesso al database. La chiave API e le sorgenti restano solo sul dispositivo e nel backup locale.</p>
-                <label class="settings-check" for="cloud-enabled">
-                    <input type="checkbox" id="cloud-enabled">
-                    <span data-i18n="cloud.enabled">Sync cloud attivo</span>
-                </label>
-                <label for="cloud-url" data-i18n="cloud.url">Supabase URL</label>
-                <input type="text" id="cloud-url" class="settings-input" autocomplete="off" spellcheck="false">
-                <label for="cloud-anon" data-i18n="cloud.anonKey">Chiave anonima (anon key)</label>
-                <input type="text" id="cloud-anon" class="settings-input" autocomplete="off" spellcheck="false">
-                <label for="cloud-token" data-i18n="cloud.token">Token personale segreto</label>
-                <input type="text" id="cloud-token" class="settings-input" placeholder="—" autocomplete="off" aria-describedby="cloud-token-hint">
-                <p class="settings-hint" id="cloud-token-hint" data-i18n="cloud.tokenHint">Genera un token e conservalo: serve per accedere ai tuoi dati su un altro dispositivo. Su un secondo dispositivo incolla lo stesso token per sincronizzare gli stessi dati.</p>
-                <div class="settings-actions">
-                    <button type="button" class="btn" data-action="cloud-generate-token" data-i18n="cloud.generate">🎲 Genera token</button>
-                </div>
-                <span class="settings-status" id="cloud-status" hidden></span>
-            </div>
-            <div class="settings-field">
                 <label for="backup-status" data-i18n="settings.backup">Backup dati</label>
                 <p class="settings-hint" data-i18n="settings.backupHint">Salva i tuoi dati (salvati, puntate viste, ultime riproduzioni, stagioni personalizzate, novità e preferenze) e ripristinali in un secondo momento. Il backup contiene solo gli identificativi dei titoli: al ripristino i dettagli vengono riscaricati da TMDB (serve la connessione).</p>
                 <div class="settings-actions">
@@ -353,6 +333,30 @@
                     <button type="button" class="btn btn--danger" data-action="delete-all-data" data-i18n="settings.dataDeleteBtn">🗑 Elimina dati</button>
                 </div>
                 <span class="settings-status" id="data-delete-status" hidden></span>
+            </div>
+        </section>
+
+        <section class="settings-tabpage" id="settings-tab-cloud" role="tabpanel" aria-labelledby="settings-tab-cloud" hidden>
+            <div class="settings-field">
+                <label for="cloud-url" data-i18n="cloud.title">Sync cloud</label>
+                <p class="settings-hint" data-i18n="cloud.hint">Sincronizza i tuoi dati con un tuo spazio Supabase personale. È tutto facoltativo: i dati restano sul dispositivo finché non configuri e attivi il sync. Prima di partire, i dati vengono cifrati sul dispositivo con un token segreto personale, quindi restano illeggibili anche per chiunque abbia accesso al database. La chiave API e le sorgenti restano solo sul dispositivo e nel backup locale.</p>
+                <label class="settings-check" for="cloud-enabled">
+                    <input type="checkbox" id="cloud-enabled">
+                    <span data-i18n="cloud.enabled">Sync cloud attivo</span>
+                </label>
+                <label for="cloud-url" data-i18n="cloud.url">Supabase URL</label>
+                <input type="text" id="cloud-url" class="settings-input" autocomplete="off" spellcheck="false">
+                <label for="cloud-anon" data-i18n="cloud.anonKey">Chiave anonima (anon key)</label>
+                <input type="text" id="cloud-anon" class="settings-input" autocomplete="off" spellcheck="false">
+                <label for="cloud-token" data-i18n="cloud.token">Token personale segreto</label>
+                <input type="text" id="cloud-token" class="settings-input" placeholder="—" autocomplete="off" aria-describedby="cloud-token-hint">
+                <p class="settings-hint" id="cloud-token-hint" data-i18n="cloud.tokenHint">Genera un token e conservalo: serve per accedere ai tuoi dati su un altro dispositivo. Su un secondo dispositivo incolla lo stesso token per sincronizzare gli stessi dati.</p>
+                <div class="settings-actions">
+                    <button type="button" class="btn" data-action="cloud-generate-token" data-i18n="cloud.generate">🎲 Genera token</button>
+                    <button type="button" class="btn" data-action="cloud-push" data-i18n="cloud.push">⬆ Carica sul cloud</button>
+                    <button type="button" class="btn" data-action="cloud-pull" data-i18n="cloud.pull">⬇ Scarica dal cloud</button>
+                </div>
+                <span class="settings-status" id="cloud-status" hidden></span>
             </div>
         </section>
 
@@ -450,6 +454,11 @@
             <p>Questo prodotto usa l'API TMDB ma non è approvato né certificato da TMDB. Titoli, testi e immagini provengono da <a href="https://www.themoviedb.org" target="_blank" rel="noopener">The Movie Database (TMDB)</a>, che non è affiliato a questa applicazione. Le immagini dei poster sono mostrate per la sola consultazione del catalogo.</p>
         </div>
     </div>
+</div>
+
+<div id="cloud-quickbar" class="cloud-quickbar" hidden>
+    <button type="button" class="btn-settings" id="btn-cloud-push" data-action="cloud-push" title="Carica sul cloud" data-i18n-title="cloud.push" data-i18n-aria="cloud.push">⬆</button>
+    <button type="button" class="btn-settings" id="btn-cloud-pull" data-action="cloud-pull" title="Scarica dal cloud" data-i18n-title="cloud.pull" data-i18n-aria="cloud.pull">⬇</button>
 </div>
 
 <footer class="colophon">

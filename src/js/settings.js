@@ -18,6 +18,7 @@ import { encryptAPIKey } from './crypto.js';
 import { getBrowserMode, setBrowserMode } from './browser.js';
 import { trapFocus } from './focusTrap.js';
 import { setCloudToken, regenerateCloudToken } from './cloudSync.js';
+import { syncCloudQuickbar } from './catalog.js';
 import { showToast } from './toast.js';
 
 function syncNotifySettingsInputs() {
@@ -83,6 +84,7 @@ function showCloudStatus(msg, isError = false) {
 
 function cloudToggle() {
     persistCloudInputs();
+    syncCloudQuickbar();
     showCloudStatus(t('msg.cloudConfigSaved'));
 }
 
@@ -97,7 +99,7 @@ async function cloudGenerateToken() {
     const token = await regenerateCloudToken();
     flashCloudToken(token);
     showCloudStatus(t('msg.cloudTokenGenerated'));
-    showToast('Cloud Sync', t('msg.cloudTokenCopy'), 8000);
+    showToast('Cloud Sync', t('msg.cloudTokenCopy'), 4000);
 }
 
 // Saves a user-pasted token into the encrypted cloud config.
@@ -111,7 +113,7 @@ async function cloudTokenSave() {
 
 // --- SETTINGS TABS ---
 
-const settingsTabPages = ['settings-tab-api', 'settings-tab-notify', 'settings-tab-prefs', 'settings-tab-data', 'settings-tab-updates', 'settings-tab-help'];
+const settingsTabPages = ['settings-tab-api', 'settings-tab-notify', 'settings-tab-prefs', 'settings-tab-data', 'settings-tab-cloud', 'settings-tab-updates', 'settings-tab-help'];
 
 function switchSettingsTab(tabId) {
     const buttons = document.querySelectorAll('.settings-tab');

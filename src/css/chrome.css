@@ -203,3 +203,9 @@
     to { transform: rotate(360deg); }
 }
 
+/* Detail view: hide topbar actions not related to the detail */
+body.is-detail .topbar__actions {
+    visibility: hidden;
+    pointer-events: none;
+}
+

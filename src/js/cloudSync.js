@@ -69,7 +69,7 @@ async function pushCloud() {
         if (err && err.message === 'Cloud sync not configured') {
             showToast(t('cloud'), t('msg.cloudNotConfigured'));
         } else {
-            showToast(t('cloud'), t('msg.cloudPushError'), 5000);
+            showToast(t('cloud'), t('msg.cloudPushError'));
         }
     }
 }
@@ -104,7 +104,7 @@ async function pullCloud() {
         if (err && err.message === 'Cloud sync not configured') {
             showToast(t('cloud'), t('msg.cloudNotConfigured'));
         } else {
-            showToast(t('cloud'), t('msg.cloudPullError'), 5000);
+            showToast(t('cloud'), t('msg.cloudPullError'));
         }
     }
 }

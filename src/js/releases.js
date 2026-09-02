@@ -191,7 +191,7 @@ async function checkReleases(manual = false) {
         if (newReleases.length) {
             const list = newReleases.slice(0, 4).map(releaseBody).join('\n');
             const extra = newReleases.length > 4 ? t('msg.moreReleases', { n: newReleases.length - 4 }) : '';
-            showToast(t('toast.newReleases'), list + extra, 8000);
+            showToast(t('toast.newReleases'), list + extra, 4000);
         } else if (manual) {
             showToast(t('common.sync'), isBaseline && fetched > 0
                 ? t('msg.firstSync')

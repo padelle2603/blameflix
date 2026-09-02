@@ -23,6 +23,7 @@ async function showDetails(id, type, opts) {
     window.scrollTo(0, 0);
     homeView.hidden = true;
     detailView.hidden = false;
+    document.body.classList.add('is-detail');
     resetDetailView();
 
     try {

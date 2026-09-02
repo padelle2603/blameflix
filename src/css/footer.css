@@ -34,3 +34,13 @@
 
 .colophon__note a { color: var(--meta); text-decoration: underline; }
 
+/* ===== CLOUD QUICKBAR (home, above footer) ===== */
+.cloud-quickbar {
+    max-width: 1240px;
+    margin: 1.6rem auto 0;
+    padding: 0 1.4rem;
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+}
+

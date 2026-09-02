@@ -1,5 +1,5 @@
 import { state, persistCollapsedRows, persistSortMode } from './state.js';
-import { homeView, detailView, searchInput, searchClear, grid, emptyState, homeHead, searchHead, catalogMenuBtn, catalogMenuPanel } from './dom.js';
+import { homeView, detailView, searchInput, searchClear, grid, emptyState, homeHead, searchHead, catalogMenuBtn, catalogMenuPanel, cloudQuickbar } from './dom.js';
 import { escapeHtml, tmdbImagePath } from './utils.js';
 import { IMG_GRID, PLACEHOLDER } from './env.js';
 import { showUnwatchedCache } from './tmdb.js';
@@ -25,11 +25,16 @@ function handleCardActivation(e) {
 grid.addEventListener('click', handleCardActivation);
 grid.addEventListener('keydown', handleCardActivation);
 
+function syncCloudQuickbar() {
+    if (cloudQuickbar) cloudQuickbar.hidden = !state.cloudSync.enabled;
+}
+
 function renderHome() {
     cancelSearch();
     state.searching = false;
     homeView.hidden = false;
     detailView.hidden = true;
+    document.body.classList.remove('is-detail');
     homeHead.hidden = false;
     searchHead.hidden = true;
     searchClear.hidden = searchInput.value.length === 0;
@@ -37,6 +42,7 @@ function renderHome() {
     renderGrid(state.currentList);
     renderNewsSection();
     refreshHomeUnwatchedCount();
+    syncCloudQuickbar();
 }
 
 function showHome() {
@@ -435,4 +441,4 @@ document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closeCatalogMenu();
 });
 
-export { renderHome, showHome, clearSearch, showEmpty, showGridLoading, renderGrid, syncTools, setFilter, setView, setSort, toggleKindOrder, toggleKindCollapse, toggleCatalogMenu, closeCatalogMenu, patchCard };
+export { renderHome, showHome, clearSearch, showEmpty, showGridLoading, renderGrid, syncTools, setFilter, setView, setSort, toggleKindOrder, toggleKindCollapse, toggleCatalogMenu, closeCatalogMenu, patchCard, syncCloudQuickbar };
