@@ -209,3 +209,13 @@ body.is-detail .topbar__actions {
     pointer-events: none;
 }
 
+/* Detail view: hide searchbar */
+body.is-detail .searchbar {
+    display: none;
+}
+
+/* Detail view: hide cloud quickbar */
+body.is-detail .cloud-quickbar {
+    display: none;
+}
+
