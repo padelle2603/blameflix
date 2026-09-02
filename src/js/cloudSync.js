@@ -40,7 +40,7 @@ function headers() {
         'apikey': state.cloudSync.anonKey,
         'Authorization': `Bearer ${state.cloudSync.anonKey}`,
         'Content-Type': 'application/json',
-        'Prefer': 'return=representation',
+        'Prefer': 'return=representation,resolution=merge-duplicates',
         'x-partition': state.cloudSync.partitionHash
     };
 }
