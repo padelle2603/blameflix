@@ -17,7 +17,7 @@ import { startTutorial } from './tutorial.js';
 import { encryptAPIKey } from './crypto.js';
 import { getBrowserMode, setBrowserMode } from './browser.js';
 import { trapFocus } from './focusTrap.js';
-import { regenerateCloudToken } from './cloudSync.js';
+import { setCloudToken, regenerateCloudToken } from './cloudSync.js';
 import { showToast } from './toast.js';
 
 function syncNotifySettingsInputs() {
@@ -86,13 +86,27 @@ function cloudToggle() {
     showCloudStatus(t('msg.cloudConfigSaved'));
 }
 
+// Shows a plaintext token briefly, then masks it back to dots.
+function flashCloudToken(value) {
+    cloudToken.value = value;
+    clearTimeout(flashCloudToken._t);
+    flashCloudToken._t = setTimeout(() => { cloudToken.value = state.cloudSync.tokenEnc ? '••••••••' : ''; }, 10000);
+}
+
 async function cloudGenerateToken() {
     const token = await regenerateCloudToken();
-    cloudToken.value = token;
+    flashCloudToken(token);
     showCloudStatus(t('msg.cloudTokenGenerated'));
     showToast('Cloud Sync', t('msg.cloudTokenCopy'), 8000);
-    // The token is needed to move to another device; keep it visible briefly.
-    setTimeout(() => { cloudToken.value = state.cloudSync.tokenEnc ? '••••••••' : ''; }, 10000);
+}
+
+// Saves a user-pasted token into the encrypted cloud config.
+async function cloudTokenSave() {
+    const value = cloudToken.value.trim();
+    if (!value) return;
+    await setCloudToken(value);
+    showCloudStatus(t('msg.cloudConfigSaved'));
+    flashCloudToken(value);
 }
 
 // --- SETTINGS TABS ---
@@ -246,5 +260,6 @@ settingsOverlay.addEventListener('click', e => {
 
 cloudUrl.addEventListener('input', persistCloudInputs);
 cloudAnon.addEventListener('input', persistCloudInputs);
+cloudToken.addEventListener('change', cloudTokenSave);
 
-export { syncNotifySettingsInputs, syncApiKeyNotice, syncResolverNotice, switchSettingsTab, openSettings, closeSettings, openDocs, closeDocs, saveSettings, sendTestNotification, syncCloudInputs, cloudToggle, cloudGenerateToken };
+export { syncNotifySettingsInputs, syncApiKeyNotice, syncResolverNotice, switchSettingsTab, openSettings, closeSettings, openDocs, closeDocs, saveSettings, sendTestNotification, syncCloudInputs, cloudToggle, cloudGenerateToken, cloudTokenSave };

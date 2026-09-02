@@ -87,14 +87,18 @@ export async function decryptCloudToken(tokenEnc) {
     return decryptAPIKey(tokenEnc);
 }
 
+// Imports a base64url-encoded 32-byte token as an AES-GCM CryptoKey.
+async function importTokenKey(token) {
+    const raw = new Uint8Array(32);
+    const bin = atob(token.replace(/-/g, '+').replace(/_/g, '/'));
+    for (let i = 0; i < 32; i++) raw[i] = bin.charCodeAt(i);
+    return crypto.subtle.importKey('raw', raw, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+}
+
 // Encrypts a UTF-8 payload with the provided token (used as an AES-GCM key).
 // Returns an object { v, iv, data } as a JSON string.
 export async function encryptWithToken(plaintext, token) {
-    const raw = new Uint8Array(32);
-    const base64Clean = token.replace(/-/g, '+').replace(/_/g, '/');
-    const bin = atob(base64Clean);
-    for (let i = 0; i < 32; i++) raw[i] = bin.charCodeAt(i);
-    const key = await crypto.subtle.importKey('raw', raw, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+    const key = await importTokenKey(token);
     const iv = crypto.getRandomValues(new Uint8Array(12));
     const ciphertext = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, new TextEncoder().encode(plaintext));
     return JSON.stringify({ v: 1, iv: Array.from(iv), data: arrayBufferToBase64(ciphertext) });
@@ -103,11 +107,7 @@ export async function encryptWithToken(plaintext, token) {
 // Decrypts a payload produced by encryptWithToken, returning the UTF-8 text.
 export async function decryptWithToken(encryptedStr, token) {
     const { iv, data } = JSON.parse(encryptedStr);
-    const raw = new Uint8Array(32);
-    const base64Clean = token.replace(/-/g, '+').replace(/_/g, '/');
-    const bin = atob(base64Clean);
-    for (let i = 0; i < 32; i++) raw[i] = bin.charCodeAt(i);
-    const key = await crypto.subtle.importKey('raw', raw, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+    const key = await importTokenKey(token);
     const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: new Uint8Array(iv) }, key, base64ToArrayBuffer(data));
     return new TextDecoder().decode(decrypted);
 }

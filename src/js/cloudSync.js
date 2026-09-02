@@ -53,10 +53,8 @@ function baseUrl() {
 async function pushCloud() {
     try {
         const token = await resolveToken();
-        const [payload, partition] = await Promise.all([
-            encryptWithToken(JSON.stringify(await backupData({ includeSensitive: false })), token),
-            cloudPartitionHash(token)
-        ]);
+        const partition = state.cloudSync.partitionHash;
+        const payload = await encryptWithToken(JSON.stringify(await backupData({ includeSensitive: false })), token);
         const now = new Date().toISOString();
         const res = await fetch(`${baseUrl()}?on_conflict=partition`, {
             method: 'POST',
@@ -64,7 +62,6 @@ async function pushCloud() {
             body: JSON.stringify({ partition, payload, updated_at: now })
         });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        state.cloudSync.partitionHash = partition;
         state.cloudSync.lastPush = Date.now();
         persistCloudSync();
         showToast(t('cloud'), t('msg.cloudPushed'));
@@ -81,7 +78,7 @@ async function pushCloud() {
 async function pullCloud() {
     try {
         const token = await resolveToken();
-        const partition = await cloudPartitionHash(token);
+        const partition = state.cloudSync.partitionHash;
         const res = await fetch(`${baseUrl()}?partition=eq.${encodeURIComponent(partition)}&select=*`, {
             method: 'GET',
             headers: headers()
@@ -99,7 +96,6 @@ async function pullCloud() {
         if (!data || typeof data !== 'object') throw new Error('Invalid structure');
         const ok = await applyBackupData(data, (msg) => showToast(t('cloud'), msg, 3500), { includeSensitive: false });
         if (ok) {
-            state.cloudSync.partitionHash = partition;
             state.cloudSync.lastPull = Date.now();
             persistCloudSync();
             showToast(t('cloud'), t('msg.cloudPulled'));
@@ -113,18 +109,25 @@ async function pullCloud() {
     }
 }
 
-// (Re)generates a fresh personal token, storing only its encrypted form and
-// its partition hash. Returns the plaintext once so it can be shown/copied.
-async function regenerateCloudToken() {
-    const token = generateCloudToken();
+// Encrypts a personal token, derives its partition hash and persists both.
+// Shared by the generate button and by a manual paste on a second device.
+async function setCloudToken(plainToken) {
+    const plain = String(plainToken).trim();
+    if (!plain) return;
     const [tokenEnc, partition] = await Promise.all([
-        encryptCloudToken(token),
-        cloudPartitionHash(token)
+        encryptCloudToken(plain),
+        cloudPartitionHash(plain)
     ]);
     state.cloudSync.tokenEnc = tokenEnc;
     state.cloudSync.partitionHash = partition;
     persistCloudSync();
+}
+
+// (Re)generates a fresh personal token, stores it and returns the plaintext.
+async function regenerateCloudToken() {
+    const token = generateCloudToken();
+    await setCloudToken(token);
     return token;
 }
 
-export { pushCloud, pullCloud, regenerateCloudToken, resolveToken };
+export { pushCloud, pullCloud, setCloudToken, regenerateCloudToken, resolveToken };
