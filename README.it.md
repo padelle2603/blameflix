@@ -263,3 +263,5 @@ modularizzazione, tenuta solo come riserva.
 ---
 
 *BlameFlix non è affiliato, approvato o certificato da TMDB.*
+
+*Sviluppata con l'ausilio di [opencode](https://opencode.ai).*

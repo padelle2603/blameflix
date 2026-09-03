@@ -262,3 +262,5 @@ kept only as a fallback.
 ---
 
 *BlameFlix is not affiliated with, endorsed or certified by TMDB.*
+
+*Developed with the assistance of [opencode](https://opencode.ai).*
