@@ -4,6 +4,7 @@ import { syncTools, showHome } from './catalog.js';
 import { hydrateWatchlistGrid } from './backup.js';
 import { checkReleases, startAutoSyncTimer } from './releases.js';
 import { checkForUpdates } from './updates.js';
+import { startCloudKeepalive } from './cloudSync.js';
 import { resolveAppVersion, isNativeRuntime } from './env.js';
 import { t } from './i18n.js';
 import { NOTIFY_ACTION_MARK_WATCHED } from './notifications.js';
@@ -39,6 +40,7 @@ function startApp() {
     syncTools();
     showHome();
     startAutoSyncTimer();
+    startCloudKeepalive();
     maybeStartTutorial();
     // The watchlist grid must be hydrated only after the API key is fully
     // decrypted: otherwise every TMDB request runs with the still-encrypted

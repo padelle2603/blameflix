@@ -3,7 +3,7 @@ import {
     persistWatchlist, persistNotifySettings, persistReleaseState, persistNewsHistory, persistNetworkSources,
     rebuildWatchlistIndex, rebuildLastPlayedMap
 } from './state.js';
-import { compressWatched, normalizeWatched, persistWatchedEpisodes, _invalidateWatchedCache } from './watched.js';
+import { normalizeWatched, persistWatchedEpisodes, _invalidateWatchedCache } from './watched.js';
 import { getDetails } from './tmdb.js';
 import { sanitizeMediaType, toIntOr } from './utils.js';
 import { setLanguage, t } from './i18n.js';
@@ -22,7 +22,7 @@ async function backupData({ includeSensitive = true } = {}) {
         myWatchlist: state.watchlist.map(({ id, media_type }) => ({ id, media_type })),
         myLastPlayed: state.lastPlayed.map(({ id, media_type, season, episode }) => ({ id, media_type, season, episode })),
         myCustomSelections: state.customSelections,
-        myWatchedEpisodes: compressWatched(state.watchedEpisodes),
+        myWatchedEpisodes: state.watchedEpisodes,
         myNewsHistory: state.newsHistory,
         myViewMode: state.viewMode,
         myTypeFilter: state.typeFilter,

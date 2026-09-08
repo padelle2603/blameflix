@@ -51,45 +51,8 @@ function normalizeWatched(raw) {
 }
 
 // Compresses an ordered list into ranges [[start,end],...].
-function listToRanges(list) {
-    if (!list.length) return [];
-    const ranges = [];
-    let start = list[0], prev = list[0];
-    for (let i = 1; i < list.length; i++) {
-        const cur = list[i];
-        if (cur === prev + 1) { prev = cur; continue; }
-        ranges.push([start, prev]);
-        start = cur; prev = cur;
-    }
-    ranges.push([start, prev]);
-    return ranges;
-}
-
-// For a season it picks the shortest form: list of numbers or ranges.
-function compactSeason(list) {
-    if (!list.length) return [];
-    const ranges = listToRanges(list);
-    return JSON.stringify(ranges).length < JSON.stringify(list).length ? ranges : list;
-}
-
-// Compacts all the seasons for saving. Does not mutate the input.
-function compressWatched(w) {
-    const out = {};
-    for (const showId of Object.keys(w)) {
-        const seasons = w[showId];
-        if (!seasons || typeof seasons !== 'object') continue;
-        const showOut = {};
-        for (const season of Object.keys(seasons)) {
-            const c = compactSeason(seasons[season]);
-            if (c.length) showOut[season] = c;
-        }
-        if (Object.keys(showOut).length) out[showId] = showOut;
-    }
-    return out;
-}
-
 function persistWatchedEpisodes() {
-    localStorage.setItem('myWatchedEpisodes', JSON.stringify(compressWatched(state.watchedEpisodes)));
+    localStorage.setItem('myWatchedEpisodes', JSON.stringify(state.watchedEpisodes));
     _invalidateWatchedCache();
     invalidateUnwatchedSnapshot(); // watched state changed: cached home counts are stale
     state._watchedDirty = true;
@@ -126,10 +89,10 @@ function isEpisodeWatched(showId, season, episode) {
 
 // Marks (true) or removes (false) an episode from the watched ones; without
 // force it toggles.
-function toggleEpisodeWatched(showId, season, episode, force) {
+function setEpisodeWatched(showId, season, episode, watched) {
     const seasons = state.watchedEpisodes[showId] || (state.watchedEpisodes[showId] = {});
     const list = seasons[season] || [];
-    const next = force === undefined ? !list.includes(episode) : !!force;
+    const next = watched === undefined ? !list.includes(episode) : !!watched;
     let updated;
     if (next) {
         updated = list.includes(episode) ? list : [...list, episode].sort((a, b) => a - b);
@@ -143,4 +106,8 @@ function toggleEpisodeWatched(showId, season, episode, force) {
     return next;
 }
 
-export { normalizeWatched, compressWatched, persistWatchedEpisodes, isEpisodeWatched, toggleEpisodeWatched, _invalidateWatchedCache };
+function toggleEpisodeWatched(showId, season, episode, force) {
+    return setEpisodeWatched(showId, season, episode, force);
+}
+
+export { normalizeWatched, persistWatchedEpisodes, isEpisodeWatched, toggleEpisodeWatched, _invalidateWatchedCache };

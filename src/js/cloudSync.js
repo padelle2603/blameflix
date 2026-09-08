@@ -130,4 +130,27 @@ async function regenerateCloudToken() {
     return token;
 }
 
-export { pushCloud, pullCloud, setCloudToken, regenerateCloudToken };
+// Lightweight ping to prevent the Supabase database from entering idle/sleep
+// state when the user has cloud sync enabled. Runs every 15 minutes while
+// the app is active.
+let _keepaliveTimer = null;
+
+function pingCloud() {
+    const cs = state.cloudSync;
+    if (!cs.enabled || !cs.url || !cs.anonKey) return;
+    fetch(`${baseUrl()}?select=partition&limit=1`, {
+        method: 'GET',
+        headers: { 'apikey': cs.anonKey, 'Authorization': `Bearer ${cs.anonKey}` }
+    }).catch(() => {});
+}
+
+function startCloudKeepalive() {
+    stopCloudKeepalive();
+    _keepaliveTimer = setInterval(pingCloud, 15 * 60 * 1000);
+}
+
+function stopCloudKeepalive() {
+    if (_keepaliveTimer !== null) { clearInterval(_keepaliveTimer); _keepaliveTimer = null; }
+}
+
+export { pushCloud, pullCloud, setCloudToken, regenerateCloudToken, startCloudKeepalive, stopCloudKeepalive };
