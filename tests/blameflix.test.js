@@ -177,8 +177,8 @@ describe('airDateTs', () => {
 });
 
 describe('isAired', () => {
-  it('considers non-dates as aired', () => {
-    expect(isAired(null)).toBe(true);
+  it('treats missing dates as not yet aired', () => {
+    expect(isAired(null)).toBe(false);
   });
 
   it('considers past dates as aired', () => {

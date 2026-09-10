@@ -96,10 +96,11 @@ function airDateTs(airDate) {
 }
 
 // True if the airing already happened (including the time, when available).
-// Without a date the episode is considered already aired.
+// Without a date the episode is not considered aired yet (e.g. a season just
+// added to TMDB whose episodes have no release date).
 function isAired(airDate) {
     const ts = airDateTs(airDate);
-    if (ts === null) return true;
+    if (ts === null) return false;
     return ts <= Date.now();
 }
 

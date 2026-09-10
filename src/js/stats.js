@@ -4,7 +4,7 @@ import { state } from './state.js';
 import { statsGrid } from './dom.js';
 import { detailFor } from './watchlist.js';
 import { getDetails, getSeasonEpisodes } from './tmdb.js';
-import { mapPool } from './utils.js';
+import { isAired, mapPool } from './utils.js';
 import { t } from './i18n.js';
 
 const tvItems = () => state.watchlist.filter(i => i.media_type === 'tv');
@@ -69,12 +69,11 @@ function computeActivityBars(days) {
 // Total aired episode count of a series (for the type breakdown).
 async function totalAired(item) {
     const seasons = (detailFor(item).seasons || []).filter(s => s.season_number >= 1);
-    const today = isoKey(new Date());
     let total = 0;
     await mapPool(seasons, 4, async s => {
         try {
             const eps = await getSeasonEpisodes(item.id, s.season_number).catch(() => []);
-            total += eps.filter(ep => !ep.air_date || ep.air_date <= today).length;
+            total += eps.filter(ep => isAired(ep.air_date)).length;
         } catch { /* ignore */ }
     });
     return total;

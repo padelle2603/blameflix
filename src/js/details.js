@@ -318,7 +318,7 @@ function renderEpisodeList(eps, highlightEpisode) {
     eps.forEach(ep => {
         const epNum = ep.episode_number;
         const watched = isEpisodeWatched(state.currentMedia.id, state.currentSeason, epNum);
-        const future = !!ep.air_date && !isAired(ep.air_date);
+        const future = !isAired(ep.air_date);
         const resume = highlightEpisode === epNum;
 
         const row = document.createElement('div');
@@ -339,7 +339,9 @@ function renderEpisodeList(eps, highlightEpisode) {
 
         const epLabel = `${seasonLabel}-${epNum}`;
         const playLabel = future
-            ? t('episode.airingOn', { date: escapeHtml(airDateFormatted) })
+            ? (ep.air_date
+                ? t('episode.airingOn', { date: escapeHtml(airDateFormatted) })
+                : t('episode.tba'))
             : (watched ? t('episode.watchAgain') : t('episode.watch'));
 
         row.innerHTML = `
@@ -513,7 +515,7 @@ async function markAllAiredWatched() {
     results.forEach(r => {
         if (!r.eps) { allWatched = false; return; }
         r.eps.forEach(ep => {
-            if (ep.air_date && !isAired(ep.air_date)) return; // future: ignored
+            if (!isAired(ep.air_date)) return; // future/unknown: ignored
             anyAired = true;
             if (!isEpisodeWatched(state.currentMedia.id, r.sn, ep.episode_number)) allWatched = false;
         });
@@ -527,7 +529,7 @@ async function markAllAiredWatched() {
         results.forEach(r => {
             if (!r.eps) return;
             const airedNums = new Set(r.eps
-                .filter(ep => !(ep.air_date && !isAired(ep.air_date)))
+                .filter(ep => isAired(ep.air_date))
                 .map(ep => ep.episode_number));
             if (!airedNums.size) return;
             const sn = r.sn;
@@ -544,7 +546,7 @@ async function markAllAiredWatched() {
             const eps = r.eps;
             if (!eps || !eps.length) return;
             const nums = eps
-                .filter(ep => !(ep.air_date && !isAired(ep.air_date)))
+                .filter(ep => isAired(ep.air_date))
                 .map(ep => ep.episode_number);
             if (!nums.length) return;
             const existing = seasonsStore[sn] || [];
