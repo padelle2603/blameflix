@@ -1,5 +1,5 @@
 import { state } from './state.js';
-import { searchbar, btnSearchToggle, searchClear, searchInput, homeView, detailView, homeHead, searchHead, searchTitle, homeUnwatchedEl } from './dom.js';
+import { searchbar, btnSearchToggle, searchClear, searchInput, homePanels, detailView, homeHead, searchHead, searchTitle, homeUnwatchedEl } from './dom.js';
 import { fetchJson } from './tmdb.js';
 import { BASE_URL } from './env.js';
 import { t, locale } from './i18n.js';
@@ -116,7 +116,7 @@ async function performSearch(q) {
     const cloudBar = document.getElementById('cloud-quickbar');
     if (cloudBar) cloudBar.hidden = true;
     searchClear.hidden = false;
-    homeView.hidden = false;
+    homePanels.hidden = false;
     detailView.hidden = true;
     detailView.classList.remove('is-visible', 'is-exiting');
     document.body.classList.remove('is-detail');

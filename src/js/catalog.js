@@ -1,5 +1,5 @@
 import { state, persistCollapsedRows, persistSortMode, addToWatchlistIndex, removeFromWatchlistIndex } from './state.js';
-import { homeView, detailView, searchInput, searchClear, grid, emptyState, homeHead, searchHead, searchTitle, catalogMenuBtn, catalogMenuPanel, cloudQuickbar } from './dom.js';
+import { homePanels, detailView, searchInput, searchClear, grid, emptyState, homeHead, searchHead, searchTitle, catalogMenuBtn, catalogMenuPanel, cloudQuickbar } from './dom.js';
 import { escapeHtml, tmdbImagePath } from './utils.js';
 import { IMG_GRID, PLACEHOLDER } from './env.js';
 import { showUnwatchedCache } from './tmdb.js';
@@ -112,7 +112,7 @@ async function renderHome() {
     // Home -> Home (initial or refresh): instant
     homeHead.hidden = false;
     searchHead.hidden = true;
-    homeView.hidden = false;
+    homePanels.hidden = false;
     renderGrid(state.currentList);
     state._watchlistDirty = false;
     state._watchedDirty = false;
@@ -377,7 +377,7 @@ function refreshRailArrows() {
 }
 
 window.addEventListener('resize', () => {
-    if (!homeView.hidden) refreshRailArrows();
+    if (!homePanels.hidden) refreshRailArrows();
 });
 
 // Netflix-style keyboard navigation inside the rails: ←/→ move focus
@@ -582,7 +582,7 @@ function toggleKindOrder() {
     state.kindOrder = state.kindOrder === 'tv' ? 'movie' : 'tv';
     localStorage.setItem('myKindOrder', state.kindOrder);
     applyKindOrder();
-    if (!homeView.hidden) renderGrid(state.currentList);
+    if (!homePanels.hidden) renderGrid(state.currentList);
 }
 
 applyKindOrder();

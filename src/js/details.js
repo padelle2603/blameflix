@@ -1,9 +1,9 @@
 import { state } from './state.js';
-import { detailView, episodeSection, episodeList, customControls, inputSeason, inputSeasonCustom, inputEpisodeCustom, unwatchedEl, detailTitle, detailOverview, detailDate, detailKind, detailPoster, detailBackdrop, tvControls, btnMarkAllAired } from './dom.js';
-import { getDetails, getSeasonEpisodes, seasonEpisodesCache, fetchSeasons } from './tmdb.js';
+import { detailView, episodeSection, episodeList, customControls, inputSeason, inputSeasonCustom, inputEpisodeCustom, unwatchedEl, detailTitle, detailOverview, detailDate, detailKind, detailPoster, detailBackdrop, tvControls, btnMarkAllAired, similarSection, similarList } from './dom.js';
+import { getDetails, getSimilar, getSeasonEpisodes, seasonEpisodesCache, fetchSeasons } from './tmdb.js';
 import { toggleEpisodeWatched, isEpisodeWatched, persistWatchedEpisodes } from './watched.js';
 import { escapeHtml, tmdbImagePath, isAired, mapPool } from './utils.js';
-import { IMG_BASE, IMG_STILL, IMG_BACKDROP, PLACEHOLDER, EPISODE_PLACEHOLDER } from './env.js';
+import { IMG_BASE, IMG_GRID, IMG_STILL, IMG_BACKDROP, PLACEHOLDER, EPISODE_PLACEHOLDER } from './env.js';
 import { t, tp, locale } from './i18n.js';
 import { showToast } from './toast.js';
 import { openLink } from './browser.js';
@@ -14,6 +14,7 @@ import { syncNetworkSourceBtn } from './networkSchedule.js';
 import { showHome } from './catalog.js';
 import { countUnwatchedEps, refreshHomeUnwatchedCount } from './counter.js';
 import { slideHomeToDetail, syncStackToView } from './viewTransition.js';
+import { prefersReduced } from './motion.js';
 
 // Request token: only the latest showDetails() call is allowed to touch
 // the DOM, so two quick taps on different cards never mix their data.
@@ -76,6 +77,7 @@ async function showDetails(id, type, opts) {
             overridePanel.hidden = true;
             document.getElementById('resolver-override-input').value = getResolverOverride();
         }
+        loadSimilar(type, id, requestSeq);
         // Detail height may have grown from skeleton to full content (and episodes)
         // Sync stack height smoothly to avoid vertical twitch
         requestAnimationFrame(() => syncStackToView(detailView));
@@ -102,6 +104,8 @@ function resetDetailView() {
     episodeSection.hidden = true;
     tvControls.hidden = true;
     btnMarkAllAired.hidden = true;
+    similarSection.hidden = true;
+    similarList.innerHTML = '';
     resetDetailSpoilers();
 }
 
@@ -723,5 +727,78 @@ async function openTmdbPage() {
     const url = tmdbPageUrl();
     if (url) await openLink(url);
 }
+
+let similarRequestSeq = 0;
+
+async function loadSimilar(type, id, parentSeq) {
+    const seq = ++similarRequestSeq;
+    similarSection.hidden = true;
+    similarList.innerHTML = '';
+    try {
+        const results = await getSimilar(type, id);
+        if (seq !== similarRequestSeq || parentSeq !== detailsRequestSeq) return;
+        if (!results.length) return;
+        const frag = document.createDocumentFragment();
+        results.forEach(item => {
+            const poster = tmdbImagePath(item.poster_path) ? `${IMG_GRID}${item.poster_path}` : PLACEHOLDER;
+            const title = item.title || item.name || t('common.noTitle');
+            const date = item.release_date || item.first_air_date || '';
+            const year = date ? date.substring(0, 4) : '';
+            const kind = item.media_type === 'tv' ? t('common.tvKindLong') : t('common.movieKindLong');
+            const card = document.createElement('div');
+            card.className = 'similar-card';
+            card.tabIndex = 0;
+            card.dataset.id = item.id;
+            card.dataset.type = item.media_type || type;
+            card.innerHTML = `
+                <div class="similar-card__poster">
+                    <img src="${poster}" alt="${escapeHtml(title)}" loading="lazy" decoding="async">
+                    <span class="similar-card__kind">${escapeHtml(kind)}</span>
+                </div>
+                <div class="similar-card__body">
+                    <h4 class="similar-card__title">${escapeHtml(title)}</h4>
+                    ${year ? `<span class="similar-card__year">${escapeHtml(year)}</span>` : ''}
+                </div>
+            `;
+            frag.appendChild(card);
+        });
+        similarList.appendChild(frag);
+        similarSection.hidden = false;
+        syncSimilarArrows();
+        requestAnimationFrame(() => syncStackToView(detailView));
+    } catch { /* similar titles are best-effort */ }
+}
+
+function syncSimilarArrows() {
+    const wrap = similarList.closest('.rail-wrap');
+    if (!wrap) return;
+    const max = similarList.scrollWidth - similarList.clientWidth;
+    const prev = wrap.querySelector('.rail-arrow--prev');
+    const next = wrap.querySelector('.rail-arrow--next');
+    if (prev) prev.disabled = similarList.scrollLeft <= 1;
+    if (next) next.disabled = similarList.scrollLeft >= max - 1;
+    wrap.classList.toggle('is-scrollable', max > 1);
+}
+
+similarList.addEventListener('scroll', syncSimilarArrows, { passive: true });
+
+similarList.addEventListener('click', e => {
+    const card = e.target.closest('.similar-card');
+    if (!card) return;
+    showDetails(Number(card.dataset.id), card.dataset.type);
+});
+
+similarList.addEventListener('keydown', e => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const card = e.target.closest('.similar-card');
+    if (!card) return;
+    e.preventDefault();
+    showDetails(Number(card.dataset.id), card.dataset.type);
+});
+
+const similarPrev = () => similarList.closest('.rail-wrap').querySelector('.rail-arrow--prev');
+const similarNext = () => similarList.closest('.rail-wrap').querySelector('.rail-arrow--next');
+similarPrev().addEventListener('click', () => similarList.scrollBy({ left: -similarList.clientWidth * 0.9, behavior: prefersReduced() ? 'auto' : 'smooth' }));
+similarNext().addEventListener('click', () => similarList.scrollBy({ left: similarList.clientWidth * 0.9, behavior: prefersReduced() ? 'auto' : 'smooth' }));
 
 export { showDetails, markSeasonWatched, markAllAiredWatched, onSeasonChange, refreshUnwatchedCount, findNextUnwatched, syncResumeSelection, shareTitle, openTmdbPage };

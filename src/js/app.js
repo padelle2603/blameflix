@@ -12,6 +12,7 @@ import { toggleWatchlist } from './watchlist.js';
 import { skipTutorial } from './tutorial.js';
 import { searchInput, inputSeason, detailView, settingsOverlay, docsOverlay, catalogMenuPanel, disclaimerOverlay, tutorialOverlay, updatePopup, networkPanel, resolverPanel } from './dom.js';
 import { state } from './state.js';
+import { initPanels, goPanel, panelIndex, CATALOG_INDEX, calendarTo, openCalendarItem } from './panels.js';
 import './ptr.js';
 
 // --- Lazy loaders for heavy modules ---
@@ -211,6 +212,7 @@ function registerAndroidBack() {
         if (!networkPanel.hidden) { networkPanel.hidden = true; return; }
         if (!resolverPanel.hidden) { resolverPanel.hidden = true; return; }
         if (!detailView.hidden) { await showHome(); return; }
+        if (panelIndex() !== CATALOG_INDEX) { goPanel(CATALOG_INDEX); return; }
         if (isSearchBarVisible()) { closeSearchBar(); return; }
         if (state.searching || (searchInput.value || '').trim()) { await clearSearch(); return; }
         await App.minimizeApp();
@@ -266,6 +268,10 @@ const actions = {
     'save-network-source': () => saveNetworkSource(),
     'clear-network-source': () => clearNetworkSource(),
     'accept-disclaimer': () => acceptDisclaimer(),
+    'go-panel': el => goPanel(Number(el.dataset.panel)),
+    'calendar-prev': () => calendarTo(-1),
+    'calendar-next': () => calendarTo(1),
+    'open-calendar-item': el => openCalendarItem(el.dataset.id, el.dataset.type),
     'focus-search': () => { openSearchBar(); }
 };
 
@@ -297,4 +303,5 @@ document.addEventListener('change', e => {
 
 applyLanguage();
 initDisclaimer();
+initPanels();
 registerAndroidBack();

@@ -13,6 +13,7 @@ import { syncResolverOverrideBtn } from './resolver.js';
 import { showUpdateNotice, syncUpdatePopup } from './updates.js';
 import { registerNotificationActions } from './notifications.js';
 import { detailView, updatePopup } from './dom.js';
+import { refreshPanels } from './panels.js';
 
 const I18N = {
     it: {
@@ -102,6 +103,30 @@ const I18N = {
         'detail.savedRemove': '✓ Salvato · rimuovi',
         'detail.addSaved': '+ Aggiungi ai salvati',
         'detail.noOverview': 'Nessuna descrizione disponibile.',
+        'detail.similar': 'Ti potrebbe piacere',
+        'stats.kicker': 'La tua sala',
+        'stats.title': 'Statistiche',
+        'stats.hours': 'Ore stimate viste',
+        'stats.topGenre': 'Genere preferito',
+        'stats.streak': 'Streak',
+        'stats.byType': 'Per tipo',
+        'stats.moviesSeen': 'Film visti',
+        'stats.moviesTotal': 'Film salvati',
+        'stats.seriesTotal': 'Serie salvate',
+        'stats.completed': 'complete',
+        'stats.inProgress': 'in corso',
+        'stats.activity': 'Attività (12 mesi)',
+        'calendar.kicker': 'Prossimi rilasci',
+        'calendar.title': 'Calendario uscite',
+        'calendar.prev': 'Mese precedente',
+        'calendar.next': 'Mese successivo',
+        'calendar.sun': 'Dom',
+        'calendar.mon': 'Lun',
+        'calendar.tue': 'Mar',
+        'calendar.wed': 'Mer',
+        'calendar.thu': 'Gio',
+        'calendar.fri': 'Ven',
+        'calendar.sat': 'Sab',
         'settings.preferences': 'Preferenze',
         'settings.tab.api': 'API e Sorgenti',
         'settings.tab.notify': 'Notifiche',
@@ -419,6 +444,30 @@ const I18N = {
         'detail.savedRemove': '✓ Saved · remove',
         'detail.addSaved': '+ Add to saved',
         'detail.noOverview': 'No description available.',
+        'detail.similar': 'You might also like',
+        'stats.kicker': 'Your room',
+        'stats.title': 'Stats',
+        'stats.hours': 'Estimated hours watched',
+        'stats.topGenre': 'Top genre',
+        'stats.streak': 'Streak',
+        'stats.byType': 'By type',
+        'stats.moviesSeen': 'Movies watched',
+        'stats.moviesTotal': 'Saved movies',
+        'stats.seriesTotal': 'Saved series',
+        'stats.completed': 'completed',
+        'stats.inProgress': 'in progress',
+        'stats.activity': 'Activity (last 12 months)',
+        'calendar.kicker': 'Upcoming releases',
+        'calendar.title': 'Release calendar',
+        'calendar.prev': 'Previous month',
+        'calendar.next': 'Next month',
+        'calendar.sun': 'Sun',
+        'calendar.mon': 'Mon',
+        'calendar.tue': 'Tue',
+        'calendar.wed': 'Wed',
+        'calendar.thu': 'Thu',
+        'calendar.fri': 'Fri',
+        'calendar.sat': 'Sat',
         'settings.preferences': 'Preferences',
         'settings.tab.api': 'API & Sources',
         'settings.tab.notify': 'Notifications',
@@ -709,6 +758,7 @@ function applyLanguage() {
     if (typeof syncUpdatePopup === 'function' && updatePopup && !updatePopup.hidden) syncUpdatePopup();
     // The Android notification action title is localized: re-register it.
     registerNotificationActions();
+    refreshPanels();
 }
 
 // Switches the language (and optionally persists the choice).

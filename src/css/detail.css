@@ -307,6 +307,81 @@
     flex-basis: 100%;
 }
 
+/* ===== SIMILAR TITLES ===== */
+.similar-section {
+    margin-top: 2rem;
+    border-top: 1px solid var(--line);
+    padding-top: 1.4rem;
+}
+
+.similar-section__title {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 1.1rem;
+    margin: 0 0 1rem;
+}
+
+.similar-card {
+    flex: 0 0 140px;
+    cursor: pointer;
+    scroll-snap-align: start;
+}
+
+.similar-card__poster {
+    position: relative;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--line);
+    background: var(--paper-hi);
+}
+
+.similar-card__poster img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+}
+
+.similar-card__kind {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    font-family: var(--font-mono);
+    font-size: 0.55rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    background: var(--chip-bg);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-sm);
+    padding: 2px 6px;
+}
+
+.similar-card__body {
+    padding: 0.4rem 0;
+}
+
+.similar-card__title {
+    font-family: var(--font-main);
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.similar-card__year {
+    font-family: var(--font-mono);
+    font-size: var(--fs-caption);
+    color: var(--meta);
+}
+
+.similar-card:focus-visible {
+    outline: 2px solid var(--lago);
+    outline-offset: 2px;
+    border-radius: var(--radius);
+}
+
 /* ===== HERO BACKDROP ===== */
 #detail-view { position: relative; }
 #detail-view > .btn--ghost { position: relative; z-index: 1; }
@@ -328,12 +403,12 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-    #home-view,
+    .home-panels,
     #detail-view {
         transition: none !important;
     }
-    #home-view.is-exiting,
-    #home-view.is-entering,
+    .home-panels.is-exiting,
+    .home-panels.is-entering,
     #detail-view,
     #detail-view.is-visible,
     #detail-view.is-exiting {

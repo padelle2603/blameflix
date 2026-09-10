@@ -121,7 +121,36 @@
 
     <!-- HOMEPAGE / SEARCH -->
     <div class="view-stack">
-    <main id="home-view">
+    <div class="home-panels" id="home-panels">
+    <section class="home-panel" id="stats-view" aria-label="Statistiche">
+        <div class="panel-head">
+            <span class="eyebrow" data-i18n="stats.kicker">La tua sala</span>
+            <h2 class="panel-title" data-i18n="stats.title">Statistiche</h2>
+        </div>
+        <div class="stats-grid" id="stats-grid">
+            <div class="stat-card stat-card--wide">
+                <span class="stat-card__value skeleton-block"></span>
+                <span class="stat-card__label" data-i18n="stats.hours">Ore stimate viste</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-card__value skeleton-block"></span>
+                <span class="stat-card__label" data-i18n="stats.topGenre">Genere preferito</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-card__value skeleton-block"></span>
+                <span class="stat-card__label" data-i18n="stats.streak">Streak</span>
+            </div>
+            <div class="stat-card stat-card--wide">
+                <span class="stat-card__label" data-i18n="stats.byType">Per tipo</span>
+                <p class="stat-bytype" id="stats-bytype"></p>
+            </div>
+            <div class="stat-card stat-card--wide">
+                <span class="stat-card__label" data-i18n="stats.activity">Attività (12 mesi)</span>
+                <div class="bars" id="stats-bars" aria-hidden="true"></div>
+            </div>
+        </div>
+    </section>
+    <main class="home-panel" id="home-view">
         <div class="section-head" id="home-head">
             <span class="section-unwatched" id="home-unwatched" hidden></span>
         </div>
@@ -145,6 +174,26 @@
             <button type="button" class="btn" id="empty-search-btn" data-action="focus-search" data-i18n="home.startSearch">Cerca un titolo</button>
         </div>
     </main>
+
+    <section class="home-panel" id="calendar-view" aria-label="Calendario">
+        <div class="panel-head">
+            <span class="eyebrow" data-i18n="calendar.kicker">Prossimi rilasci</span>
+            <h2 class="panel-title" data-i18n="calendar.title">Calendario uscite</h2>
+        </div>
+        <div class="calendar-toolbar">
+            <button type="button" class="btn btn--ghost" id="cal-prev" data-action="calendar-prev" data-i18n="calendar.prev" aria-label="Mese precedente">‹</button>
+            <span class="calendar-month" id="cal-month"></span>
+            <button type="button" class="btn btn--ghost" id="cal-next" data-action="calendar-next" data-i18n="calendar.next" aria-label="Mese successivo">›</button>
+        </div>
+        <div class="calendar-grid" id="calendar-grid" role="grid"></div>
+    </section>
+    </div>
+
+    <div class="panel-dots" id="panel-dots" role="tablist" aria-label="Pannelli">
+        <button type="button" class="panel-dot" data-action="go-panel" data-panel="0" data-i18n-aria="stats.title" data-i18n-title="stats.title" aria-label="Statistiche" aria-selected="false" title="Statistiche"></button>
+        <button type="button" class="panel-dot is-active" data-action="go-panel" data-panel="1" data-i18n-aria="nav.home" data-i18n-title="nav.home" aria-label="Home" aria-selected="true" title="Home"></button>
+        <button type="button" class="panel-dot" data-action="go-panel" data-panel="2" data-i18n-aria="calendar.title" data-i18n-title="calendar.title" aria-label="Calendario" aria-selected="false" title="Calendario"></button>
+    </div>
 
     <!-- DETAIL (overlay, no new page) -->
     <div id="detail-view" hidden>
@@ -232,6 +281,15 @@
                 <button type="button" class="btn episode-section__mark" id="btn-mark-season" data-action="mark-season-watched" data-i18n="episode.markAllWatched">✓ Segna tutte come viste</button>
             </div>
             <div id="episode-list" class="episode-list"></div>
+        </section>
+
+        <section class="similar-section" id="similar-section" hidden>
+            <h3 class="similar-section__title" data-i18n="detail.similar">Ti potrebbe piacere</h3>
+            <div class="rail-wrap">
+                <button type="button" class="rail-arrow rail-arrow--prev" aria-label="Scorri indietro">‹</button>
+                <div class="rail" id="similar-list" role="group" data-i18n-aria="detail.similar"></div>
+                <button type="button" class="rail-arrow rail-arrow--next" aria-label="Scorri avanti">›</button>
+            </div>
         </section>
     </div>
     </div>

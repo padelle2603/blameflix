@@ -1,4 +1,11 @@
 // Shared DOM references, resolved once (the script runs after the markup).
+export const homePanels = document.getElementById('home-panels');
+export const statsView = document.getElementById('stats-view');
+export const statsGrid = document.getElementById('stats-grid');
+export const calendarView = document.getElementById('calendar-view');
+export const panelDots = document.getElementById('panel-dots');
+export const calendarGrid = document.getElementById('calendar-grid');
+export const calendarMonth = document.getElementById('cal-month');
 export const homeView = document.getElementById('home-view');
 export const detailView = document.getElementById('detail-view');
 export const searchbar = document.getElementById('searchbar');
@@ -66,4 +73,6 @@ export const disclaimerOverlay = document.getElementById('disclaimer-overlay');
 export const tutorialOverlay = document.getElementById('tutorial-overlay');
 export const networkPanel = document.getElementById('network-panel');
 export const resolverPanel = document.getElementById('resolver-override-panel');
+export const similarSection = document.getElementById('similar-section');
+export const similarList = document.getElementById('similar-list');
 

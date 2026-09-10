@@ -82,6 +82,17 @@ async function getSeasonEpisodes(showId, seasonNumber) {
     return eps;
 }
 
+const similarCache = new LruCache(60, 30 * 60 * 1000); // key 'type:id' -> similar results
+
+async function getSimilar(type, id) {
+    const key = `${type}:${id}`;
+    if (similarCache.has(key)) return similarCache.get(key);
+    const data = await fetchDetail(`${BASE_URL}/${type}/${id}/similar?api_key=${state.apiKey}&language=${locale()}`);
+    const results = (data.results || []).slice(0, 20);
+    similarCache.set(key, results);
+    return results;
+}
+
 const tvSeasonsCache = new LruCache(150); // id -> seasons array (for the home counter)
 const showUnwatchedCache = new LruCache(300); // id -> unwatched episodes (poster badges)
 
@@ -97,4 +108,4 @@ async function fetchSeasons(showId) {
     }
 }
 
-export { fetchJson, detailsCache, getDetails, seasonEpisodesCache, getSeasonEpisodes, tvSeasonsCache, showUnwatchedCache, fetchSeasons };
+export { fetchJson, detailsCache, getDetails, getSimilar, seasonEpisodesCache, getSeasonEpisodes, tvSeasonsCache, showUnwatchedCache, fetchSeasons };

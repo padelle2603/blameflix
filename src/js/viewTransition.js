@@ -1,7 +1,8 @@
 // Simple SlideX view transitions for home ↔ detail and grid (home ↔ search).
 // Excludes settings tabs. Respects prefers-reduced-motion.
-import { homeView, detailView, grid, searchbar, btnSearchToggle } from './dom.js';
+import { homePanels, detailView, grid, searchbar, btnSearchToggle } from './dom.js';
 import { VIEW_DUR, GRID_DUR_OUT, GRID_DUR_IN, SEARCHBAR_DUR, prefersReduced, wait, nextFrame } from './motion.js';
+import { storePanelIndex, restorePanelIndex } from './panels.js';
 
 function getStack() {
     return document.querySelector('.view-stack');
@@ -73,8 +74,9 @@ export async function slideHomeToDetail() {
     if (prefersReduced()) {
         const stack = getStack();
         if (stack) stack.style.height = '';
-        homeView.hidden = true;
-        homeView.classList.remove('is-exiting', 'is-entering');
+        storePanelIndex();
+        homePanels.hidden = true;
+        homePanels.classList.remove('is-exiting', 'is-entering');
         detailView.hidden = false;
         detailView.classList.remove('is-exiting');
         detailView.classList.add('is-visible');
@@ -82,7 +84,7 @@ export async function slideHomeToDetail() {
         return;
     }
     const stack = getStack();
-    const fromH = homeView.offsetHeight;
+    const fromH = homePanels.offsetHeight;
     const toH = measureHeight(detailView);
 
     if (stack && Math.abs(fromH - toH) > 8) {
@@ -91,7 +93,7 @@ export async function slideHomeToDetail() {
     }
 
     detailView.classList.remove('is-exiting');
-    homeView.classList.remove('is-entering');
+    homePanels.classList.remove('is-entering');
     detailView.hidden = false;
     detailView.classList.remove('is-visible');
     void detailView.offsetWidth;
@@ -102,12 +104,13 @@ export async function slideHomeToDetail() {
 
     // Start exit and enter together for push effect
     await nextFrame();
-    homeView.classList.add('is-exiting');
+    homePanels.classList.add('is-exiting');
     detailView.classList.add('is-visible');
     document.body.classList.add('is-detail');
     await wait(VIEW_DUR);
-    homeView.hidden = true;
-    homeView.classList.remove('is-exiting');
+    storePanelIndex();
+    homePanels.hidden = true;
+    homePanels.classList.remove('is-exiting');
     if (stack) stack.style.height = '';
 }
 
@@ -119,14 +122,15 @@ export async function slideDetailToHome() {
         if (stack) stack.style.height = '';
         detailView.classList.remove('is-visible', 'is-exiting');
         detailView.hidden = true;
-        homeView.hidden = false;
-        homeView.classList.remove('is-exiting', 'is-entering');
+        homePanels.hidden = false;
+        restorePanelIndex();
+        homePanels.classList.remove('is-exiting', 'is-entering');
         document.body.classList.remove('is-detail');
         return;
     }
     const stack = getStack();
     const fromH = detailView.offsetHeight;
-    const toH = measureHeight(homeView);
+    const toH = measureHeight(homePanels);
 
     if (stack && Math.abs(fromH - toH) > 8) {
         stack.style.height = fromH + 'px';
@@ -134,9 +138,10 @@ export async function slideDetailToHome() {
     }
 
     // Prepare home for entering from left
-    homeView.hidden = false;
-    homeView.classList.add('is-entering');
-    void homeView.offsetWidth;
+    homePanels.hidden = false;
+    restorePanelIndex();
+    homePanels.classList.add('is-entering');
+    void homePanels.offsetWidth;
     detailView.classList.remove('is-visible');
     detailView.classList.add('is-exiting');
 
@@ -145,7 +150,7 @@ export async function slideDetailToHome() {
     }
 
     await nextFrame();
-    homeView.classList.remove('is-entering');
+    homePanels.classList.remove('is-entering');
     await wait(VIEW_DUR);
     detailView.hidden = true;
     detailView.classList.remove('is-exiting');

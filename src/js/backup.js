@@ -14,7 +14,7 @@ import { sourceTemplateError } from './sourceUtils.js';
 import { watchlistKey } from './watchlist.js';
 import { patchCard, syncTools, showHome } from './catalog.js';
 import { refreshHomeUnwatchedCount } from './counter.js';
-import { backupFile, backupStatus, homeView, settingsKeyInput, settingsOverlay, settingsResolverMovieInput, settingsResolverTvInput, settingsLangInput } from './dom.js';
+import { backupFile, backupStatus, homePanels, settingsKeyInput, settingsOverlay, settingsResolverMovieInput, settingsResolverTvInput, settingsLangInput } from './dom.js';
 import { encryptAPIKey, decryptAPIKey, isEncryptedKey, getCryptoKeyString } from './crypto.js';
 
 async function backupData({ includeSensitive = true } = {}) {
@@ -242,7 +242,7 @@ async function hydrateWatchlistGrid(force = false) {
             state.watchlistDetails.set(watchlistKey(h.id, h.media_type), h);
             // Only real details refresh the card in place: a failed fetch
             // keeps its placeholder (no useless DOM churn).
-            if (homeView.hidden) return;
+            if (homePanels.hidden) return;
             if (h.title || h.name) patchCard(h);
         })
     );
