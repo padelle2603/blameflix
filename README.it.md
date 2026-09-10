@@ -233,8 +233,9 @@ Impostazioni → **Preferenze** ti lascia passare tra italiano e inglese. L'app 
 Le release vengono create automaticamente dalla pipeline a ogni `push` sul ramo
 `main`, con tag `v<versione>`. Su Android l'aggiornamento è **in-place**: ogni
 release ha un `versionCode` crescente e firma con la stessa chiave, quindi il
-nuovo APK si installa sopra il precedente e i tuoi dati restano intatti. Il
-[changelog](CHANGELOG.md) elenca le modifiche di ogni release.
+nuovo APK si installa sopra il precedente e i tuoi dati restano intatti. Le
+note di release su [GitHub Releases](https://github.com/padelle2603/blameflix/releases)
+elencano le modifiche di ogni release.
 
 ## Sviluppo
 

@@ -233,7 +233,8 @@ Releases are created automatically by the pipeline on every `push` to the `main`
 branch, tagged `v<version>`. On Android the update is **in-place**: every
 release has an increasing `versionCode` and is signed with the same key, so the
 new APK installs over the previous one and your data stays intact. The
-[changelog](CHANGELOG.md) lists the changes of every release.
+release notes on [GitHub Releases](https://github.com/padelle2603/blameflix/releases)
+list the changes of every release.
 
 ## Development
 
