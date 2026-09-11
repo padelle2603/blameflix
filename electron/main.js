@@ -2,6 +2,8 @@ const { app, BrowserWindow, dialog, ipcMain, Notification, shell } = require('el
 const path = require('path');
 const fs = require('fs');
 
+app.commandLine.appendSwitch('ozone-platform-hint', 'auto');
+
 function getWebRoot() {
     // In packaged app (AppImage), resources are at process.resourcesPath/app/
     // In development, they're at __dirname/../www/
