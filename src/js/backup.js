@@ -3,7 +3,7 @@ import {
     persistWatchlist, persistNotifySettings, persistReleaseState, persistNewsHistory, persistNetworkSources,
     rebuildWatchlistIndex, rebuildLastPlayedMap
 } from './state.js';
-import { normalizeWatched, persistWatchedEpisodes, _invalidateWatchedCache } from './watched.js';
+import { normalizeWatched, normalizeWatchedAt, persistWatchedEpisodes, _invalidateWatchedCache } from './watched.js';
 import { getDetails } from './tmdb.js';
 import { sanitizeMediaType, toIntOr } from './utils.js';
 import { setLanguage, t } from './i18n.js';
@@ -23,6 +23,7 @@ async function backupData({ includeSensitive = true } = {}) {
         myLastPlayed: state.lastPlayed.map(({ id, media_type, season, episode }) => ({ id, media_type, season, episode })),
         myCustomSelections: state.customSelections,
         myWatchedEpisodes: state.watchedEpisodes,
+        myWatchedAt: state.watchedAt,
         myNewsHistory: state.newsHistory,
         myViewMode: state.viewMode,
         myTypeFilter: state.typeFilter,
@@ -45,7 +46,7 @@ async function backupData({ includeSensitive = true } = {}) {
     }
     return {
         app: 'BlameFlix',
-        version: 8,
+        version: 9,
         exportedAt: new Date().toISOString(),
         data
     };
@@ -478,6 +479,7 @@ async function applyBackupData(data, statusFn = (msg, isError) => showBackupStat
     rebuildLastPlayedMap();
     state.customSelections = cs;
     state.watchedEpisodes = normalizeWatched(we);
+    state.watchedAt = normalizeWatchedAt(data.myWatchedAt);
     state.newsHistory = nh.slice(0, NEWS_HISTORY_MAX);
     state.notifySettings = ns;
     state.releaseState = rl;
@@ -485,6 +487,7 @@ async function applyBackupData(data, statusFn = (msg, isError) => showBackupStat
     localStorage.setItem('myLastPlayed', JSON.stringify(state.lastPlayed));
     localStorage.setItem('myCustomSelections', JSON.stringify(state.customSelections));
     persistWatchedEpisodes();
+    localStorage.setItem('myWatchedAt', JSON.stringify(state.watchedAt));
     persistNewsHistory();
     persistNotifySettings();
     persistReleaseState();

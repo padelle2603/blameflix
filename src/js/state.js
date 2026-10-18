@@ -1,6 +1,6 @@
 /* global __BLAMEFLIX_VERSION__ */
 import { readStoredJson } from './storage.js';
-import { normalizeWatched } from './watched.js';
+import { normalizeWatched, normalizeWatchedAt } from './watched.js';
 import { LANG_CODES } from './langs.js';
 
 // Version injected at build time from package.json; resolved against the
@@ -70,6 +70,7 @@ export const state = {
     currentSeason: 1, // season selected in the episode list
     currentEpisode: 1, // episode selected in the episode list
     watchedEpisodes: normalizeWatched(readStoredJson('myWatchedEpisodes', {})),
+    watchedAt: normalizeWatchedAt(readStoredJson('myWatchedAt', {})), // showId -> {season -> {episode -> timestamp}}
     newsHistory: (() => { const h = readStoredJson('myNewsHistory', []); return Array.isArray(h) ? h : []; })(),
     searching: false,
     currentList: [], // Last rendered titles (watchlist or search results)

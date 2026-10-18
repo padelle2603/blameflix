@@ -138,6 +138,70 @@ body.is-detail .panel-dots { visibility: hidden; }
 
 .bars i.has { background: var(--lago); }
 
+.hbars { display: flex; flex-direction: column; gap: 4px; margin-top: 0.8rem; }
+
+.hbar-row { display: flex; align-items: center; gap: 0.5rem; }
+
+.hbar-label {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--meta);
+    min-width: 3.2em;
+    text-align: right;
+}
+
+.hbar-wrap { flex: 1; display: flex; align-items: center; gap: 6px; }
+
+.hbar-wrap i {
+    display: block;
+    background: var(--lago);
+    border-radius: 2px;
+    height: 14px;
+    min-width: 2px;
+}
+
+.hbar-count {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--meta);
+}
+
+.recent-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-top: 0.6rem;
+}
+
+.recent-item {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.8rem;
+    padding: 0.35rem 0.5rem;
+    border-radius: var(--radius);
+    transition: background 0.15s ease;
+}
+
+.recent-item:hover { background: var(--paper); }
+
+.recent-title {
+    font-family: var(--font-body);
+    font-size: var(--fs-sm);
+    color: var(--ink);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.recent-date {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--meta);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
 .calendar-toolbar {
     display: flex;
     align-items: center;

@@ -58,10 +58,10 @@ async function openPlayer(resume = false) {
 
     if (state.currentMedia.media_type === 'movie') {
         streamUrl = resolveTemplate(effectiveResolverTemplate('movie'), { id: state.currentMedia.id, media_type: state.currentMedia.media_type });
+        if (streamUrl) saveLastPlayed(state.currentMedia, null, null);
     } else if (state.currentMedia.media_type === 'tv') {
         let season, episode;
         if (state.customMode) {
-            // Manual values (seasons/episodes not present on TMDB)
             season = Math.max(1, Number(inputSeasonCustom.value) || 1);
             episode = Math.max(1, Number(inputEpisodeCustom.value) || 1);
             state.customSelections[state.currentMedia.id] = { season, episode };
@@ -84,7 +84,10 @@ async function openPlayer(resume = false) {
             episode = state.currentEpisode || 1;
         }
         streamUrl = resolveTemplate(effectiveResolverTemplate('tv'), { id: state.currentMedia.id, media_type: state.currentMedia.media_type, season, episode });
-        if (streamUrl) saveLastPlayed(state.currentMedia, season, episode);
+        if (streamUrl) {
+            saveLastPlayed(state.currentMedia, season, episode);
+            toggleEpisodeWatched(state.currentMedia.id, season, episode, true);
+        }
     } else {
         return;
     }
