@@ -62,8 +62,6 @@ Type a title and BlameFlix searches it in the public API of The Movie Database
 
 ![Search](gifs/search.gif)
 
-> Full-quality 1080p demo: [search.mp4](Videos/search.mp4)
-
 ### Tracking
 
 Mark watched episodes (compressed into ranges to take little space), resume
@@ -71,8 +69,6 @@ where you left off, and save seasons/episodes even when TMDB does not list
 them.
 
 ![Tracking](gifs/track.gif)
-
-> Full-quality 1080p demo: [track.mp4](Videos/track.mp4)
 
 ### Settings & "Watch now"
 
@@ -82,8 +78,6 @@ template, even different per title, with `{id}`, `{type}`, `{season}`,
 are rejected); if the source is empty the button stays inactive.
 
 ![Settings](gifs/settings.gif)
-
-> Full-quality 1080p demo: [settings.mp4](Videos/settings.mp4)
 
 ### Library, release notifications & backup
 

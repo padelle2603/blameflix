@@ -61,8 +61,6 @@ Scrivi un titolo e BlameFlix lo cerca nell'API pubblica di The Movie Database
 
 ![Ricerca](gifs/search.gif)
 
-> Demo a 1080p: [search.mp4](Videos/search.mp4)
-
 ### Tracciamento
 
 Segna le puntate viste (compresse in intervalli per occupare poco spazio),
@@ -70,8 +68,6 @@ riprendi da dove eri rimasto e salva stagioni/episodi anche quando TMDB non li
 elenca.
 
 ![Tracciamento](gifs/track.gif)
-
-> Demo a 1080p: [track.mp4](Videos/track.mp4)
 
 ### Impostazioni e «Guarda ora»
 
@@ -82,8 +78,6 @@ un template URL, anche diverso per ogni titolo, con i segnaposto `{id}`,
 pulsante resta inattivo.
 
 ![Impostazioni](gifs/settings.gif)
-
-> Demo a 1080p: [settings.mp4](Videos/settings.mp4)
 
 ### Libreria, notifiche di rilascio e backup
 
